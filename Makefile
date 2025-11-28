@@ -29,7 +29,7 @@ install-dev:
 	uv pip install -e ".[dev]"
 
 test:
-	pytest tests/ -v
+	uv run python -m pytest tests/ -v
 
 lint:
 	ruff check src/maid_runner_mcp/
