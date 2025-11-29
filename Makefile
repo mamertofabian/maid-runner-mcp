@@ -1,5 +1,10 @@
 .PHONY: help install install-dev test lint lint-fix format type-check validate clean build publish
 
+# Unset VIRTUAL_ENV to let uv manage the virtual environment
+SHELL := /bin/bash
+.SHELLFLAGS := -c
+export VIRTUAL_ENV :=
+
 help:
 	@echo "MAID Runner MCP - Development Commands"
 	@echo ""
@@ -32,19 +37,19 @@ test:
 	uv run python -m pytest tests/ -v
 
 lint:
-	ruff check src/maid_runner_mcp/
+	uv run ruff check src/maid_runner_mcp/
 
 lint-fix:
-	ruff check --fix src/maid_runner_mcp/
+	uv run ruff check --fix src/maid_runner_mcp/
 
 format:
-	black src/maid_runner_mcp/ tests/
+	uv run python -m black src/maid_runner_mcp/ tests/
 
 type-check:
-	mypy src/maid_runner_mcp/
+	uv run python -m mypy src/maid_runner_mcp/
 
 validate:
-	maid validate --manifest-dir manifests
+	uv run maid validate --manifest-dir manifests
 
 clean:
 	rm -rf build/

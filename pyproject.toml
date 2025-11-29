@@ -72,5 +72,5 @@ warn_unused_configs = true
 disallow_untyped_defs = true
 
 [tool.uv.sources]
-maid-runner = { path = "../..", editable = true }
+maid-runner = { path = "../maid-runner", editable = true }
 maid-agents = { path = "../maid-agents", editable = true }
