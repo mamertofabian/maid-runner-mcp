@@ -500,6 +500,30 @@ wheels = [
 ]
 
 [[package]]
+name = "maid-agents"
+version = "0.1.0"
+source = { editable = "../maid-agents" }
+dependencies = [
+    { name = "click" },
+    { name = "maid-runner" },
+    { name = "rich" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "black", marker = "extra == 'dev'", specifier = ">=25.1.0" },
+    { name = "click", specifier = ">=8.0.0" },
+    { name = "maid-runner", specifier = ">=0.1.0" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.4.2" },
+    { name = "rich", specifier = ">=13.0.0" },
+    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.13.0" },
+    { name = "tomli", marker = "python_full_version < '3.11'", specifier = ">=2.0.0" },
+]
+
+[package.metadata.requires-dev]
+dev = [{ name = "black", specifier = ">=25.11.0" }]
+
+[[package]]
 name = "maid-runner"
 version = "0.1.2"
 source = { registry = "https://pypi.org/simple" }
@@ -524,6 +548,7 @@ dependencies = [
 dev = [
     { name = "black" },
     { name = "build" },
+    { name = "maid-agents" },
     { name = "mypy" },
     { name = "pytest" },
     { name = "pytest-asyncio" },
@@ -541,6 +566,7 @@ requires-dist = [
 dev = [
     { name = "black", specifier = ">=25.1.0" },
     { name = "build", specifier = ">=1.0.0" },
+    { name = "maid-agents", editable = "../maid-agents" },
     { name = "mypy", specifier = ">=1.0.0" },
     { name = "pytest", specifier = ">=8.4.2" },
     { name = "pytest-asyncio", specifier = ">=0.23.0" },

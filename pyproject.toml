@@ -38,6 +38,7 @@ dev = [
     "mypy>=1.0.0",
     "build>=1.0.0",
     "twine>=5.0.0",
+    "maid-agents",
 ]
 
 [project.scripts]
@@ -69,3 +70,6 @@ python_version = "3.12"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
+
+[tool.uv.sources]
+maid-agents = { path = "../maid-agents", editable = true }
