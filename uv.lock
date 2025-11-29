@@ -501,7 +501,7 @@ wheels = [
 
 [[package]]
 name = "maid-agents"
-version = "0.1.0"
+version = "0.1.1"
 source = { editable = "../maid-agents" }
 dependencies = [
     { name = "click" },
@@ -526,13 +526,21 @@ dev = [{ name = "black", specifier = ">=25.11.0" }]
 [[package]]
 name = "maid-runner"
 version = "0.1.2"
-source = { registry = "https://pypi.org/simple" }
+source = { editable = "../../" }
 dependencies = [
     { name = "jsonschema" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/51/0b/d7ccc51be1196617075b2eff7b60cf2996f741225cf92ae12ecb7e87cc0d/maid_runner-0.1.2.tar.gz", hash = "sha256:914220fdf630ebcbf9fa5a9270efcc231cdc90a486305ffbc5fb9e4df2c6532f", size = 163886 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/a7/d4/9c4213019e7698ff711945e9f9dfc32d53aa0ba2c28d4e61aadd75d211e4/maid_runner-0.1.2-py3-none-any.whl", hash = "sha256:10de0bffdc490617d5efc9d8acf7dee3575b98989a15d3c6a96498b8eb0a3016", size = 79924 },
+
+[package.metadata]
+requires-dist = [{ name = "jsonschema", specifier = ">=4.25.1" }]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "black", specifier = ">=25.1.0" },
+    { name = "build", specifier = ">=1.0.0" },
+    { name = "pytest", specifier = ">=8.4.2" },
+    { name = "ruff", specifier = ">=0.13.0" },
+    { name = "twine", specifier = ">=5.0.0" },
 ]
 
 [[package]]
@@ -558,7 +566,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "maid-runner", specifier = ">=0.1.0" },
+    { name = "maid-runner", editable = "../../" },
     { name = "mcp", specifier = ">=1.0.0" },
 ]
 
