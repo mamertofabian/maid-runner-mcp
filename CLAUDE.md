@@ -9,10 +9,13 @@ MAID Runner MCP is a Model Context Protocol server that exposes MAID Runner vali
 ## MAID Workflow (Required for ALL changes)
 
 ### Phase 1: Goal Definition
+
 Confirm the high-level goal with user before proceeding.
 
 ### Phase 2: Planning Loop
+
 **Before ANY implementation - iterative refinement:**
+
 1. Draft manifest (`manifests/task-XXX.manifest.json`) - **PRIMARY CONTRACT**
 2. Draft behavioral tests (`tests/test_task_XXX_*.py`) to support and verify the manifest
 3. Run structural validation (checks manifest↔tests AND implementation↔history):
@@ -20,18 +23,21 @@ Confirm the high-level goal with user before proceeding.
 4. Refine BOTH tests & manifest together until validation passes
 
 ### Phase 3: Implementation
+
 1. Load ONLY files from manifest (`editableFiles` + `readonlyFiles`)
 2. Implement code to pass tests
 3. Run behavioral validation (from `validationCommand`)
 4. Iterate until all tests pass
 
 ### Phase 3.5: Refactoring
+
 1. After tests pass, improve code quality
 2. Maintain public API and manifest compliance
 3. Apply clean code principles and patterns
 4. Validate tests still pass after each change
 
 ### Phase 4: Integration
+
 Verify complete chain: `uv run python -m pytest tests/ -v`
 
 ## Key Rules
@@ -67,16 +73,19 @@ make validate    # Validate all manifests
 ### Core Components
 
 1. **MCP Server** (`src/maid_runner_mcp/server.py`)
+
    - FastMCP-based server implementation
    - Exposes tools, resources, and prompts
    - Handles stdio transport (default)
 
 2. **Tools** (`src/maid_runner_mcp/tools/`)
+
    - Wrap MAID Runner CLI commands
    - Return structured JSON responses
    - Handle errors and validation
 
 3. **Resources** (`src/maid_runner_mcp/resources/`)
+
    - Expose read-only data (manifests, schemas, etc.)
    - Support URI-based access
    - Cache validation results
@@ -89,6 +98,7 @@ make validate    # Validate all manifests
 ### MCP Components
 
 **Tools** (Actions with side effects):
+
 - `maid_validate` - Validate manifests
 - `maid_snapshot` - Generate snapshots
 - `maid_test` - Run validation commands
@@ -97,6 +107,7 @@ make validate    # Validate all manifests
 - `maid_get_schema` - Get manifest schema
 
 **Resources** (Read-only data):
+
 - `manifest://{name}` - Manifest content
 - `schema://manifest` - JSON schema
 - `validation://{name}/result` - Validation results
@@ -105,6 +116,7 @@ make validate    # Validate all manifests
 - `file-tracking://analysis` - File tracking status
 
 **Prompts** (Workflow guidance):
+
 - `plan-task` - Guide manifest creation
 - `implement-task` - Guide implementation
 - `refactor-code` - Guide refactoring
@@ -127,7 +139,7 @@ make validate    # Validate all manifests
         "type": "function|class|attribute",
         "name": "artifact_name",
         "class": "ParentClass",
-        "args": [{"name": "arg1", "type": "str"}],
+        "args": [{ "name": "arg1", "type": "str" }],
         "returns": "ReturnType"
       }
     ]
@@ -152,18 +164,21 @@ make validate    # Validate all manifests
 ## Key Design Patterns
 
 ### Error Handling
+
 - Catch `SystemExit` from MAID Runner CLI
 - Parse stderr for error messages
 - Structure errors as JSON arrays
 - Return structured error responses
 
 ### Output Parsing
+
 - Capture stdout/stderr from MAID Runner
 - Parse validation output for structured data
 - Convert to structured JSON responses
 - Cache results where appropriate
 
 ### Path Safety
+
 - Validate all file paths
 - Prevent directory traversal
 - Resolve paths relative to project root
@@ -195,12 +210,14 @@ make validate      # Validate manifests
 **Focus on current state, not temporal comparisons:**
 
 **NEVER use:**
+
 - ❌ Temporal markers: "NEW", "UPDATED", "ADDED"
 - ❌ Temporal comparisons: "Before/After"
 - ❌ Marketing language: "Exciting new feature"
 - ❌ Date-based qualifiers: "As of today", "Recently added"
 
 **ALWAYS:**
+
 - ✅ State facts clearly: "System supports X"
 - ✅ Use present tense: "This validates"
 - ✅ Document current capabilities: "The system provides"
@@ -208,17 +225,20 @@ make validate      # Validate manifests
 ## MCP Integration Notes
 
 ### Transport Support
+
 - **stdio** (default): For local process communication
 - **SSE** (future): For server-sent events
 - **WebSocket** (future): For bidirectional communication
 
 ### Protocol Compliance
+
 - Follow MCP specification strictly
 - Return structured JSON-RPC responses
 - Handle all MCP lifecycle events
 - Support tool/resource/prompt discovery
 
 ### Client Compatibility
+
 - Test with Claude Code
 - Test with MCP Inspector
 - Provide integration examples
@@ -235,113 +255,3 @@ make validate      # Validate manifests
 - [MCP Python SDK](https://github.com/modelcontextprotocol/python-sdk)
 - [MAID Methodology](../../docs/maid_specs.md)
 - [Issue #89: MCP Server Foundation](https://github.com/mamertofabian/maid-runner/issues/89)
-
-
-========================================
-
-# MAID Methodology
-
-**This project uses Manifest-driven AI Development (MAID) v1.2**
-
-MAID is a methodology for developing software with AI assistance by explicitly declaring:
-- What files can be modified for each task
-- What code artifacts (functions, classes) should be created or modified
-- How to validate that the changes meet requirements
-
-This project is compatible with MAID-aware AI agents including Claude Code and other tools that understand the MAID workflow.
-
-## MAID Workflow
-
-### Phase 1: Goal Definition
-Confirm the high-level goal before proceeding.
-
-### Phase 2: Planning Loop
-**Before ANY implementation - iterative refinement:**
-1. Draft manifest (`manifests/task-XXX.manifest.json`)
-2. Draft behavioral tests (`tests/test_task_XXX_*.py`)
-3. Run validation: `maid validate manifests/task-XXX.manifest.json --validation-mode behavioral`
-4. Refine both tests & manifest until validation passes
-
-### Phase 3: Implementation
-1. Load ONLY files from manifest (`editableFiles` + `readonlyFiles`)
-2. Implement code to pass tests
-3. Run behavioral validation (from `validationCommand`)
-4. Iterate until all tests pass
-
-### Phase 4: Integration
-Verify complete chain: `pytest tests/ -v` (or your test command)
-
-## Manifest Template
-
-```json
-{
-  "goal": "Clear task description",
-  "taskType": "edit|create|refactor",
-  "supersedes": [],
-  "creatableFiles": [],
-  "editableFiles": [],
-  "readonlyFiles": [],
-  "expectedArtifacts": {
-    "file": "path/to/file.py",
-    "contains": [
-      {
-        "type": "function|class|attribute",
-        "name": "artifact_name",
-        "class": "ParentClass",
-        "args": [{"name": "arg1", "type": "str"}],
-        "returns": "ReturnType"
-      }
-    ]
-  },
-  "validationCommand": ["pytest", "tests/test_file.py", "-v"]
-}
-```
-
-## MAID CLI Commands
-
-```bash
-# Validate a manifest
-maid validate <manifest-path> [--validation-mode behavioral|implementation]
-
-# Generate a snapshot manifest from existing code
-maid snapshot <file-path> [--output-dir <dir>]
-
-# List manifests that reference a file
-maid manifests <file-path> [--manifest-dir <dir>]
-
-# Run all validation commands
-maid test [--manifest-dir <dir>]
-
-# Get help
-maid --help
-```
-
-## Validation Modes
-
-- **Strict Mode** (`creatableFiles`): Implementation must EXACTLY match `expectedArtifacts`
-- **Permissive Mode** (`editableFiles`): Implementation must CONTAIN `expectedArtifacts` (allows existing code)
-
-## Key Rules
-
-**NEVER:** Modify code without manifest | Skip validation | Access unlisted files
-**ALWAYS:** Manifest first → Tests → Implementation → Validate
-
-## Artifact Rules
-
-- **Public** (no `_` prefix): MUST be in manifest
-- **Private** (`_` prefix): Optional in manifest
-- **creatableFiles**: Strict validation (exact match)
-- **editableFiles**: Permissive validation (contains at least)
-
-## Getting Started
-
-1. Create your first manifest in `manifests/task-001-<description>.manifest.json`
-2. Write behavioral tests in `tests/test_task_001_*.py`
-3. Validate: `maid validate manifests/task-001-<description>.manifest.json --validation-mode behavioral`
-4. Implement the code
-5. Run tests to verify: `maid test`
-
-## Additional Resources
-
-- **Full MAID Specification**: See `.maid/docs/maid_specs.md` for complete methodology details
-- **MAID Runner Repository**: https://github.com/mamertofabian/maid-runner
