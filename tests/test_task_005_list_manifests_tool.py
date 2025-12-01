@@ -7,6 +7,7 @@ These tests verify the expected artifacts defined in the manifest:
 Tests follow MAID behavioral testing pattern - they USE the artifacts
 rather than just checking existence.
 """
+
 import pytest
 
 
@@ -24,9 +25,9 @@ class TestListManifestsResult:
         from maid_runner_mcp.tools.manifests import ListManifestsResult
 
         # TypedDict classes have __annotations__
-        assert hasattr(ListManifestsResult, "__annotations__"), (
-            "ListManifestsResult should have __annotations__ (TypedDict requirement)"
-        )
+        assert hasattr(
+            ListManifestsResult, "__annotations__"
+        ), "ListManifestsResult should have __annotations__ (TypedDict requirement)"
 
     def test_list_manifests_result_has_required_fields(self):
         """Test that ListManifestsResult has all required fields.
@@ -51,9 +52,9 @@ class TestListManifestsResult:
         ]
 
         for field_name in required_fields:
-            assert field_name in annotations, (
-                f"ListManifestsResult should have '{field_name}' field"
-            )
+            assert (
+                field_name in annotations
+            ), f"ListManifestsResult should have '{field_name}' field"
 
 
 class TestMaidListManifestsFunction:
@@ -75,9 +76,9 @@ class TestMaidListManifestsFunction:
         import asyncio
         from maid_runner_mcp.tools.manifests import maid_list_manifests
 
-        assert asyncio.iscoroutinefunction(maid_list_manifests), (
-            "maid_list_manifests should be an async function"
-        )
+        assert asyncio.iscoroutinefunction(
+            maid_list_manifests
+        ), "maid_list_manifests should be an async function"
 
     def test_maid_list_manifests_has_correct_signature(self):
         """Test that maid_list_manifests has the expected parameters.
@@ -93,20 +94,16 @@ class TestMaidListManifestsFunction:
         params = sig.parameters
 
         # Check required parameter
-        assert "file_path" in params, (
-            "maid_list_manifests should have 'file_path' parameter"
-        )
-        assert params["file_path"].default is inspect.Parameter.empty, (
-            "file_path should be a required parameter (no default)"
-        )
+        assert "file_path" in params, "maid_list_manifests should have 'file_path' parameter"
+        assert (
+            params["file_path"].default is inspect.Parameter.empty
+        ), "file_path should be a required parameter (no default)"
 
         # Check optional parameter with default
-        assert "manifest_dir" in params, (
-            "maid_list_manifests should have 'manifest_dir' parameter"
-        )
-        assert params["manifest_dir"].default == "manifests", (
-            "manifest_dir should default to 'manifests'"
-        )
+        assert "manifest_dir" in params, "maid_list_manifests should have 'manifest_dir' parameter"
+        assert (
+            params["manifest_dir"].default == "manifests"
+        ), "manifest_dir should default to 'manifests'"
 
 
 @pytest.mark.asyncio
@@ -135,9 +132,7 @@ class TestMaidListManifestsBehavior:
 
         # Verify types match the output schema from Issue #89
         assert isinstance(result["file_path"], str), "file_path should be a string"
-        assert isinstance(result["total_manifests"], int), (
-            "total_manifests should be an integer"
-        )
+        assert isinstance(result["total_manifests"], int), "total_manifests should be an integer"
         assert isinstance(result["created_by"], list), "created_by should be a list"
         assert isinstance(result["edited_by"], list), "edited_by should be a list"
         assert isinstance(result["read_by"], list), "read_by should be a list"
@@ -149,14 +144,14 @@ class TestMaidListManifestsBehavior:
         result = await maid_list_manifests(file_path="src/maid_runner_mcp/server.py")
 
         # server.py should be referenced by at least one manifest
-        assert result["total_manifests"] > 0, (
-            "server.py should be referenced by at least one manifest"
-        )
+        assert (
+            result["total_manifests"] > 0
+        ), "server.py should be referenced by at least one manifest"
 
         # server.py was created by task-001
-        assert len(result["created_by"]) > 0, (
-            "server.py should have at least one created_by manifest"
-        )
+        assert (
+            len(result["created_by"]) > 0
+        ), "server.py should have at least one created_by manifest"
 
     async def test_maid_list_manifests_with_unreferenced_file(self):
         """Test that maid_list_manifests handles files not in any manifest."""
@@ -166,9 +161,7 @@ class TestMaidListManifestsBehavior:
         result = await maid_list_manifests(file_path="LICENSE")
 
         # Should return a valid result with empty lists
-        assert result["total_manifests"] == 0, (
-            "LICENSE should not be in any manifest"
-        )
+        assert result["total_manifests"] == 0, "LICENSE should not be in any manifest"
         assert result["created_by"] == [], "created_by should be empty"
         assert result["edited_by"] == [], "edited_by should be empty"
         assert result["read_by"] == [], "read_by should be empty"
@@ -179,8 +172,7 @@ class TestMaidListManifestsBehavior:
 
         # Use default manifest dir
         result = await maid_list_manifests(
-            file_path="src/maid_runner_mcp/server.py",
-            manifest_dir="manifests"
+            file_path="src/maid_runner_mcp/server.py", manifest_dir="manifests"
         )
 
         # Should work with explicit manifest_dir

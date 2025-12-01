@@ -9,6 +9,7 @@ These tests verify the expected artifacts defined in the manifest:
 Tests follow MAID behavioral testing pattern - they USE the artifacts
 rather than just checking existence.
 """
+
 import pytest
 
 
@@ -26,9 +27,9 @@ class TestInitResult:
         from maid_runner_mcp.tools.init import InitResult
 
         # TypedDict classes have __annotations__
-        assert hasattr(InitResult, "__annotations__"), (
-            "InitResult should have __annotations__ (TypedDict requirement)"
-        )
+        assert hasattr(
+            InitResult, "__annotations__"
+        ), "InitResult should have __annotations__ (TypedDict requirement)"
 
     def test_init_result_has_required_fields(self):
         """Test that InitResult has all required fields."""
@@ -43,9 +44,7 @@ class TestInitResult:
         }
 
         for field_name in required_fields:
-            assert field_name in annotations, (
-                f"InitResult should have '{field_name}' field"
-            )
+            assert field_name in annotations, f"InitResult should have '{field_name}' field"
 
 
 class TestMaidInitFunction:
@@ -67,9 +66,7 @@ class TestMaidInitFunction:
         import asyncio
         from maid_runner_mcp.tools.init import maid_init
 
-        assert asyncio.iscoroutinefunction(maid_init), (
-            "maid_init should be an async function"
-        )
+        assert asyncio.iscoroutinefunction(maid_init), "maid_init should be an async function"
 
     def test_maid_init_has_correct_signature(self):
         """Test that maid_init has the expected parameters.
@@ -86,15 +83,11 @@ class TestMaidInitFunction:
 
         # Check target_dir parameter with default
         assert "target_dir" in params, "maid_init should have 'target_dir' parameter"
-        assert params["target_dir"].default == ".", (
-            "target_dir should default to '.'"
-        )
+        assert params["target_dir"].default == ".", "target_dir should default to '.'"
 
         # Check force parameter with default
         assert "force" in params, "maid_init should have 'force' parameter"
-        assert params["force"].default is False, (
-            "force should default to False"
-        )
+        assert params["force"].default is False, "force should default to False"
 
 
 class TestSchemaResult:
@@ -109,9 +102,9 @@ class TestSchemaResult:
         from maid_runner_mcp.tools.schema import SchemaResult
 
         # TypedDict classes have __annotations__
-        assert hasattr(SchemaResult, "__annotations__"), (
-            "SchemaResult should have __annotations__ (TypedDict requirement)"
-        )
+        assert hasattr(
+            SchemaResult, "__annotations__"
+        ), "SchemaResult should have __annotations__ (TypedDict requirement)"
 
     def test_schema_result_has_schema_field(self):
         """Test that SchemaResult has the schema field."""
@@ -119,9 +112,7 @@ class TestSchemaResult:
 
         annotations = SchemaResult.__annotations__
 
-        assert "schema" in annotations, (
-            "SchemaResult should have 'schema' field"
-        )
+        assert "schema" in annotations, "SchemaResult should have 'schema' field"
 
 
 class TestMaidGetSchemaFunction:
@@ -138,9 +129,9 @@ class TestMaidGetSchemaFunction:
         import asyncio
         from maid_runner_mcp.tools.schema import maid_get_schema
 
-        assert asyncio.iscoroutinefunction(maid_get_schema), (
-            "maid_get_schema should be an async function"
-        )
+        assert asyncio.iscoroutinefunction(
+            maid_get_schema
+        ), "maid_get_schema should be an async function"
 
     def test_maid_get_schema_has_no_required_parameters(self):
         """Test that maid_get_schema has no required parameters."""
@@ -152,9 +143,9 @@ class TestMaidGetSchemaFunction:
 
         # All parameters (if any) should have defaults
         for param_name, param in params.items():
-            assert param.default is not inspect.Parameter.empty, (
-                f"Parameter '{param_name}' should have a default value"
-            )
+            assert (
+                param.default is not inspect.Parameter.empty
+            ), f"Parameter '{param_name}' should have a default value"
 
 
 @pytest.mark.asyncio
@@ -209,9 +200,9 @@ class TestMaidGetSchemaBehavior:
         assert isinstance(schema, dict), "schema should be a dictionary"
 
         # A valid JSON schema typically has these fields
-        assert "$schema" in schema or "type" in schema or "properties" in schema, (
-            "Schema should have standard JSON schema fields"
-        )
+        assert (
+            "$schema" in schema or "type" in schema or "properties" in schema
+        ), "Schema should have standard JSON schema fields"
 
 
 class TestToolsExport:

@@ -50,9 +50,7 @@ async def maid_init(
         # Provide "Y\n" to stdin for interactive prompts
         result = await loop.run_in_executor(
             None,
-            lambda: subprocess.run(
-                cmd, capture_output=True, text=True, input="Y\nY\nY\n"
-            ),
+            lambda: subprocess.run(cmd, capture_output=True, text=True, input="Y\nY\nY\n"),
         )
 
         success = result.returncode == 0
@@ -62,11 +60,7 @@ async def maid_init(
             # Parse error output
             error_output = result.stderr or result.stdout
             if error_output:
-                errors = [
-                    line.strip()
-                    for line in error_output.strip().split("\n")
-                    if line.strip()
-                ]
+                errors = [line.strip() for line in error_output.strip().split("\n") if line.strip()]
 
         return InitResult(
             success=success,

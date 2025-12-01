@@ -7,6 +7,7 @@ These tests verify the expected artifacts defined in the manifest:
 Tests follow MAID behavioral testing pattern - they USE the artifacts
 rather than just checking existence.
 """
+
 import pytest
 
 
@@ -25,9 +26,9 @@ class TestValidateResult:
         from typing import get_type_hints
 
         # TypedDict classes have __annotations__
-        assert hasattr(ValidateResult, "__annotations__"), (
-            "ValidateResult should have __annotations__ (TypedDict requirement)"
-        )
+        assert hasattr(
+            ValidateResult, "__annotations__"
+        ), "ValidateResult should have __annotations__ (TypedDict requirement)"
 
     def test_validate_result_has_required_fields(self):
         """Test that ValidateResult has all required fields."""
@@ -45,9 +46,7 @@ class TestValidateResult:
         }
 
         for field_name in required_fields:
-            assert field_name in annotations, (
-                f"ValidateResult should have '{field_name}' field"
-            )
+            assert field_name in annotations, f"ValidateResult should have '{field_name}' field"
 
     def test_validate_result_has_optional_file_tracking(self):
         """Test that ValidateResult has optional file_tracking field."""
@@ -55,9 +54,7 @@ class TestValidateResult:
 
         annotations = ValidateResult.__annotations__
 
-        assert "file_tracking" in annotations, (
-            "ValidateResult should have 'file_tracking' field"
-        )
+        assert "file_tracking" in annotations, "ValidateResult should have 'file_tracking' field"
 
 
 class TestMaidValidateFunction:
@@ -79,9 +76,9 @@ class TestMaidValidateFunction:
         import asyncio
         from maid_runner_mcp.tools.validate import maid_validate
 
-        assert asyncio.iscoroutinefunction(maid_validate), (
-            "maid_validate should be an async function"
-        )
+        assert asyncio.iscoroutinefunction(
+            maid_validate
+        ), "maid_validate should be an async function"
 
     def test_maid_validate_has_correct_signature(self):
         """Test that maid_validate has the expected parameters.
@@ -101,30 +98,28 @@ class TestMaidValidateFunction:
 
         # Check required parameter
         assert "manifest_path" in params, "maid_validate should have 'manifest_path' parameter"
-        assert params["manifest_path"].default is inspect.Parameter.empty, (
-            "manifest_path should be a required parameter (no default)"
-        )
+        assert (
+            params["manifest_path"].default is inspect.Parameter.empty
+        ), "manifest_path should be a required parameter (no default)"
 
         # Check optional parameters with defaults
         assert "validation_mode" in params, "maid_validate should have 'validation_mode' parameter"
-        assert params["validation_mode"].default == "implementation", (
-            "validation_mode should default to 'implementation'"
-        )
+        assert (
+            params["validation_mode"].default == "implementation"
+        ), "validation_mode should default to 'implementation'"
 
-        assert "use_manifest_chain" in params, "maid_validate should have 'use_manifest_chain' parameter"
-        assert params["use_manifest_chain"].default is False, (
-            "use_manifest_chain should default to False"
-        )
+        assert (
+            "use_manifest_chain" in params
+        ), "maid_validate should have 'use_manifest_chain' parameter"
+        assert (
+            params["use_manifest_chain"].default is False
+        ), "use_manifest_chain should default to False"
 
         assert "manifest_dir" in params, "maid_validate should have 'manifest_dir' parameter"
-        assert params["manifest_dir"].default is None, (
-            "manifest_dir should default to None"
-        )
+        assert params["manifest_dir"].default is None, "manifest_dir should default to None"
 
         assert "quiet" in params, "maid_validate should have 'quiet' parameter"
-        assert params["quiet"].default is True, (
-            "quiet should default to True"
-        )
+        assert params["quiet"].default is True, "quiet should default to True"
 
 
 @pytest.mark.asyncio

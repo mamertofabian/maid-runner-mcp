@@ -7,6 +7,7 @@ These tests verify the expected artifacts defined in the manifest:
 Tests follow MAID behavioral testing pattern - they USE the artifacts
 rather than just checking existence.
 """
+
 import pytest
 
 
@@ -24,9 +25,9 @@ class TestTestResult:
         from maid_runner_mcp.tools.test import TestResult
 
         # TypedDict classes have __annotations__
-        assert hasattr(TestResult, "__annotations__"), (
-            "TestResult should have __annotations__ (TypedDict requirement)"
-        )
+        assert hasattr(
+            TestResult, "__annotations__"
+        ), "TestResult should have __annotations__ (TypedDict requirement)"
 
     def test_test_result_has_required_fields(self):
         """Test that TestResult has all required fields.
@@ -45,9 +46,7 @@ class TestTestResult:
         required_fields = ["success", "total_manifests", "passed", "failed", "failed_manifests"]
 
         for field_name in required_fields:
-            assert field_name in annotations, (
-                f"TestResult should have '{field_name}' field"
-            )
+            assert field_name in annotations, f"TestResult should have '{field_name}' field"
 
     def test_test_result_field_types(self):
         """Test that TestResult fields have expected types."""
@@ -83,9 +82,7 @@ class TestMaidTestFunction:
         import asyncio
         from maid_runner_mcp.tools.test import maid_test
 
-        assert asyncio.iscoroutinefunction(maid_test), (
-            "maid_test should be an async function"
-        )
+        assert asyncio.iscoroutinefunction(maid_test), "maid_test should be an async function"
 
     def test_maid_test_has_correct_signature(self):
         """Test that maid_test has the expected parameters.
@@ -104,27 +101,21 @@ class TestMaidTestFunction:
 
         # Check manifest_dir parameter with default
         assert "manifest_dir" in params, "maid_test should have 'manifest_dir' parameter"
-        assert params["manifest_dir"].default == "manifests", (
-            "manifest_dir should default to 'manifests'"
-        )
+        assert (
+            params["manifest_dir"].default == "manifests"
+        ), "manifest_dir should default to 'manifests'"
 
         # Check manifest parameter with default
         assert "manifest" in params, "maid_test should have 'manifest' parameter"
-        assert params["manifest"].default is None, (
-            "manifest should default to None"
-        )
+        assert params["manifest"].default is None, "manifest should default to None"
 
         # Check fail_fast parameter with default
         assert "fail_fast" in params, "maid_test should have 'fail_fast' parameter"
-        assert params["fail_fast"].default is False, (
-            "fail_fast should default to False"
-        )
+        assert params["fail_fast"].default is False, "fail_fast should default to False"
 
         # Check timeout parameter with default
         assert "timeout" in params, "maid_test should have 'timeout' parameter"
-        assert params["timeout"].default == 300, (
-            "timeout should default to 300"
-        )
+        assert params["timeout"].default == 300, "timeout should default to 300"
 
 
 @pytest.mark.asyncio
@@ -228,9 +219,9 @@ class TestMaidTestBehavior:
         passed = result["passed"]
         failed = result["failed"]
 
-        assert passed + failed == total, (
-            f"passed ({passed}) + failed ({failed}) should equal total_manifests ({total})"
-        )
+        assert (
+            passed + failed == total
+        ), f"passed ({passed}) + failed ({failed}) should equal total_manifests ({total})"
 
     async def test_maid_test_failed_manifests_matches_failed_count(self):
         """Test that failed_manifests list length matches failed count."""
@@ -248,6 +239,6 @@ class TestMaidTestBehavior:
         failed_count = result["failed"]
         failed_list = result["failed_manifests"]
 
-        assert len(failed_list) == failed_count, (
-            f"len(failed_manifests) ({len(failed_list)}) should equal failed ({failed_count})"
-        )
+        assert (
+            len(failed_list) == failed_count
+        ), f"len(failed_manifests) ({len(failed_list)}) should equal failed ({failed_count})"

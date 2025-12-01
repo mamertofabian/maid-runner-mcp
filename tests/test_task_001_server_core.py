@@ -8,6 +8,7 @@ These tests verify the expected artifacts defined in the manifest:
 Tests follow MAID behavioral testing pattern - they USE the artifacts
 rather than just checking existence.
 """
+
 import pytest
 from mcp.server.fastmcp import FastMCP
 
@@ -25,9 +26,9 @@ class TestMCPServerCore:
         """
         from maid_runner_mcp.server import mcp
 
-        assert isinstance(mcp, FastMCP), (
-            f"Expected mcp to be a FastMCP instance, got {type(mcp).__name__}"
-        )
+        assert isinstance(
+            mcp, FastMCP
+        ), f"Expected mcp to be a FastMCP instance, got {type(mcp).__name__}"
 
     def test_mcp_attribute_has_name(self):
         """Test that the mcp instance has a proper server name configured."""
@@ -50,9 +51,9 @@ class TestMCPServerCore:
 
         server = create_server()
 
-        assert isinstance(server, FastMCP), (
-            f"Expected create_server() to return FastMCP instance, got {type(server).__name__}"
-        )
+        assert isinstance(
+            server, FastMCP
+        ), f"Expected create_server() to return FastMCP instance, got {type(server).__name__}"
 
     def test_create_server_returns_new_instance_each_call(self):
         """Test that create_server() creates fresh instances (factory pattern)."""
@@ -111,14 +112,15 @@ class TestMCPServerCore:
 
         # main() should have no required parameters
         required_params = [
-            p for p in sig.parameters.values()
+            p
+            for p in sig.parameters.values()
             if p.default is inspect.Parameter.empty
             and p.kind not in (inspect.Parameter.VAR_POSITIONAL, inspect.Parameter.VAR_KEYWORD)
         ]
 
-        assert len(required_params) == 0, (
-            f"main() should have no required parameters, found: {required_params}"
-        )
+        assert (
+            len(required_params) == 0
+        ), f"main() should have no required parameters, found: {required_params}"
 
     def test_module_imports_successfully(self):
         """Test that the server module can be imported without errors."""
@@ -127,7 +129,9 @@ class TestMCPServerCore:
 
         # Verify expected attributes exist
         assert hasattr(server_module, "mcp"), "Module should have 'mcp' attribute"
-        assert hasattr(server_module, "create_server"), "Module should have 'create_server' function"
+        assert hasattr(
+            server_module, "create_server"
+        ), "Module should have 'create_server' function"
         assert hasattr(server_module, "main"), "Module should have 'main' function"
 
 

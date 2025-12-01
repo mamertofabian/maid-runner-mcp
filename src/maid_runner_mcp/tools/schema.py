@@ -59,11 +59,7 @@ async def maid_get_schema() -> SchemaResult:
             error_output = result.stderr or result.stdout
             errors: list[str] = []
             if error_output:
-                errors = [
-                    line.strip()
-                    for line in error_output.strip().split("\n")
-                    if line.strip()
-                ]
+                errors = [line.strip() for line in error_output.strip().split("\n") if line.strip()]
 
             return SchemaResult(
                 success=False,

@@ -71,11 +71,7 @@ async def maid_snapshot(
             # Parse error output
             error_output = result.stderr or result.stdout
             if error_output:
-                errors = [
-                    line.strip()
-                    for line in error_output.strip().split("\n")
-                    if line.strip()
-                ]
+                errors = [line.strip() for line in error_output.strip().split("\n") if line.strip()]
         else:
             # Parse successful output for manifest path
             output = result.stdout or ""

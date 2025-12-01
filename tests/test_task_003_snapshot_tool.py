@@ -7,6 +7,7 @@ These tests verify the expected artifacts defined in the manifest:
 Tests follow MAID behavioral testing pattern - they USE the artifacts
 rather than just checking existence.
 """
+
 import os
 import tempfile
 
@@ -27,9 +28,9 @@ class TestSnapshotResult:
         from maid_runner_mcp.tools.snapshot import SnapshotResult
 
         # TypedDict classes have __annotations__
-        assert hasattr(SnapshotResult, "__annotations__"), (
-            "SnapshotResult should have __annotations__ (TypedDict requirement)"
-        )
+        assert hasattr(
+            SnapshotResult, "__annotations__"
+        ), "SnapshotResult should have __annotations__ (TypedDict requirement)"
 
     def test_snapshot_result_has_required_fields(self):
         """Test that SnapshotResult has all required fields.
@@ -48,9 +49,7 @@ class TestSnapshotResult:
         required_fields = ["success", "manifest_path", "superseded_manifests", "errors"]
 
         for field_name in required_fields:
-            assert field_name in annotations, (
-                f"SnapshotResult should have '{field_name}' field"
-            )
+            assert field_name in annotations, f"SnapshotResult should have '{field_name}' field"
 
     def test_snapshot_result_has_optional_test_stub_path(self):
         """Test that SnapshotResult has optional test_stub_path field."""
@@ -58,9 +57,7 @@ class TestSnapshotResult:
 
         annotations = SnapshotResult.__annotations__
 
-        assert "test_stub_path" in annotations, (
-            "SnapshotResult should have 'test_stub_path' field"
-        )
+        assert "test_stub_path" in annotations, "SnapshotResult should have 'test_stub_path' field"
 
 
 class TestMaidSnapshotFunction:
@@ -82,9 +79,9 @@ class TestMaidSnapshotFunction:
         import asyncio
         from maid_runner_mcp.tools.snapshot import maid_snapshot
 
-        assert asyncio.iscoroutinefunction(maid_snapshot), (
-            "maid_snapshot should be an async function"
-        )
+        assert asyncio.iscoroutinefunction(
+            maid_snapshot
+        ), "maid_snapshot should be an async function"
 
     def test_maid_snapshot_has_correct_signature(self):
         """Test that maid_snapshot has the expected parameters.
@@ -103,25 +100,21 @@ class TestMaidSnapshotFunction:
 
         # Check required parameter
         assert "file_path" in params, "maid_snapshot should have 'file_path' parameter"
-        assert params["file_path"].default is inspect.Parameter.empty, (
-            "file_path should be a required parameter (no default)"
-        )
+        assert (
+            params["file_path"].default is inspect.Parameter.empty
+        ), "file_path should be a required parameter (no default)"
 
         # Check optional parameters with defaults
         assert "output_dir" in params, "maid_snapshot should have 'output_dir' parameter"
-        assert params["output_dir"].default == "manifests", (
-            "output_dir should default to 'manifests'"
-        )
+        assert (
+            params["output_dir"].default == "manifests"
+        ), "output_dir should default to 'manifests'"
 
         assert "force" in params, "maid_snapshot should have 'force' parameter"
-        assert params["force"].default is False, (
-            "force should default to False"
-        )
+        assert params["force"].default is False, "force should default to False"
 
         assert "skip_test_stub" in params, "maid_snapshot should have 'skip_test_stub' parameter"
-        assert params["skip_test_stub"].default is False, (
-            "skip_test_stub should default to False"
-        )
+        assert params["skip_test_stub"].default is False, "skip_test_stub should default to False"
 
 
 @pytest.mark.asyncio
@@ -164,7 +157,7 @@ class TestMaidSnapshotBehavior:
             result = await maid_snapshot(
                 file_path="src/maid_runner_mcp/server.py",
                 output_dir=tmpdir,
-                skip_test_stub=True  # Don't create test stub for this test
+                skip_test_stub=True,  # Don't create test stub for this test
             )
 
             # Result should have proper structure regardless of success

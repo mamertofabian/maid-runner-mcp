@@ -62,9 +62,7 @@ async def maid_test(
     try:
         result = await loop.run_in_executor(
             None,
-            lambda: subprocess.run(
-                cmd, capture_output=True, text=True, timeout=timeout
-            ),
+            lambda: subprocess.run(cmd, capture_output=True, text=True, timeout=timeout),
         )
 
         # Parse output to extract results
