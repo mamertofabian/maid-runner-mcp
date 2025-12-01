@@ -1,0 +1,38 @@
+{
+  "goal": "Implement the maid_test MCP tool that runs validation commands from manifests",
+  "taskType": "create",
+  "supersedes": [],
+  "creatableFiles": [
+    "src/maid_runner_mcp/tools/test.py"
+  ],
+  "editableFiles": [
+    "src/maid_runner_mcp/tools/__init__.py",
+    "src/maid_runner_mcp/server.py"
+  ],
+  "readonlyFiles": [
+    "src/maid_runner_mcp/tools/validate.py"
+  ],
+  "expectedArtifacts": {
+    "file": "src/maid_runner_mcp/tools/test.py",
+    "contains": [
+      {
+        "type": "class",
+        "name": "TestResult",
+        "description": "TypedDict for test results with fields: success, total_manifests, passed, failed, failed_manifests"
+      },
+      {
+        "type": "function",
+        "name": "maid_test",
+        "args": [
+          {"name": "manifest_dir", "type": "str", "default": "manifests"},
+          {"name": "manifest", "type": "str | None", "default": "None"},
+          {"name": "fail_fast", "type": "bool", "default": "False"},
+          {"name": "timeout", "type": "int", "default": "300"}
+        ],
+        "returns": "TestResult",
+        "description": "MCP tool that runs validation commands from manifests using MAID Runner's test command"
+      }
+    ]
+  },
+  "validationCommand": ["uv", "run", "python", "-m", "pytest", "tests/test_task_004_test_tool.py", "-v"]
+}

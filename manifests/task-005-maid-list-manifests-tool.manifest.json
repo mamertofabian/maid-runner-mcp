@@ -1,0 +1,36 @@
+{
+  "goal": "Implement the maid_list_manifests MCP tool that lists manifests referencing a file",
+  "taskType": "create",
+  "supersedes": [],
+  "creatableFiles": [
+    "src/maid_runner_mcp/tools/manifests.py"
+  ],
+  "editableFiles": [
+    "src/maid_runner_mcp/tools/__init__.py",
+    "src/maid_runner_mcp/server.py"
+  ],
+  "readonlyFiles": [
+    "tests/test_task_005_list_manifests_tool.py"
+  ],
+  "expectedArtifacts": {
+    "file": "src/maid_runner_mcp/tools/manifests.py",
+    "contains": [
+      {
+        "type": "class",
+        "name": "ListManifestsResult",
+        "description": "TypedDict for list manifests results with fields: file_path, total_manifests, created_by, edited_by, read_by"
+      },
+      {
+        "type": "function",
+        "name": "maid_list_manifests",
+        "args": [
+          {"name": "file_path", "type": "str"},
+          {"name": "manifest_dir", "type": "str", "default": "manifests"}
+        ],
+        "returns": "ListManifestsResult",
+        "description": "MCP tool that lists manifests referencing a file using MAID Runner's manifests command"
+      }
+    ]
+  },
+  "validationCommand": ["uv", "run", "python", "-m", "pytest", "tests/test_task_005_list_manifests_tool.py", "-v"]
+}

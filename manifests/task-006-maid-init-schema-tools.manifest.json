@@ -1,0 +1,37 @@
+{
+  "goal": "Implement maid_init and maid_get_schema MCP tools for project initialization and schema retrieval",
+  "taskType": "create",
+  "supersedes": [],
+  "creatableFiles": [
+    "src/maid_runner_mcp/tools/init.py",
+    "src/maid_runner_mcp/tools/schema.py"
+  ],
+  "editableFiles": [
+    "src/maid_runner_mcp/tools/__init__.py",
+    "src/maid_runner_mcp/server.py"
+  ],
+  "readonlyFiles": [
+    "src/maid_runner_mcp/tools/validate.py"
+  ],
+  "expectedArtifacts": {
+    "file": "src/maid_runner_mcp/tools/init.py",
+    "contains": [
+      {
+        "type": "class",
+        "name": "InitResult",
+        "description": "TypedDict for maid_init results with fields: success, target_dir, errors"
+      },
+      {
+        "type": "function",
+        "name": "maid_init",
+        "args": [
+          {"name": "target_dir", "type": "str", "default": "\".\""},
+          {"name": "force", "type": "bool", "default": "False"}
+        ],
+        "returns": "InitResult",
+        "description": "MCP tool that initializes a MAID project using MAID Runner's init command"
+      }
+    ]
+  },
+  "validationCommand": ["uv", "run", "python", "-m", "pytest", "tests/test_task_006_init_schema_tools.py", "-v"]
+}

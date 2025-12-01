@@ -1,0 +1,38 @@
+{
+  "goal": "Implement the maid_snapshot MCP tool that generates manifest snapshots from existing code",
+  "taskType": "create",
+  "supersedes": [],
+  "creatableFiles": [
+    "src/maid_runner_mcp/tools/snapshot.py"
+  ],
+  "editableFiles": [
+    "src/maid_runner_mcp/tools/__init__.py",
+    "src/maid_runner_mcp/server.py"
+  ],
+  "readonlyFiles": [
+    "tests/test_task_003_snapshot_tool.py"
+  ],
+  "expectedArtifacts": {
+    "file": "src/maid_runner_mcp/tools/snapshot.py",
+    "contains": [
+      {
+        "type": "class",
+        "name": "SnapshotResult",
+        "description": "TypedDict for snapshot results with fields: success, manifest_path, test_stub_path, superseded_manifests, errors"
+      },
+      {
+        "type": "function",
+        "name": "maid_snapshot",
+        "args": [
+          {"name": "file_path", "type": "str"},
+          {"name": "output_dir", "type": "str", "default": "manifests"},
+          {"name": "force", "type": "bool", "default": "False"},
+          {"name": "skip_test_stub", "type": "bool", "default": "False"}
+        ],
+        "returns": "SnapshotResult",
+        "description": "MCP tool that generates a manifest snapshot from existing code using MAID Runner's snapshot command"
+      }
+    ]
+  },
+  "validationCommand": ["uv", "run", "python", "-m", "pytest", "tests/test_task_003_snapshot_tool.py", "-v"]
+}
