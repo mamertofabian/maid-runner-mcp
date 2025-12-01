@@ -293,27 +293,34 @@ Verify complete chain: `pytest tests/ -v`
 
 ## Manifest Template
 
+**⚠️ CRITICAL: `expectedArtifacts` is an OBJECT, not an array!**
+
+- `expectedArtifacts` defines artifacts for **ONE file only**
+- For multi-file tasks: Create **separate manifests** for each file
+- Structure: `{"file": "...", "contains": [...]}`
+- **NOT** an array of file objects
+
 ```json
 {
   "goal": "Clear task description",
   "taskType": "edit|create|refactor",
-  "supersedes": [],
-  "creatableFiles": [],
-  "editableFiles": [],
-  "readonlyFiles": [],
+  "supersedes": [],  // Optional: paths to obsolete manifests
+  "creatableFiles": [],  // New files (Strict Mode)
+  "editableFiles": [],   // Existing files (Permissive Mode)
+  "readonlyFiles": [],   // Dependencies and tests
   "expectedArtifacts": {
-    "file": "path/to/file.py",
-    "contains": [
+    "file": "path/to/file.py",  // ← Single file path
+    "contains": [                // ← Array of artifacts for THIS file
       {
         "type": "function|class|attribute",
         "name": "artifact_name",
-        "class": "ParentClass",
-        "args": [{"name": "arg1", "type": "str"}],
-        "returns": "ReturnType"
+        "class": "ParentClass",  // For methods/attributes
+        "args": [{"name": "arg1", "type": "str"}],  // For functions
+        "returns": "ReturnType"  // Optional
       }
     ]
   },
-  "validationCommand": ["pytest", "tests/test_file.py", "-v"]
+  "validationCommand": ["pytest tests/test_file.py -v"]
 }
 ```
 
