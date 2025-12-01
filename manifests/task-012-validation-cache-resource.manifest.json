@@ -1,0 +1,39 @@
+{
+  "goal": "Implement the validation://{manifest_name}/result MCP resource that exposes cached validation results as read-only resources",
+  "taskType": "create",
+  "supersedes": [],
+  "creatableFiles": [
+    "src/maid_runner_mcp/resources/validation.py"
+  ],
+  "editableFiles": [
+    "src/maid_runner_mcp/resources/__init__.py",
+    "src/maid_runner_mcp/tools/validate.py"
+  ],
+  "readonlyFiles": [
+    "src/maid_runner_mcp/resources/manifest.py",
+    "src/maid_runner_mcp/resources/schema.py",
+    "src/maid_runner_mcp/utils/cache.py",
+    "src/maid_runner_mcp/server.py"
+  ],
+  "expectedArtifacts": {
+    "file": "src/maid_runner_mcp/resources/validation.py",
+    "contains": [
+      {
+        "type": "attribute",
+        "name": "_validation_cache",
+        "description": "Module-level dictionary to store validation results"
+      },
+      {
+        "type": "function",
+        "name": "get_validation_result",
+        "description": "MCP resource handler for accessing cached validation results by manifest name",
+        "args": [
+          {"name": "manifest_name", "type": "str"}
+        ],
+        "returns": "str",
+        "raises": ["ValueError", "KeyError"]
+      }
+    ]
+  },
+  "validationCommand": ["uv", "run", "python", "-m", "pytest", "tests/test_task_012_validation_resource.py", "-v"]
+}

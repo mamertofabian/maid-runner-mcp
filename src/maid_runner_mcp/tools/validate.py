@@ -2,9 +2,11 @@
 
 import asyncio
 import subprocess
-from typing import TypedDict
+from pathlib import Path
+from typing import Any, TypedDict, cast
 
 from maid_runner_mcp.server import mcp
+from maid_runner_mcp.resources.validation import _validation_cache
 
 
 class ValidateResult(TypedDict, total=False):
@@ -80,7 +82,7 @@ async def maid_validate(
             if error_output:
                 errors = [line.strip() for line in error_output.strip().split("\n") if line.strip()]
 
-        return ValidateResult(
+        validate_result = ValidateResult(
             success=success,
             mode=validation_mode,
             manifest=manifest_path,
@@ -89,6 +91,15 @@ async def maid_validate(
             errors=errors,
             file_tracking=None,
         )
+
+        # Cache the validation result by manifest name
+        # Extract manifest name from path (remove directory and extension)
+        manifest_name = Path(manifest_path).stem
+        if manifest_name.endswith(".manifest"):
+            manifest_name = manifest_name[: -len(".manifest")]
+        _validation_cache[manifest_name] = cast(dict[str, Any], validate_result)
+
+        return validate_result
 
     except FileNotFoundError:
         return ValidateResult(
