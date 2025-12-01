@@ -36,7 +36,10 @@ async def maid_init(
         InitResult with initialization outcome
     """
     # Build command
-    cmd = ["uv", "run", "maid", "init", target_dir]
+    cmd = ["uv", "run", "maid", "init"]
+
+    if target_dir != ".":
+        cmd.extend(["--target-dir", target_dir])
 
     if force:
         cmd.append("--force")
@@ -44,8 +47,12 @@ async def maid_init(
     # Run in thread pool to avoid blocking
     loop = asyncio.get_event_loop()
     try:
+        # Provide "Y\n" to stdin for interactive prompts
         result = await loop.run_in_executor(
-            None, lambda: subprocess.run(cmd, capture_output=True, text=True)
+            None,
+            lambda: subprocess.run(
+                cmd, capture_output=True, text=True, input="Y\nY\nY\n"
+            ),
         )
 
         success = result.returncode == 0
