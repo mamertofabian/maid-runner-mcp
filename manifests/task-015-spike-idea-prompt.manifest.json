@@ -1,0 +1,41 @@
+{
+  "goal": "Implement spike-idea MCP prompt that guides AI agents through exploratory spikes before creating manifests",
+  "taskType": "create",
+  "supersedes": [],
+  "creatableFiles": [
+    "src/maid_runner_mcp/prompts/spike_idea.py"
+  ],
+  "editableFiles": [],
+  "readonlyFiles": [
+    ".claude/commands/spike.md",
+    "src/maid_runner_mcp/prompts/__init__.py",
+    "src/maid_runner_mcp/server.py",
+    "tests/test_task_015_spike_idea_prompt.py"
+  ],
+  "expectedArtifacts": {
+    "file": "src/maid_runner_mcp/prompts/spike_idea.py",
+    "contains": [
+      {
+        "type": "function",
+        "name": "spike_idea",
+        "description": "MCP prompt handler that returns a spike exploration template for the given idea",
+        "args": [
+          {
+            "name": "idea",
+            "type": "str"
+          }
+        ],
+        "returns": "list[Message]"
+      }
+    ]
+  },
+  "validationCommand": [
+    "uv",
+    "run",
+    "python",
+    "-m",
+    "pytest",
+    "tests/test_task_015_spike_idea_prompt.py",
+    "-v"
+  ]
+}
