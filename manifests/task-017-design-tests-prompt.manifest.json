@@ -1,0 +1,42 @@
+{
+  "goal": "Implement design-tests MCP prompt that guides AI agents through MAID Phase 2 behavioral test creation",
+  "taskType": "create",
+  "supersedes": [],
+  "creatableFiles": [
+    "src/maid_runner_mcp/prompts/design_tests.py"
+  ],
+  "editableFiles": [],
+  "readonlyFiles": [
+    ".claude/agents/maid-test-designer.md",
+    "src/maid_runner_mcp/prompts/__init__.py",
+    "src/maid_runner_mcp/prompts/plan_task.py",
+    "src/maid_runner_mcp/server.py",
+    "tests/test_task_017_design_tests_prompt.py"
+  ],
+  "expectedArtifacts": {
+    "file": "src/maid_runner_mcp/prompts/design_tests.py",
+    "contains": [
+      {
+        "type": "function",
+        "name": "design_tests",
+        "description": "MCP prompt handler that returns a behavioral test creation template for the given manifest",
+        "args": [
+          {
+            "name": "manifest_path",
+            "type": "str"
+          }
+        ],
+        "returns": "list[Message]"
+      }
+    ]
+  },
+  "validationCommand": [
+    "uv",
+    "run",
+    "python",
+    "-m",
+    "pytest",
+    "tests/test_task_017_design_tests_prompt.py",
+    "-v"
+  ]
+}

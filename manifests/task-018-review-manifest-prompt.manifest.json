@@ -1,0 +1,42 @@
+{
+  "goal": "Implement review-manifest MCP prompt that guides AI agents through MAID Phase 2 Quality Gate - reviewing manifest and tests before implementation",
+  "taskType": "create",
+  "supersedes": [],
+  "creatableFiles": [
+    "src/maid_runner_mcp/prompts/review_manifest.py"
+  ],
+  "editableFiles": [],
+  "readonlyFiles": [
+    ".claude/agents/maid-plan-reviewer.md",
+    "src/maid_runner_mcp/prompts/__init__.py",
+    "src/maid_runner_mcp/prompts/plan_task.py",
+    "src/maid_runner_mcp/server.py",
+    "tests/test_task_018_review_manifest_prompt.py"
+  ],
+  "expectedArtifacts": {
+    "file": "src/maid_runner_mcp/prompts/review_manifest.py",
+    "contains": [
+      {
+        "type": "function",
+        "name": "review_manifest",
+        "description": "MCP prompt handler that returns a review template for validating manifest and tests quality before implementation",
+        "args": [
+          {
+            "name": "manifest_path",
+            "type": "str"
+          }
+        ],
+        "returns": "list[Message]"
+      }
+    ]
+  },
+  "validationCommand": [
+    "uv",
+    "run",
+    "python",
+    "-m",
+    "pytest",
+    "tests/test_task_018_review_manifest_prompt.py",
+    "-v"
+  ]
+}

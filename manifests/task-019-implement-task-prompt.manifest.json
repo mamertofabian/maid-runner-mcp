@@ -1,0 +1,42 @@
+{
+  "goal": "Implement implement-task MCP prompt that guides AI agents through MAID Phase 3 implementation (TDD)",
+  "taskType": "create",
+  "supersedes": [],
+  "creatableFiles": [
+    "src/maid_runner_mcp/prompts/implement_task.py"
+  ],
+  "editableFiles": [],
+  "readonlyFiles": [
+    ".claude/agents/maid-developer.md",
+    "src/maid_runner_mcp/prompts/__init__.py",
+    "src/maid_runner_mcp/prompts/plan_task.py",
+    "src/maid_runner_mcp/server.py",
+    "tests/test_task_019_implement_task_prompt.py"
+  ],
+  "expectedArtifacts": {
+    "file": "src/maid_runner_mcp/prompts/implement_task.py",
+    "contains": [
+      {
+        "type": "function",
+        "name": "implement_task",
+        "description": "MCP prompt handler that returns an implementation guide for Phase 3 TDD workflow",
+        "args": [
+          {
+            "name": "manifest_path",
+            "type": "str"
+          }
+        ],
+        "returns": "list[Message]"
+      }
+    ]
+  },
+  "validationCommand": [
+    "uv",
+    "run",
+    "python",
+    "-m",
+    "pytest",
+    "tests/test_task_019_implement_task_prompt.py",
+    "-v"
+  ]
+}

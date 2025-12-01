@@ -1,0 +1,44 @@
+{
+  "goal": "Implement fix-errors MCP prompt that guides AI agents through MAID Phase 3 Support - fixing validation errors and test failures",
+  "taskType": "create",
+  "supersedes": [],
+  "creatableFiles": [
+    "src/maid_runner_mcp/prompts/fix_errors.py"
+  ],
+  "editableFiles": [],
+  "readonlyFiles": [
+    ".claude/agents/maid-fixer.md",
+    "src/maid_runner_mcp/prompts/__init__.py",
+    "src/maid_runner_mcp/prompts/spike_idea.py",
+    "src/maid_runner_mcp/prompts/plan_task.py",
+    "src/maid_runner_mcp/server.py",
+    "tests/test_task_021_fix_errors_prompt.py"
+  ],
+  "expectedArtifacts": {
+    "file": "src/maid_runner_mcp/prompts/fix_errors.py",
+    "contains": [
+      {
+        "type": "function",
+        "name": "fix_errors",
+        "description": "MCP prompt handler that returns a template to guide AI agents through fixing validation errors and test failures",
+        "args": [
+          {
+            "name": "error_context",
+            "type": "str",
+            "default": "\"\""
+          }
+        ],
+        "returns": "list[Message]"
+      }
+    ]
+  },
+  "validationCommand": [
+    "uv",
+    "run",
+    "python",
+    "-m",
+    "pytest",
+    "tests/test_task_021_fix_errors_prompt.py",
+    "-v"
+  ]
+}

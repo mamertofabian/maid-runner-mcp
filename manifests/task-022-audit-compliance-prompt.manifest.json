@@ -1,0 +1,49 @@
+{
+  "goal": "Implement audit-compliance MCP prompt that guides AI agents through cross-cutting MAID compliance auditing across all phases",
+  "taskType": "create",
+  "supersedes": [],
+  "creatableFiles": [
+    "src/maid_runner_mcp/prompts/audit_compliance.py"
+  ],
+  "editableFiles": [],
+  "readonlyFiles": [
+    ".claude/agents/maid-auditor.md",
+    "src/maid_runner_mcp/prompts/__init__.py",
+    "src/maid_runner_mcp/prompts/spike_idea.py",
+    "src/maid_runner_mcp/prompts/plan_task.py",
+    "src/maid_runner_mcp/server.py",
+    "tests/test_task_022_audit_compliance_prompt.py"
+  ],
+  "expectedArtifacts": {
+    "file": "src/maid_runner_mcp/prompts/audit_compliance.py",
+    "contains": [
+      {
+        "type": "function",
+        "name": "audit_compliance",
+        "description": "MCP prompt handler that returns a compliance audit template for the given scope",
+        "args": [
+          {
+            "name": "manifest_path",
+            "type": "str",
+            "default": "\"\""
+          },
+          {
+            "name": "scope",
+            "type": "str",
+            "default": "\"all\""
+          }
+        ],
+        "returns": "list[Message]"
+      }
+    ]
+  },
+  "validationCommand": [
+    "uv",
+    "run",
+    "python",
+    "-m",
+    "pytest",
+    "tests/test_task_022_audit_compliance_prompt.py",
+    "-v"
+  ]
+}
