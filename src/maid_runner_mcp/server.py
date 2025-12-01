@@ -43,6 +43,7 @@ from maid_runner_mcp.tools import validate  # noqa: E402, F401
 # Import resources to register them with the server
 # Resources use @mcp.resource() decorator from this module
 from maid_runner_mcp.resources import manifest  # noqa: E402, F401
+from maid_runner_mcp.resources import schema as schema_resource  # noqa: E402, F401
 
 
 def main() -> None:
