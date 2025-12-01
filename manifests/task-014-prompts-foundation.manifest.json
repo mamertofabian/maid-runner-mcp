@@ -1,0 +1,33 @@
+{
+  "goal": "Create prompts module foundation with directory structure and server registration for MCP prompt templates",
+  "taskType": "create",
+  "supersedes": [],
+  "creatableFiles": [
+    "src/maid_runner_mcp/prompts/__init__.py"
+  ],
+  "editableFiles": [
+    "src/maid_runner_mcp/server.py"
+  ],
+  "readonlyFiles": [
+    "src/maid_runner_mcp/resources/__init__.py",
+    "tests/test_task_014_prompts_foundation.py"
+  ],
+  "expectedArtifacts": {
+    "file": "src/maid_runner_mcp/prompts/__init__.py",
+    "contains": [
+      {
+        "type": "attribute",
+        "name": "__all__"
+      }
+    ]
+  },
+  "validationCommand": [
+    "uv",
+    "run",
+    "python",
+    "-m",
+    "pytest",
+    "tests/test_task_014_prompts_foundation.py",
+    "-v"
+  ]
+}

@@ -46,6 +46,9 @@ from maid_runner_mcp.resources import manifest  # noqa: E402, F401
 from maid_runner_mcp.resources import schema as schema_resource  # noqa: E402, F401
 from maid_runner_mcp.resources import snapshot as snapshot_resource  # noqa: E402, F401
 
+# Import prompts to register them with the server
+from maid_runner_mcp import prompts  # noqa: E402, F401
+
 
 def main() -> None:
     """Entry point for the MCP server.

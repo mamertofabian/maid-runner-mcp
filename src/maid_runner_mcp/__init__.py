@@ -4,5 +4,6 @@ Exposes MAID Runner validation tools to AI agents via MCP protocol.
 """
 
 from maid_runner_mcp.__version__ import __version__
+from maid_runner_mcp import prompts
 
-__all__ = ["__version__"]
+__all__ = ["__version__", "prompts"]
