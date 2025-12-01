@@ -4,4 +4,6 @@ Resources provide read-only access to MAID data structures
 including manifests, schemas, validation results, and snapshots.
 """
 
-__all__ = []
+from maid_runner_mcp.resources.manifest import get_manifest
+
+__all__ = ["get_manifest"]

@@ -1,0 +1,34 @@
+{
+  "goal": "Implement the manifest://{manifest_name} MCP resource that allows AI agents to access manifest files as read-only resources",
+  "taskType": "create",
+  "supersedes": [],
+  "creatableFiles": [
+    "src/maid_runner_mcp/resources/manifest.py"
+  ],
+  "editableFiles": [
+    "src/maid_runner_mcp/resources/__init__.py",
+    "src/maid_runner_mcp/server.py"
+  ],
+  "readonlyFiles": [
+    "src/maid_runner_mcp/tools/validate.py",
+    "src/maid_runner_mcp/tools/__init__.py",
+    "src/maid_runner_mcp/utils/cache.py",
+    "manifests/task-009-resource-infrastructure.manifest.json"
+  ],
+  "expectedArtifacts": {
+    "file": "src/maid_runner_mcp/resources/manifest.py",
+    "contains": [
+      {
+        "type": "function",
+        "name": "get_manifest",
+        "description": "MCP resource handler for accessing manifest files by name",
+        "args": [
+          {"name": "manifest_name", "type": "str"}
+        ],
+        "returns": "str",
+        "raises": ["FileNotFoundError", "ValueError"]
+      }
+    ]
+  },
+  "validationCommand": ["uv", "run", "python", "-m", "pytest", "tests/test_task_010_manifest_resource.py", "-v"]
+}
