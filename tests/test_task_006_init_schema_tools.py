@@ -154,15 +154,17 @@ class TestMaidInitBehavior:
 
     async def test_maid_init_returns_init_result(self):
         """Test that maid_init returns an InitResult-compatible dict."""
+        import tempfile
         from maid_runner_mcp.tools.init import maid_init
 
-        # Call with default parameters
-        result = await maid_init()
+        # Use a temporary directory to avoid overwriting project files
+        with tempfile.TemporaryDirectory() as tmpdir:
+            result = await maid_init(target_dir=tmpdir)
 
-        # Result should have the required fields
-        assert "success" in result, "Result should have 'success' field"
-        assert "target_dir" in result, "Result should have 'target_dir' field"
-        assert "errors" in result, "Result should have 'errors' field"
+            # Result should have the required fields
+            assert "success" in result, "Result should have 'success' field"
+            assert "target_dir" in result, "Result should have 'target_dir' field"
+            assert "errors" in result, "Result should have 'errors' field"
 
     async def test_maid_init_with_nonexistent_directory(self):
         """Test that maid_init handles nonexistent directories."""
