@@ -44,6 +44,7 @@ from maid_runner_mcp.tools import validate  # noqa: E402, F401
 # Resources use @mcp.resource() decorator from this module
 from maid_runner_mcp.resources import manifest  # noqa: E402, F401
 from maid_runner_mcp.resources import schema as schema_resource  # noqa: E402, F401
+from maid_runner_mcp.resources import snapshot as snapshot_resource  # noqa: E402, F401
 
 
 def main() -> None:

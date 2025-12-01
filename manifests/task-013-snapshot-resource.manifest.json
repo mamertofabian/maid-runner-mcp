@@ -1,0 +1,39 @@
+{
+  "goal": "Implement snapshot://system MCP resource for exposing system-wide manifest snapshots",
+  "taskType": "create",
+  "supersedes": [],
+  "creatableFiles": [
+    "src/maid_runner_mcp/resources/snapshot.py"
+  ],
+  "editableFiles": [
+    "src/maid_runner_mcp/resources/__init__.py",
+    "src/maid_runner_mcp/server.py"
+  ],
+  "readonlyFiles": [
+    "src/maid_runner_mcp/tools/snapshot_system.py",
+    "src/maid_runner_mcp/utils/cache.py",
+    "src/maid_runner_mcp/resources/manifest.py",
+    "src/maid_runner_mcp/resources/schema.py",
+    "tests/test_task_013_snapshot_resource.py"
+  ],
+  "expectedArtifacts": {
+    "file": "src/maid_runner_mcp/resources/snapshot.py",
+    "contains": [
+      {
+        "type": "function",
+        "name": "get_system_snapshot",
+        "args": [],
+        "returns": "str"
+      }
+    ]
+  },
+  "validationCommand": [
+    "uv",
+    "run",
+    "python",
+    "-m",
+    "pytest",
+    "tests/test_task_013_snapshot_resource.py",
+    "-v"
+  ]
+}

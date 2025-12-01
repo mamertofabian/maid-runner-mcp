@@ -8,5 +8,12 @@ from maid_runner_mcp.resources.manifest import get_manifest
 from maid_runner_mcp.resources.schema import get_manifest_schema
 from maid_runner_mcp.resources import validation
 from maid_runner_mcp.resources.validation import get_validation_result
+from maid_runner_mcp.resources.snapshot import get_system_snapshot
 
-__all__ = ["get_manifest", "get_manifest_schema", "get_validation_result", "validation"]
+__all__ = [
+    "get_manifest",
+    "get_manifest_schema",
+    "get_validation_result",
+    "get_system_snapshot",
+    "validation",
+]
