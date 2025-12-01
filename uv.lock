@@ -549,7 +549,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "maid-runner", specifier = ">=0.1.0" },
+    { name = "maid-runner" },
     { name = "mcp", specifier = ">=1.0.0" },
 ]
 

@@ -19,7 +19,7 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [
-    "maid-runner>=0.1.0",
+    "maid-runner",
     "mcp>=1.0.0",
 ]
 
