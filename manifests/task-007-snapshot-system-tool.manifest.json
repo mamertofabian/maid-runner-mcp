@@ -1,0 +1,38 @@
+{
+  "goal": "Implement the maid_snapshot_system MCP tool that generates system-wide manifest snapshots",
+  "taskType": "create",
+  "supersedes": [],
+  "creatableFiles": [
+    "src/maid_runner_mcp/tools/snapshot_system.py"
+  ],
+  "editableFiles": [
+    "src/maid_runner_mcp/tools/__init__.py",
+    "src/maid_runner_mcp/server.py"
+  ],
+  "readonlyFiles": [
+    "tests/test_task_007_snapshot_system_tool.py",
+    "src/maid_runner_mcp/tools/snapshot.py"
+  ],
+  "expectedArtifacts": {
+    "file": "src/maid_runner_mcp/tools/snapshot_system.py",
+    "contains": [
+      {
+        "type": "class",
+        "name": "SystemSnapshotResult",
+        "description": "TypedDict for system snapshot results with fields: success, output_path, errors"
+      },
+      {
+        "type": "function",
+        "name": "maid_snapshot_system",
+        "args": [
+          {"name": "output", "type": "str", "default": "\"system.manifest.json\""},
+          {"name": "manifest_dir", "type": "str", "default": "\"manifests\""},
+          {"name": "quiet", "type": "bool", "default": "True"}
+        ],
+        "returns": "SystemSnapshotResult",
+        "description": "MCP tool that generates a system-wide manifest snapshot using MAID Runner's snapshot-system command"
+      }
+    ]
+  },
+  "validationCommand": ["uv", "run", "python", "-m", "pytest", "tests/test_task_007_snapshot_system_tool.py", "-v"]
+}

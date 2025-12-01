@@ -1,0 +1,36 @@
+{
+  "goal": "Implement the maid_generate_stubs MCP tool that wraps MAID Runner's generate-stubs command to generate test stubs from manifests",
+  "taskType": "create",
+  "supersedes": [],
+  "creatableFiles": [
+    "src/maid_runner_mcp/tools/generate_stubs.py"
+  ],
+  "editableFiles": [
+    "src/maid_runner_mcp/tools/__init__.py",
+    "src/maid_runner_mcp/server.py"
+  ],
+  "readonlyFiles": [
+    "src/maid_runner_mcp/tools/schema.py",
+    "src/maid_runner_mcp/tools/validate.py"
+  ],
+  "expectedArtifacts": {
+    "file": "src/maid_runner_mcp/tools/generate_stubs.py",
+    "contains": [
+      {
+        "type": "class",
+        "name": "GenerateStubsResult",
+        "description": "TypedDict for generate-stubs results with fields: success, manifest_path, generated_files, errors"
+      },
+      {
+        "type": "function",
+        "name": "maid_generate_stubs",
+        "args": [
+          {"name": "manifest_path", "type": "str"}
+        ],
+        "returns": "GenerateStubsResult",
+        "description": "MCP tool that generates test stubs from a manifest using MAID Runner's generate-stubs command"
+      }
+    ]
+  },
+  "validationCommand": ["uv", "run", "python", "-m", "pytest", "tests/test_task_008_generate_stubs_tool.py", "-v"]
+}
