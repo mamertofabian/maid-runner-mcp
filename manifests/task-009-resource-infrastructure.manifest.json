@@ -1,0 +1,121 @@
+{
+  "goal": "Implement the foundational resource infrastructure for the MAID Runner MCP server, including the resources directory structure and caching utilities",
+  "taskType": "create",
+  "supersedes": [],
+  "creatableFiles": [
+    "src/maid_runner_mcp/resources/__init__.py",
+    "src/maid_runner_mcp/utils/__init__.py",
+    "src/maid_runner_mcp/utils/cache.py"
+  ],
+  "editableFiles": [
+    "src/maid_runner_mcp/server.py"
+  ],
+  "readonlyFiles": [
+    "src/maid_runner_mcp/tools/__init__.py"
+  ],
+  "expectedArtifacts": {
+    "file": "src/maid_runner_mcp/utils/cache.py",
+    "contains": [
+      {
+        "type": "class",
+        "name": "LRUCache",
+        "description": "LRU cache implementation with configurable size"
+      },
+      {
+        "type": "function",
+        "name": "__init__",
+        "class": "LRUCache",
+        "args": [
+          {"name": "max_size", "type": "int"}
+        ],
+        "returns": "None"
+      },
+      {
+        "type": "function",
+        "name": "get",
+        "class": "LRUCache",
+        "args": [
+          {"name": "key", "type": "str"}
+        ],
+        "returns": "T | None"
+      },
+      {
+        "type": "function",
+        "name": "set",
+        "class": "LRUCache",
+        "args": [
+          {"name": "key", "type": "str"},
+          {"name": "value", "type": "T"}
+        ],
+        "returns": "None"
+      },
+      {
+        "type": "class",
+        "name": "TTLCache",
+        "description": "Time-to-live cache implementation"
+      },
+      {
+        "type": "function",
+        "name": "__init__",
+        "class": "TTLCache",
+        "args": [
+          {"name": "ttl_seconds", "type": "float"}
+        ],
+        "returns": "None"
+      },
+      {
+        "type": "function",
+        "name": "get",
+        "class": "TTLCache",
+        "args": [
+          {"name": "key", "type": "str"}
+        ],
+        "returns": "T | None"
+      },
+      {
+        "type": "function",
+        "name": "set",
+        "class": "TTLCache",
+        "args": [
+          {"name": "key", "type": "str"},
+          {"name": "value", "type": "T"}
+        ],
+        "returns": "None"
+      },
+      {
+        "type": "class",
+        "name": "ValidationCache",
+        "description": "Specialized cache for validation results using LRU"
+      },
+      {
+        "type": "function",
+        "name": "__init__",
+        "class": "ValidationCache",
+        "args": [
+          {"name": "max_size", "type": "int"}
+        ],
+        "returns": "None"
+      },
+      {
+        "type": "function",
+        "name": "get",
+        "class": "ValidationCache",
+        "args": [
+          {"name": "manifest_path", "type": "str"}
+        ],
+        "returns": "Any | None"
+      },
+      {
+        "type": "function",
+        "name": "set",
+        "class": "ValidationCache",
+        "args": [
+          {"name": "manifest_path", "type": "str"},
+          {"name": "result", "type": "Any"}
+        ],
+        "returns": "None"
+      }
+    ]
+  },
+  "validationCommand": ["uv", "run", "python", "-m", "pytest", "tests/test_task_009_resource_infrastructure.py", "-v"]
+}
