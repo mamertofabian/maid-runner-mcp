@@ -6,17 +6,32 @@ Exposes MAID Runner validation tools via Model Context Protocol (MCP).
 from mcp.server.fastmcp import FastMCP
 
 
+# Module-level server instance (singleton)
+# Tools are registered via @mcp.tool() decorators in tools modules
+_server: FastMCP | None = None
+
+
 def create_server() -> FastMCP:
-    """Create and configure a FastMCP server instance.
+    """Get the configured FastMCP server instance.
+
+    Returns the singleton server instance with all registered tools.
+    This ensures tools decorated with @mcp.tool() are available.
 
     Returns:
-        FastMCP: A configured MCP server ready to register tools.
+        FastMCP: The configured MCP server with registered tools.
     """
-    return FastMCP("maid-runner")
+    global _server
+    if _server is None:
+        _server = FastMCP("maid-runner")
+    return _server
 
 
-# Module-level server instance
+# Initialize the server instance
 mcp = create_server()
+
+# Import tools to register them with the server
+# Tools use @mcp.tool() decorator from this module
+from maid_runner_mcp.tools import validate  # noqa: E402, F401
 
 
 def main() -> None:

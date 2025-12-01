@@ -1,0 +1,37 @@
+{
+  "goal": "Implement the maid_validate MCP tool that wraps MAID Runner's validate command to validate manifests",
+  "taskType": "create",
+  "supersedes": [],
+  "creatableFiles": [
+    "src/maid_runner_mcp/tools/__init__.py",
+    "src/maid_runner_mcp/tools/validate.py"
+  ],
+  "editableFiles": [
+    "src/maid_runner_mcp/server.py"
+  ],
+  "readonlyFiles": [],
+  "expectedArtifacts": {
+    "file": "src/maid_runner_mcp/tools/validate.py",
+    "contains": [
+      {
+        "type": "class",
+        "name": "ValidateResult",
+        "description": "TypedDict for validation results with fields: success, mode, manifest, target_file, used_chain, errors, file_tracking"
+      },
+      {
+        "type": "function",
+        "name": "maid_validate",
+        "args": [
+          {"name": "manifest_path", "type": "str"},
+          {"name": "validation_mode", "type": "str", "default": "implementation"},
+          {"name": "use_manifest_chain", "type": "bool", "default": "False"},
+          {"name": "manifest_dir", "type": "str | None", "default": "None"},
+          {"name": "quiet", "type": "bool", "default": "True"}
+        ],
+        "returns": "ValidateResult",
+        "description": "MCP tool that validates a manifest using MAID Runner's validate command"
+      }
+    ]
+  },
+  "validationCommand": ["uv", "run", "python", "-m", "pytest", "tests/test_task_002_validate_tool.py", "-v"]
+}
