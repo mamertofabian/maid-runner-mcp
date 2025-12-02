@@ -5,8 +5,11 @@ import subprocess
 from pathlib import Path
 from typing import Any, TypedDict, cast
 
+from mcp.server.fastmcp import Context
+
 from maid_runner_mcp.server import mcp
 from maid_runner_mcp.resources.validation import _validation_cache
+from maid_runner_mcp.utils.roots import get_working_directory
 
 
 class ValidateResult(TypedDict, total=False):
@@ -34,6 +37,7 @@ class ValidateResult(TypedDict, total=False):
 @mcp.tool()
 async def maid_validate(
     manifest_path: str,
+    ctx: Context,
     validation_mode: str = "implementation",
     use_manifest_chain: bool = False,
     manifest_dir: str | None = None,
@@ -61,6 +65,7 @@ async def maid_validate(
         use_manifest_chain: Whether to use manifest chain for validation
         manifest_dir: Directory containing manifests (optional)
         quiet: Whether to suppress verbose output
+        ctx: MCP context for accessing working directory
 
     Returns:
         ValidateResult with validation outcome
@@ -83,8 +88,9 @@ async def maid_validate(
     # Run in thread pool to avoid blocking
     loop = asyncio.get_event_loop()
     try:
+        cwd = await get_working_directory(ctx)
         result = await loop.run_in_executor(
-            None, lambda: subprocess.run(cmd, capture_output=True, text=True)
+            None, lambda: subprocess.run(cmd, capture_output=True, text=True, cwd=cwd)
         )
 
         success = result.returncode == 0

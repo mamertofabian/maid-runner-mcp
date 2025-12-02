@@ -1,0 +1,53 @@
+{
+  "goal": "Update maid_validate tool to use working directory from MCP roots",
+  "taskType": "edit",
+  "supersedes": [],
+  "creatableFiles": [],
+  "editableFiles": [
+    "src/maid_runner_mcp/tools/validate.py"
+  ],
+  "readonlyFiles": [
+    "src/maid_runner_mcp/utils/roots.py"
+  ],
+  "expectedArtifacts": {
+    "file": "src/maid_runner_mcp/tools/validate.py",
+    "contains": [
+      {
+        "type": "function",
+        "name": "maid_validate",
+        "args": [
+          {
+            "name": "manifest_path",
+            "type": "str"
+          },
+          {
+            "name": "validation_mode",
+            "type": "str"
+          },
+          {
+            "name": "use_manifest_chain",
+            "type": "bool"
+          },
+          {
+            "name": "manifest_dir",
+            "type": "str | None"
+          },
+          {
+            "name": "quiet",
+            "type": "bool"
+          },
+          {
+            "name": "ctx",
+            "type": "Context"
+          }
+        ],
+        "returns": "ValidateResult"
+      }
+    ]
+  },
+  "validationCommand": [
+    "pytest",
+    "tests/test_task_027_validate_tool_cwd.py",
+    "-v"
+  ]
+}

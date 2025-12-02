@@ -129,9 +129,18 @@ class TestMaidValidateBehavior:
     async def test_maid_validate_returns_validate_result(self):
         """Test that maid_validate returns a ValidateResult-compatible dict."""
         from maid_runner_mcp.tools.validate import maid_validate
+        from unittest.mock import AsyncMock, MagicMock
+
+        # Create a mock context
+        mock_ctx = MagicMock()
+        mock_session = MagicMock()
+        mock_session.list_roots = AsyncMock(
+            return_value=MagicMock(roots=[MagicMock(uri="file:///tmp/test")])
+        )
+        mock_ctx.session = mock_session
 
         # Call with an invalid path to trigger error handling
-        result = await maid_validate(manifest_path="nonexistent.json")
+        result = await maid_validate(manifest_path="nonexistent.json", ctx=mock_ctx)
 
         # Result should have the required fields
         assert "success" in result, "Result should have 'success' field"
@@ -144,9 +153,18 @@ class TestMaidValidateBehavior:
     async def test_maid_validate_error_handling(self):
         """Test that maid_validate handles errors gracefully."""
         from maid_runner_mcp.tools.validate import maid_validate
+        from unittest.mock import AsyncMock, MagicMock
+
+        # Create a mock context
+        mock_ctx = MagicMock()
+        mock_session = MagicMock()
+        mock_session.list_roots = AsyncMock(
+            return_value=MagicMock(roots=[MagicMock(uri="file:///tmp/test")])
+        )
+        mock_ctx.session = mock_session
 
         # Call with a nonexistent manifest
-        result = await maid_validate(manifest_path="nonexistent.json")
+        result = await maid_validate(manifest_path="nonexistent.json", ctx=mock_ctx)
 
         # Should return success=False with errors
         assert result["success"] is False, "Should return success=False for invalid manifest"
@@ -156,10 +174,20 @@ class TestMaidValidateBehavior:
     async def test_maid_validate_with_valid_manifest(self):
         """Test maid_validate with a valid manifest file."""
         from maid_runner_mcp.tools.validate import maid_validate
+        from unittest.mock import AsyncMock, MagicMock
+
+        # Create a mock context
+        mock_ctx = MagicMock()
+        mock_session = MagicMock()
+        mock_session.list_roots = AsyncMock(
+            return_value=MagicMock(roots=[MagicMock(uri="file:///tmp/test")])
+        )
+        mock_ctx.session = mock_session
 
         # Use the existing task-001 manifest which should be valid
         result = await maid_validate(
-            manifest_path="manifests/task-001-mcp-server-core.manifest.json"
+            manifest_path="manifests/task-001-mcp-server-core.manifest.json",
+            ctx=mock_ctx
         )
 
         # Result should have proper structure regardless of success
