@@ -101,6 +101,13 @@ For multi-file features: Create SEPARATE manifests for each file.
 - `maid_get_schema`: Get manifest JSON schema
 - `maid_init`: Initialize MAID project
 - `maid_generate_stubs`: Generate test stubs from manifest
+
+## Available Resources
+
+- `maid://spec`: Full MAID methodology specification document
+- `schema://manifest`: JSON schema for manifest validation
+- `manifest://{name}`: Read specific manifest content
+- `snapshot://system`: System-wide manifest snapshot
 """.strip()
 
 
@@ -145,6 +152,7 @@ from maid_runner_mcp.tools import validate  # noqa: E402, F401
 from maid_runner_mcp.resources import manifest  # noqa: E402, F401
 from maid_runner_mcp.resources import schema as schema_resource  # noqa: E402, F401
 from maid_runner_mcp.resources import snapshot as snapshot_resource  # noqa: E402, F401
+from maid_runner_mcp.resources import spec  # noqa: E402, F401
 
 # Import prompts to register them with the server
 from maid_runner_mcp import prompts  # noqa: E402, F401
