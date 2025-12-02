@@ -26,6 +26,22 @@ class SchemaResult(TypedDict):
 async def maid_get_schema() -> SchemaResult:
     """Get the MAID manifest JSON schema.
 
+    **When to use:**
+    - Phase 2 (Planning): Understand manifest structure before creating one
+    - Debugging: Verify manifest fields are correctly named and typed
+    - Learning: Explore available manifest options
+
+    **Key information in schema:**
+    - Required fields: `goal`, `readonlyFiles`, `expectedArtifacts`/`systemArtifacts`
+    - File lists: `creatableFiles`, `editableFiles`, `readonlyFiles`
+    - Artifact types: function, class, attribute, etc.
+    - Validation commands: `validationCommand` or `validationCommands`
+
+    **Tips:**
+    - Review schema before writing your first manifest
+    - Use schema to validate manifest structure
+    - Check artifact type options for expectedArtifacts.contains[]
+
     Returns:
         SchemaResult with the manifest schema
     """

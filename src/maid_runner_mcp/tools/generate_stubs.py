@@ -27,6 +27,22 @@ class GenerateStubsResult(TypedDict):
 async def maid_generate_stubs(manifest_path: str) -> GenerateStubsResult:
     """Generate test stubs from a manifest using MAID Runner.
 
+    **When to use:**
+    - Phase 2 (Planning): After creating manifest, generate test file skeleton
+    - Jumpstarting tests: Create boilerplate test structure from manifest
+    - Consistency: Ensure test file naming matches manifest conventions
+
+    **What it generates:**
+    - Test file with naming pattern: `tests/test_task_XXX_*.py`
+    - Test class structure based on expectedArtifacts
+    - Import statements for artifacts being tested
+    - Placeholder test methods for each artifact
+
+    **Tips:**
+    - Run after creating/updating a manifest
+    - Generated stubs are starting points - add assertions
+    - Test file is added to manifest's `readonlyFiles` automatically
+
     Args:
         manifest_path: Path to the manifest JSON file
 

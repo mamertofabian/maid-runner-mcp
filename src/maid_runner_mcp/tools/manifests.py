@@ -34,6 +34,21 @@ async def maid_list_manifests(
 ) -> ListManifestsResult:
     """List manifests that reference a file using MAID Runner.
 
+    **When to use:**
+    - Before editing: Check if a file already has manifests
+    - Understanding history: See how a file has evolved through manifests
+    - Planning edits: Find related manifests to understand context
+
+    **Result categories:**
+    - `created_by`: Manifests where file is in `creatableFiles`
+    - `edited_by`: Manifests where file is in `editableFiles`
+    - `read_by`: Manifests where file is in `readonlyFiles`
+
+    **Tips:**
+    - Use before creating a new manifest for an existing file
+    - If file is in `creatableFiles`, it was first created by that manifest
+    - Use `--use-manifest-chain` in maid_validate for files with history
+
     Args:
         file_path: Path to the file to check
         manifest_dir: Directory containing manifests (default: "manifests")

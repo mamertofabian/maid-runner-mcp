@@ -29,6 +29,21 @@ async def maid_snapshot_system(
 ) -> SystemSnapshotResult:
     """Generate a system-wide manifest snapshot using MAID Runner.
 
+    **When to use:**
+    - Documentation: Create a comprehensive view of all project artifacts
+    - Architecture review: See all public APIs across the codebase
+    - Dependency analysis: Understand cross-file relationships
+
+    **What it creates:**
+    - Aggregated manifest combining all individual manifests
+    - System-wide view of all tracked artifacts
+    - Uses `systemArtifacts` (array) instead of `expectedArtifacts` (object)
+
+    **Tips:**
+    - Run periodically to update system documentation
+    - Useful for onboarding new team members
+    - Compare snapshots over time to track API evolution
+
     Args:
         output: Path to the output system manifest file (default: "system.manifest.json")
         manifest_dir: Directory containing individual manifests (default: "manifests")

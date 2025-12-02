@@ -41,6 +41,20 @@ async def maid_validate(
 ) -> ValidateResult:
     """Validate a MAID manifest using MAID Runner.
 
+    **When to use:**
+    - Phase 2 (Planning): After creating/updating a manifest, validate it passes
+    - Phase 3 (Implementation): After writing code, verify it matches the manifest
+    - Before committing: Ensure all manifests are valid
+
+    **Validation modes:**
+    - `implementation`: Checks that code artifacts match manifest expectedArtifacts
+    - `behavioral`: Checks that tests exist and reference the expected artifacts
+
+    **Use manifest chain when:**
+    - Editing existing files (taskType: "edit")
+    - The file has previous manifests that define its history
+    - You need to verify the full history of changes is valid
+
     Args:
         manifest_path: Path to the manifest JSON file
         validation_mode: Validation mode (implementation or behavioral)

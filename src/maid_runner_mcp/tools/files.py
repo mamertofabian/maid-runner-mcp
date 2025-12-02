@@ -47,8 +47,20 @@ async def maid_files(
 ) -> FileTrackingResult:
     """Get file-level tracking status using MAID Runner.
 
-    This tool analyzes all source files in the project and categorizes them
-    based on their manifest tracking status.
+    **When to use:**
+    - Project health check: See which files lack manifests
+    - Onboarding: Identify files that need to be brought under MAID
+    - Compliance audit: Ensure all source files are tracked
+
+    **Status categories:**
+    - `undeclared`: Files not referenced in any manifest (needs attention)
+    - `registered`: Files in manifests but with potential issues
+    - `tracked`: Files fully compliant with MAID methodology
+
+    **Tips:**
+    - Use `issues_only=True` to focus on problem files
+    - Filter by `status="undeclared"` to find files needing manifests
+    - Run periodically to maintain MAID compliance
 
     Args:
         manifest_dir: Directory containing manifests (default: "manifests")

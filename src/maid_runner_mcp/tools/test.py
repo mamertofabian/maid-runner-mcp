@@ -35,6 +35,21 @@ async def maid_test(
 ) -> TestResult:
     """Run validation commands from MAID manifests.
 
+    **When to use:**
+    - Phase 3 (Implementation): Execute tests to verify code passes
+    - Phase 4 (Integration): Run all tests to ensure nothing is broken
+    - CI/CD: Automated verification of all manifests
+
+    **Key behavior:**
+    - Executes the `validationCommand` from each manifest
+    - Reports pass/fail status for each manifest
+    - Can run single manifest or all manifests in directory
+
+    **Tips:**
+    - Use `manifest` parameter to test a specific task during development
+    - Use `fail_fast=True` during iterative development to stop early
+    - Increase `timeout` for slow-running test suites
+
     Args:
         manifest_dir: Directory containing manifests (default: "manifests")
         manifest: Specific manifest file to test (optional, tests all if None)

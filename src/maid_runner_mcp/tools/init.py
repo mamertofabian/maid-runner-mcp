@@ -28,6 +28,20 @@ async def maid_init(
 ) -> InitResult:
     """Initialize a MAID project using MAID Runner.
 
+    **When to use:**
+    - Starting a new project: Set up MAID directory structure
+    - Onboarding existing project: Add MAID support to existing codebase
+    - Resetting: Use `force=True` to reinitialize
+
+    **What it creates:**
+    - `manifests/` directory for task manifests
+    - `.maid/` directory for MAID configuration
+    - Basic MAID project structure
+
+    **Tips:**
+    - Run once at project setup
+    - Use `force=True` only if you need to reset MAID configuration
+
     Args:
         target_dir: Directory to initialize (defaults to current directory)
         force: Whether to force initialization even if already initialized

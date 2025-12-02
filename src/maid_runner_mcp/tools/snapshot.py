@@ -34,6 +34,21 @@ async def maid_snapshot(
 ) -> SnapshotResult:
     """Generate a manifest snapshot from existing code using MAID Runner.
 
+    **When to use:**
+    - Onboarding existing code: Create manifests for pre-existing files
+    - Before refactoring: Capture current state as a baseline
+    - Documentation: Generate manifest to document existing APIs
+
+    **Key behavior:**
+    - Analyzes source file to extract public artifacts (functions, classes)
+    - Creates a manifest with expectedArtifacts matching current code
+    - Optionally generates test stub file for the manifest
+
+    **Tips:**
+    - Use before making changes to existing code without manifests
+    - The generated manifest serves as a "snapshot" of current state
+    - Review and adjust the generated manifest as needed
+
     Args:
         file_path: Path to the source file to generate a snapshot for
         output_dir: Directory to output the manifest (default: "manifests")
