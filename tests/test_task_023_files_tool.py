@@ -10,7 +10,18 @@ rather than just checking existence. We use mocking to avoid calling the real CL
 """
 
 import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, AsyncMock
+
+
+def _create_mock_context():
+    """Helper to create a mock MCP context for testing."""
+    mock_ctx = MagicMock()
+    mock_session = MagicMock()
+    mock_session.list_roots = AsyncMock(
+        return_value=MagicMock(roots=[MagicMock(uri="file:///tmp/test")])
+    )
+    mock_ctx.session = mock_session
+    return mock_ctx
 
 
 class TestFileInfoTypedDict:
@@ -163,8 +174,17 @@ class TestMaidFilesBehavior:
         mock_result.stdout = '{"undeclared": [], "registered": [], "tracked": ["src/test.py"]}'
         mock_result.stderr = ""
 
-        with patch("subprocess.run", return_value=mock_result):
-            result = await maid_files()
+        mock_ctx = _create_mock_context()
+
+        with (
+            patch("subprocess.run", return_value=mock_result),
+            patch(
+                "maid_runner_mcp.tools.files.get_working_directory",
+                new_callable=AsyncMock,
+                return_value="/tmp/test",
+            ),
+        ):
+            result = await maid_files(ctx=mock_ctx)
 
         # Result should have all required fields
         assert "undeclared" in result, "Result should have 'undeclared' field"
@@ -180,8 +200,17 @@ class TestMaidFilesBehavior:
         mock_result.stdout = '{"undeclared": [], "registered": [], "tracked": ["src/test.py"]}'
         mock_result.stderr = ""
 
-        with patch("subprocess.run", return_value=mock_result):
-            result = await maid_files()
+        mock_ctx = _create_mock_context()
+
+        with (
+            patch("subprocess.run", return_value=mock_result),
+            patch(
+                "maid_runner_mcp.tools.files.get_working_directory",
+                new_callable=AsyncMock,
+                return_value="/tmp/test",
+            ),
+        ):
+            result = await maid_files(ctx=mock_ctx)
 
         # Verify types match the output schema from maid files --json
         assert isinstance(result["undeclared"], list), "undeclared should be a list"
@@ -199,8 +228,17 @@ class TestMaidFilesBehavior:
         )
         mock_result.stderr = ""
 
-        with patch("subprocess.run", return_value=mock_result):
-            result = await maid_files()
+        mock_ctx = _create_mock_context()
+
+        with (
+            patch("subprocess.run", return_value=mock_result),
+            patch(
+                "maid_runner_mcp.tools.files.get_working_directory",
+                new_callable=AsyncMock,
+                return_value="/tmp/test",
+            ),
+        ):
+            result = await maid_files(ctx=mock_ctx)
 
         # tracked should be a list of strings
         assert len(result["tracked"]) > 0, "tracked should have items"
@@ -222,8 +260,17 @@ class TestMaidFilesBehavior:
         }"""
         mock_result.stderr = ""
 
-        with patch("subprocess.run", return_value=mock_result):
-            result = await maid_files()
+        mock_ctx = _create_mock_context()
+
+        with (
+            patch("subprocess.run", return_value=mock_result),
+            patch(
+                "maid_runner_mcp.tools.files.get_working_directory",
+                new_callable=AsyncMock,
+                return_value="/tmp/test",
+            ),
+        ):
+            result = await maid_files(ctx=mock_ctx)
 
         # Each registered file should have FileInfo structure
         assert len(result["registered"]) > 0, "registered should have items"
@@ -249,8 +296,17 @@ class TestMaidFilesBehavior:
         }"""
         mock_result.stderr = ""
 
-        with patch("subprocess.run", return_value=mock_result):
-            result = await maid_files()
+        mock_ctx = _create_mock_context()
+
+        with (
+            patch("subprocess.run", return_value=mock_result),
+            patch(
+                "maid_runner_mcp.tools.files.get_working_directory",
+                new_callable=AsyncMock,
+                return_value="/tmp/test",
+            ),
+        ):
+            result = await maid_files(ctx=mock_ctx)
 
         # Each undeclared file should have FileInfo structure
         assert len(result["undeclared"]) > 0, "undeclared should have items"
@@ -276,8 +332,17 @@ class TestMaidFilesBehavior:
         }"""
         mock_result.stderr = ""
 
-        with patch("subprocess.run", return_value=mock_result) as mock_run:
-            result = await maid_files(issues_only=True)
+        mock_ctx = _create_mock_context()
+
+        with (
+            patch("subprocess.run", return_value=mock_result) as mock_run,
+            patch(
+                "maid_runner_mcp.tools.files.get_working_directory",
+                new_callable=AsyncMock,
+                return_value="/tmp/test",
+            ),
+        ):
+            result = await maid_files(ctx=mock_ctx, issues_only=True)
 
         # Result should still have all fields
         assert "undeclared" in result
@@ -298,8 +363,17 @@ class TestMaidFilesBehavior:
         mock_result.stdout = '{"undeclared": [], "registered": [], "tracked": ["src/test.py"]}'
         mock_result.stderr = ""
 
-        with patch("subprocess.run", return_value=mock_result) as mock_run:
-            result = await maid_files(status="tracked")
+        mock_ctx = _create_mock_context()
+
+        with (
+            patch("subprocess.run", return_value=mock_result) as mock_run,
+            patch(
+                "maid_runner_mcp.tools.files.get_working_directory",
+                new_callable=AsyncMock,
+                return_value="/tmp/test",
+            ),
+        ):
+            result = await maid_files(ctx=mock_ctx, status="tracked")
 
         # Result should still have all fields
         assert "undeclared" in result
@@ -323,8 +397,17 @@ class TestMaidFilesBehavior:
         mock_result.stdout = '{"undeclared": [], "registered": [], "tracked": []}'
         mock_result.stderr = ""
 
-        with patch("subprocess.run", return_value=mock_result) as mock_run:
-            result = await maid_files(manifest_dir="custom_manifests")
+        mock_ctx = _create_mock_context()
+
+        with (
+            patch("subprocess.run", return_value=mock_result) as mock_run,
+            patch(
+                "maid_runner_mcp.tools.files.get_working_directory",
+                new_callable=AsyncMock,
+                return_value="/tmp/test",
+            ),
+        ):
+            result = await maid_files(ctx=mock_ctx, manifest_dir="custom_manifests")
 
         # Should work with explicit manifest_dir
         assert "undeclared" in result
@@ -348,8 +431,17 @@ class TestMaidFilesBehavior:
         mock_result.stdout = ""
         mock_result.stderr = "Error: manifest directory not found"
 
-        with patch("subprocess.run", return_value=mock_result):
-            result = await maid_files()
+        mock_ctx = _create_mock_context()
+
+        with (
+            patch("subprocess.run", return_value=mock_result),
+            patch(
+                "maid_runner_mcp.tools.files.get_working_directory",
+                new_callable=AsyncMock,
+                return_value="/tmp/test",
+            ),
+        ):
+            result = await maid_files(ctx=mock_ctx)
 
         # Should return empty result on error, not raise exception
         assert "undeclared" in result
@@ -369,8 +461,17 @@ class TestMaidFilesBehavior:
         mock_result.stdout = "Not valid JSON output"
         mock_result.stderr = ""
 
-        with patch("subprocess.run", return_value=mock_result):
-            result = await maid_files()
+        mock_ctx = _create_mock_context()
+
+        with (
+            patch("subprocess.run", return_value=mock_result),
+            patch(
+                "maid_runner_mcp.tools.files.get_working_directory",
+                new_callable=AsyncMock,
+                return_value="/tmp/test",
+            ),
+        ):
+            result = await maid_files(ctx=mock_ctx)
 
         # Should return empty result on parse error
         assert "undeclared" in result
@@ -389,8 +490,17 @@ class TestMaidFilesBehavior:
         mock_result.stdout = '{"undeclared": [], "registered": [], "tracked": []}'
         mock_result.stderr = ""
 
-        with patch("subprocess.run", return_value=mock_result) as mock_run:
-            await maid_files()
+        mock_ctx = _create_mock_context()
+
+        with (
+            patch("subprocess.run", return_value=mock_result) as mock_run,
+            patch(
+                "maid_runner_mcp.tools.files.get_working_directory",
+                new_callable=AsyncMock,
+                return_value="/tmp/test",
+            ),
+        ):
+            await maid_files(ctx=mock_ctx)
 
         # Verify the command was called with default manifest_dir
         call_args = mock_run.call_args
@@ -414,8 +524,17 @@ class TestMaidFilesBehavior:
         mock_result.stdout = '{"undeclared": [], "registered": [], "tracked": []}'
         mock_result.stderr = ""
 
-        with patch("subprocess.run", return_value=mock_result) as mock_run:
-            await maid_files()
+        mock_ctx = _create_mock_context()
+
+        with (
+            patch("subprocess.run", return_value=mock_result) as mock_run,
+            patch(
+                "maid_runner_mcp.tools.files.get_working_directory",
+                new_callable=AsyncMock,
+                return_value="/tmp/test",
+            ),
+        ):
+            await maid_files(ctx=mock_ctx)
 
         # Verify the command includes --json flag
         call_args = mock_run.call_args

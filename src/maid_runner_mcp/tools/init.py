@@ -4,7 +4,10 @@ import asyncio
 import subprocess
 from typing import TypedDict
 
+from mcp.server.fastmcp import Context
+
 from maid_runner_mcp.server import mcp
+from maid_runner_mcp.utils.roots import get_working_directory
 
 
 class InitResult(TypedDict):
@@ -23,6 +26,7 @@ class InitResult(TypedDict):
 
 @mcp.tool()
 async def maid_init(
+    ctx: Context,
     target_dir: str = ".",
     force: bool = False,
 ) -> InitResult:
@@ -49,6 +53,9 @@ async def maid_init(
     Returns:
         InitResult with initialization outcome
     """
+    # Get working directory from MCP roots
+    cwd = await get_working_directory(ctx)
+
     # Build command
     cmd = ["uv", "run", "maid", "init"]
 
@@ -64,7 +71,7 @@ async def maid_init(
         # Provide "Y\n" to stdin for interactive prompts
         result = await loop.run_in_executor(
             None,
-            lambda: subprocess.run(cmd, capture_output=True, text=True, input="Y\nY\nY\n"),
+            lambda: subprocess.run(cmd, capture_output=True, text=True, input="Y\nY\nY\n", cwd=cwd),
         )
 
         success = result.returncode == 0

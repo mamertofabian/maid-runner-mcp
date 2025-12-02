@@ -1,0 +1,45 @@
+{
+  "goal": "Update maid_files tool to use working directory from MCP roots",
+  "taskType": "edit",
+  "supersedes": [],
+  "creatableFiles": [],
+  "editableFiles": [
+    "src/maid_runner_mcp/tools/files.py"
+  ],
+  "readonlyFiles": [
+    "src/maid_runner_mcp/utils/roots.py"
+  ],
+  "expectedArtifacts": {
+    "file": "src/maid_runner_mcp/tools/files.py",
+    "contains": [
+      {
+        "type": "function",
+        "name": "maid_files",
+        "args": [
+          {
+            "name": "manifest_dir",
+            "type": "str"
+          },
+          {
+            "name": "issues_only",
+            "type": "bool"
+          },
+          {
+            "name": "status",
+            "type": "str | None"
+          },
+          {
+            "name": "ctx",
+            "type": "Context"
+          }
+        ],
+        "returns": "FileTrackingResult"
+      }
+    ]
+  },
+  "validationCommand": [
+    "pytest",
+    "tests/test_task_032_files_tool_cwd.py",
+    "-v"
+  ]
+}

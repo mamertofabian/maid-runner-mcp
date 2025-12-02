@@ -124,9 +124,18 @@ class TestMaidSnapshotBehavior:
     async def test_maid_snapshot_returns_snapshot_result(self):
         """Test that maid_snapshot returns a SnapshotResult-compatible dict."""
         from maid_runner_mcp.tools.snapshot import maid_snapshot
+        from unittest.mock import AsyncMock, MagicMock
+
+        # Create a mock context
+        mock_ctx = MagicMock()
+        mock_session = MagicMock()
+        mock_session.list_roots = AsyncMock(
+            return_value=MagicMock(roots=[MagicMock(uri="file:///tmp/test")])
+        )
+        mock_ctx.session = mock_session
 
         # Call with an invalid path to trigger error handling
-        result = await maid_snapshot(file_path="nonexistent.py")
+        result = await maid_snapshot(file_path="nonexistent.py", ctx=mock_ctx)
 
         # Result should have the required fields
         assert "success" in result, "Result should have 'success' field"
@@ -138,9 +147,18 @@ class TestMaidSnapshotBehavior:
     async def test_maid_snapshot_error_handling(self):
         """Test that maid_snapshot handles errors gracefully."""
         from maid_runner_mcp.tools.snapshot import maid_snapshot
+        from unittest.mock import AsyncMock, MagicMock
+
+        # Create a mock context
+        mock_ctx = MagicMock()
+        mock_session = MagicMock()
+        mock_session.list_roots = AsyncMock(
+            return_value=MagicMock(roots=[MagicMock(uri="file:///tmp/test")])
+        )
+        mock_ctx.session = mock_session
 
         # Call with a nonexistent file
-        result = await maid_snapshot(file_path="nonexistent.py")
+        result = await maid_snapshot(file_path="nonexistent.py", ctx=mock_ctx)
 
         # Should return success=False with errors
         assert result["success"] is False, "Should return success=False for invalid file"
@@ -150,6 +168,15 @@ class TestMaidSnapshotBehavior:
     async def test_maid_snapshot_with_valid_file(self):
         """Test maid_snapshot with a valid source file."""
         from maid_runner_mcp.tools.snapshot import maid_snapshot
+        from unittest.mock import AsyncMock, MagicMock
+
+        # Create a mock context
+        mock_ctx = MagicMock()
+        mock_session = MagicMock()
+        mock_session.list_roots = AsyncMock(
+            return_value=MagicMock(roots=[MagicMock(uri="file:///tmp/test")])
+        )
+        mock_ctx.session = mock_session
 
         # Use a temporary directory to avoid polluting the manifests folder
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -158,6 +185,7 @@ class TestMaidSnapshotBehavior:
                 file_path="src/maid_runner_mcp/server.py",
                 output_dir=tmpdir,
                 skip_test_stub=True,  # Don't create test stub for this test
+                ctx=mock_ctx,
             )
 
             # Result should have proper structure regardless of success

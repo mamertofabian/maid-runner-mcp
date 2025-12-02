@@ -4,7 +4,10 @@ import asyncio
 import subprocess
 from typing import TypedDict
 
+from mcp.server.fastmcp import Context
+
 from maid_runner_mcp.server import mcp
+from maid_runner_mcp.utils.roots import get_working_directory
 
 
 class SnapshotResult(TypedDict, total=False):
@@ -27,6 +30,7 @@ class SnapshotResult(TypedDict, total=False):
 
 @mcp.tool()
 async def maid_snapshot(
+    ctx: Context,
     file_path: str,
     output_dir: str = "manifests",
     force: bool = False,
@@ -58,6 +62,9 @@ async def maid_snapshot(
     Returns:
         SnapshotResult with generation outcome
     """
+    # Get working directory from MCP roots
+    cwd = await get_working_directory(ctx)
+
     # Build command
     cmd = ["uv", "run", "maid", "snapshot", file_path]
 
@@ -73,7 +80,7 @@ async def maid_snapshot(
     loop = asyncio.get_event_loop()
     try:
         result = await loop.run_in_executor(
-            None, lambda: subprocess.run(cmd, capture_output=True, text=True)
+            None, lambda: subprocess.run(cmd, capture_output=True, text=True, cwd=cwd)
         )
 
         success = result.returncode == 0

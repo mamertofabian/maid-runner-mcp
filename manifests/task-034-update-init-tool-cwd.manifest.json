@@ -1,0 +1,41 @@
+{
+  "goal": "Update maid_init tool to use working directory from MCP roots",
+  "taskType": "edit",
+  "supersedes": [],
+  "creatableFiles": [],
+  "editableFiles": [
+    "src/maid_runner_mcp/tools/init.py"
+  ],
+  "readonlyFiles": [
+    "src/maid_runner_mcp/utils/roots.py"
+  ],
+  "expectedArtifacts": {
+    "file": "src/maid_runner_mcp/tools/init.py",
+    "contains": [
+      {
+        "type": "function",
+        "name": "maid_init",
+        "args": [
+          {
+            "name": "target_dir",
+            "type": "str"
+          },
+          {
+            "name": "force",
+            "type": "bool"
+          },
+          {
+            "name": "ctx",
+            "type": "Context"
+          }
+        ],
+        "returns": "InitResult"
+      }
+    ]
+  },
+  "validationCommand": [
+    "pytest",
+    "tests/test_task_034_init_tool_cwd.py",
+    "-v"
+  ]
+}

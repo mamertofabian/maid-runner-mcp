@@ -128,8 +128,16 @@ class TestMaidTestBehavior:
 
     async def test_maid_test_returns_test_result(self):
         """Test that maid_test returns a TestResult-compatible dict."""
-        from unittest.mock import patch, MagicMock
+        from unittest.mock import patch, MagicMock, AsyncMock
         from maid_runner_mcp.tools.test import maid_test
+
+        # Create a mock context
+        mock_ctx = MagicMock()
+        mock_session = MagicMock()
+        mock_session.list_roots = AsyncMock(
+            return_value=MagicMock(roots=[MagicMock(uri="file:///tmp/test")])
+        )
+        mock_ctx.session = mock_session
 
         # Mock subprocess to avoid recursive test execution
         mock_result = MagicMock()
@@ -138,7 +146,7 @@ class TestMaidTestBehavior:
         mock_result.stderr = ""
 
         with patch("subprocess.run", return_value=mock_result):
-            result = await maid_test()
+            result = await maid_test(ctx=mock_ctx)
 
         # Result should have the required fields
         assert "success" in result, "Result should have 'success' field"
@@ -149,8 +157,16 @@ class TestMaidTestBehavior:
 
     async def test_maid_test_field_types(self):
         """Test that maid_test returns correctly typed fields."""
-        from unittest.mock import patch, MagicMock
+        from unittest.mock import patch, MagicMock, AsyncMock
         from maid_runner_mcp.tools.test import maid_test
+
+        # Create a mock context
+        mock_ctx = MagicMock()
+        mock_session = MagicMock()
+        mock_session.list_roots = AsyncMock(
+            return_value=MagicMock(roots=[MagicMock(uri="file:///tmp/test")])
+        )
+        mock_ctx.session = mock_session
 
         mock_result = MagicMock()
         mock_result.returncode = 0
@@ -158,7 +174,7 @@ class TestMaidTestBehavior:
         mock_result.stderr = ""
 
         with patch("subprocess.run", return_value=mock_result):
-            result = await maid_test()
+            result = await maid_test(ctx=mock_ctx)
 
         assert isinstance(result["success"], bool), "success should be bool"
         assert isinstance(result["total_manifests"], int), "total_manifests should be int"
@@ -168,8 +184,16 @@ class TestMaidTestBehavior:
 
     async def test_maid_test_with_nonexistent_manifest(self):
         """Test maid_test with a nonexistent manifest file."""
-        from unittest.mock import patch, MagicMock
+        from unittest.mock import patch, MagicMock, AsyncMock
         from maid_runner_mcp.tools.test import maid_test
+
+        # Create a mock context
+        mock_ctx = MagicMock()
+        mock_session = MagicMock()
+        mock_session.list_roots = AsyncMock(
+            return_value=MagicMock(roots=[MagicMock(uri="file:///tmp/test")])
+        )
+        mock_ctx.session = mock_session
 
         mock_result = MagicMock()
         mock_result.returncode = 1
@@ -177,7 +201,7 @@ class TestMaidTestBehavior:
         mock_result.stderr = "Manifest not found: nonexistent.json"
 
         with patch("subprocess.run", return_value=mock_result):
-            result = await maid_test(manifest="nonexistent.json")
+            result = await maid_test(ctx=mock_ctx, manifest="nonexistent.json")
 
         # Should handle gracefully with failure info
         assert "success" in result
@@ -186,8 +210,16 @@ class TestMaidTestBehavior:
 
     async def test_maid_test_with_nonexistent_directory(self):
         """Test maid_test with a nonexistent manifest directory."""
-        from unittest.mock import patch, MagicMock
+        from unittest.mock import patch, MagicMock, AsyncMock
         from maid_runner_mcp.tools.test import maid_test
+
+        # Create a mock context
+        mock_ctx = MagicMock()
+        mock_session = MagicMock()
+        mock_session.list_roots = AsyncMock(
+            return_value=MagicMock(roots=[MagicMock(uri="file:///tmp/test")])
+        )
+        mock_ctx.session = mock_session
 
         mock_result = MagicMock()
         mock_result.returncode = 1
@@ -195,7 +227,7 @@ class TestMaidTestBehavior:
         mock_result.stderr = "Directory not found"
 
         with patch("subprocess.run", return_value=mock_result):
-            result = await maid_test(manifest_dir="nonexistent_dir")
+            result = await maid_test(ctx=mock_ctx, manifest_dir="nonexistent_dir")
 
         # Should handle gracefully
         assert "success" in result
@@ -203,8 +235,16 @@ class TestMaidTestBehavior:
 
     async def test_maid_test_counts_are_consistent(self):
         """Test that passed + failed equals total_manifests."""
-        from unittest.mock import patch, MagicMock
+        from unittest.mock import patch, MagicMock, AsyncMock
         from maid_runner_mcp.tools.test import maid_test
+
+        # Create a mock context
+        mock_ctx = MagicMock()
+        mock_session = MagicMock()
+        mock_session.list_roots = AsyncMock(
+            return_value=MagicMock(roots=[MagicMock(uri="file:///tmp/test")])
+        )
+        mock_ctx.session = mock_session
 
         mock_result = MagicMock()
         mock_result.returncode = 0
@@ -212,7 +252,7 @@ class TestMaidTestBehavior:
         mock_result.stderr = ""
 
         with patch("subprocess.run", return_value=mock_result):
-            result = await maid_test()
+            result = await maid_test(ctx=mock_ctx)
 
         # The counts should be consistent
         total = result["total_manifests"]
@@ -225,8 +265,16 @@ class TestMaidTestBehavior:
 
     async def test_maid_test_failed_manifests_matches_failed_count(self):
         """Test that failed_manifests list length matches failed count."""
-        from unittest.mock import patch, MagicMock
+        from unittest.mock import patch, MagicMock, AsyncMock
         from maid_runner_mcp.tools.test import maid_test
+
+        # Create a mock context
+        mock_ctx = MagicMock()
+        mock_session = MagicMock()
+        mock_session.list_roots = AsyncMock(
+            return_value=MagicMock(roots=[MagicMock(uri="file:///tmp/test")])
+        )
+        mock_ctx.session = mock_session
 
         mock_result = MagicMock()
         mock_result.returncode = 0
@@ -234,7 +282,7 @@ class TestMaidTestBehavior:
         mock_result.stderr = ""
 
         with patch("subprocess.run", return_value=mock_result):
-            result = await maid_test()
+            result = await maid_test(ctx=mock_ctx)
 
         failed_count = result["failed"]
         failed_list = result["failed_manifests"]

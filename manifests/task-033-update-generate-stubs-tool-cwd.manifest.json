@@ -1,0 +1,37 @@
+{
+  "goal": "Update maid_generate_stubs tool to use working directory from MCP roots",
+  "taskType": "edit",
+  "supersedes": [],
+  "creatableFiles": [],
+  "editableFiles": [
+    "src/maid_runner_mcp/tools/generate_stubs.py"
+  ],
+  "readonlyFiles": [
+    "src/maid_runner_mcp/utils/roots.py"
+  ],
+  "expectedArtifacts": {
+    "file": "src/maid_runner_mcp/tools/generate_stubs.py",
+    "contains": [
+      {
+        "type": "function",
+        "name": "maid_generate_stubs",
+        "args": [
+          {
+            "name": "manifest_path",
+            "type": "str"
+          },
+          {
+            "name": "ctx",
+            "type": "Context"
+          }
+        ],
+        "returns": "GenerateStubsResult"
+      }
+    ]
+  },
+  "validationCommand": [
+    "pytest",
+    "tests/test_task_033_generate_stubs_tool_cwd.py",
+    "-v"
+  ]
+}

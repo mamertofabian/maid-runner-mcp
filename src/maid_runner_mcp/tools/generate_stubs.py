@@ -4,7 +4,10 @@ import asyncio
 import subprocess
 from typing import TypedDict
 
+from mcp.server.fastmcp import Context
+
 from maid_runner_mcp.server import mcp
+from maid_runner_mcp.utils.roots import get_working_directory
 
 
 class GenerateStubsResult(TypedDict):
@@ -24,7 +27,7 @@ class GenerateStubsResult(TypedDict):
 
 
 @mcp.tool()
-async def maid_generate_stubs(manifest_path: str) -> GenerateStubsResult:
+async def maid_generate_stubs(ctx: Context, manifest_path: str) -> GenerateStubsResult:
     """Generate test stubs from a manifest using MAID Runner.
 
     **When to use:**
@@ -44,11 +47,15 @@ async def maid_generate_stubs(manifest_path: str) -> GenerateStubsResult:
     - Test file is added to manifest's `readonlyFiles` automatically
 
     Args:
+        ctx: MCP context containing session and roots information
         manifest_path: Path to the manifest JSON file
 
     Returns:
         GenerateStubsResult with generation outcome
     """
+    # Get working directory from MCP roots
+    cwd = await get_working_directory(ctx)
+
     # Build command
     cmd = ["uv", "run", "maid", "generate-stubs", manifest_path]
 
@@ -56,7 +63,7 @@ async def maid_generate_stubs(manifest_path: str) -> GenerateStubsResult:
     loop = asyncio.get_event_loop()
     try:
         result = await loop.run_in_executor(
-            None, lambda: subprocess.run(cmd, capture_output=True, text=True)
+            None, lambda: subprocess.run(cmd, capture_output=True, text=True, cwd=cwd)
         )
 
         success = result.returncode == 0

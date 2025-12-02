@@ -5,8 +5,10 @@ import json
 import subprocess
 from typing import TypedDict
 
+from mcp.server.fastmcp import Context
 
 from maid_runner_mcp.server import mcp
+from maid_runner_mcp.utils.roots import get_working_directory
 
 
 class FileInfo(TypedDict):
@@ -41,6 +43,7 @@ class FileTrackingResult(TypedDict):
 
 @mcp.tool()
 async def maid_files(
+    ctx: Context,
     manifest_dir: str = "manifests",
     issues_only: bool = False,
     status: str | None = None,
@@ -70,6 +73,9 @@ async def maid_files(
     Returns:
         FileTrackingResult with categorized files
     """
+    # Get working directory from MCP roots
+    cwd = await get_working_directory(ctx)
+
     # Build command
     cmd = ["uv", "run", "maid", "files", "--manifest-dir", manifest_dir, "--json"]
 
@@ -83,7 +89,7 @@ async def maid_files(
     loop = asyncio.get_event_loop()
     try:
         result = await loop.run_in_executor(
-            None, lambda: subprocess.run(cmd, capture_output=True, text=True)
+            None, lambda: subprocess.run(cmd, capture_output=True, text=True, cwd=cwd)
         )
 
         # Check for errors

@@ -112,10 +112,20 @@ class TestMaidListManifestsBehavior:
 
     async def test_maid_list_manifests_returns_list_manifests_result(self):
         """Test that maid_list_manifests returns a ListManifestsResult-compatible dict."""
+        from unittest.mock import AsyncMock, MagicMock
+        from mcp.types import ListRootsResult, Root
+        from pydantic import FileUrl
         from maid_runner_mcp.tools.manifests import maid_list_manifests
 
+        # Create mock context
+        mock_ctx = MagicMock()
+        mock_ctx.session = AsyncMock()
+        mock_ctx.session.list_roots = AsyncMock(
+            return_value=ListRootsResult(roots=[Root(uri=FileUrl("file:///home/user/project"))])
+        )
+
         # Call with an existing file that is referenced by manifests
-        result = await maid_list_manifests(file_path="src/maid_runner_mcp/server.py")
+        result = await maid_list_manifests(file_path="src/maid_runner_mcp/server.py", ctx=mock_ctx)
 
         # Result should have all required fields
         assert "file_path" in result, "Result should have 'file_path' field"
@@ -126,9 +136,19 @@ class TestMaidListManifestsBehavior:
 
     async def test_maid_list_manifests_returns_correct_types(self):
         """Test that maid_list_manifests returns correct field types."""
+        from unittest.mock import AsyncMock, MagicMock
+        from mcp.types import ListRootsResult, Root
+        from pydantic import FileUrl
         from maid_runner_mcp.tools.manifests import maid_list_manifests
 
-        result = await maid_list_manifests(file_path="src/maid_runner_mcp/server.py")
+        # Create mock context
+        mock_ctx = MagicMock()
+        mock_ctx.session = AsyncMock()
+        mock_ctx.session.list_roots = AsyncMock(
+            return_value=ListRootsResult(roots=[Root(uri=FileUrl("file:///home/user/project"))])
+        )
+
+        result = await maid_list_manifests(file_path="src/maid_runner_mcp/server.py", ctx=mock_ctx)
 
         # Verify types match the output schema from Issue #89
         assert isinstance(result["file_path"], str), "file_path should be a string"
@@ -139,9 +159,21 @@ class TestMaidListManifestsBehavior:
 
     async def test_maid_list_manifests_finds_manifests_for_server(self):
         """Test that maid_list_manifests finds manifests for server.py."""
+        import os
+        from unittest.mock import AsyncMock, MagicMock
+        from mcp.types import ListRootsResult, Root
+        from pydantic import FileUrl
         from maid_runner_mcp.tools.manifests import maid_list_manifests
 
-        result = await maid_list_manifests(file_path="src/maid_runner_mcp/server.py")
+        # Create mock context with current directory
+        mock_ctx = MagicMock()
+        mock_ctx.session = AsyncMock()
+        cwd = os.getcwd()
+        mock_ctx.session.list_roots = AsyncMock(
+            return_value=ListRootsResult(roots=[Root(uri=FileUrl(f"file://{cwd}"))])
+        )
+
+        result = await maid_list_manifests(file_path="src/maid_runner_mcp/server.py", ctx=mock_ctx)
 
         # server.py should be referenced by at least one manifest
         assert (
@@ -155,10 +187,20 @@ class TestMaidListManifestsBehavior:
 
     async def test_maid_list_manifests_with_unreferenced_file(self):
         """Test that maid_list_manifests handles files not in any manifest."""
+        from unittest.mock import AsyncMock, MagicMock
+        from mcp.types import ListRootsResult, Root
+        from pydantic import FileUrl
         from maid_runner_mcp.tools.manifests import maid_list_manifests
 
+        # Create mock context
+        mock_ctx = MagicMock()
+        mock_ctx.session = AsyncMock()
+        mock_ctx.session.list_roots = AsyncMock(
+            return_value=ListRootsResult(roots=[Root(uri=FileUrl("file:///home/user/project"))])
+        )
+
         # Use a file that is not in any manifest (LICENSE is not tracked)
-        result = await maid_list_manifests(file_path="LICENSE")
+        result = await maid_list_manifests(file_path="LICENSE", ctx=mock_ctx)
 
         # Should return a valid result with empty lists
         assert result["total_manifests"] == 0, "LICENSE should not be in any manifest"
@@ -168,11 +210,21 @@ class TestMaidListManifestsBehavior:
 
     async def test_maid_list_manifests_custom_manifest_dir(self):
         """Test that maid_list_manifests accepts custom manifest_dir."""
+        from unittest.mock import AsyncMock, MagicMock
+        from mcp.types import ListRootsResult, Root
+        from pydantic import FileUrl
         from maid_runner_mcp.tools.manifests import maid_list_manifests
+
+        # Create mock context
+        mock_ctx = MagicMock()
+        mock_ctx.session = AsyncMock()
+        mock_ctx.session.list_roots = AsyncMock(
+            return_value=ListRootsResult(roots=[Root(uri=FileUrl("file:///home/user/project"))])
+        )
 
         # Use default manifest dir
         result = await maid_list_manifests(
-            file_path="src/maid_runner_mcp/server.py", manifest_dir="manifests"
+            file_path="src/maid_runner_mcp/server.py", ctx=mock_ctx, manifest_dir="manifests"
         )
 
         # Should work with explicit manifest_dir

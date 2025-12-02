@@ -8,7 +8,11 @@ rather than just checking existence.
 """
 
 import json
+import os
 import pytest
+from unittest.mock import AsyncMock, MagicMock
+from mcp.types import ListRootsResult, Root
+from pydantic import FileUrl
 
 
 class TestGetSystemSnapshotFunction:
@@ -37,13 +41,13 @@ class TestGetSystemSnapshotFunction:
             get_system_snapshot
         ), "get_system_snapshot should be an async function"
 
-    def test_get_system_snapshot_has_no_parameters(self):
-        """Test that get_system_snapshot accepts no parameters.
+    def test_get_system_snapshot_has_ctx_parameter(self):
+        """Test that get_system_snapshot has ctx parameter.
 
         The manifest specifies:
-        - args: []
+        - args: [{"name": "ctx", "type": "Context"}]
 
-        This is a resource that returns the system-wide snapshot without input.
+        Updated to use working directory from MCP roots.
         """
         import inspect
         from src.maid_runner_mcp.resources.snapshot import get_system_snapshot
@@ -51,7 +55,7 @@ class TestGetSystemSnapshotFunction:
         sig = inspect.signature(get_system_snapshot)
         params = sig.parameters
 
-        assert len(params) == 0, "get_system_snapshot should have no parameters"
+        assert "ctx" in params, "get_system_snapshot should have 'ctx' parameter"
 
     def test_get_system_snapshot_returns_string(self):
         """Test that get_system_snapshot return type is str.
@@ -80,7 +84,15 @@ class TestGetSystemSnapshotBehavior:
         """
         from src.maid_runner_mcp.resources.snapshot import get_system_snapshot
 
-        result = await get_system_snapshot()
+        # Create mock context
+        mock_ctx = MagicMock()
+        mock_ctx.session = AsyncMock()
+        cwd = os.getcwd()
+        mock_ctx.session.list_roots = AsyncMock(
+            return_value=ListRootsResult(roots=[Root(uri=FileUrl(f"file://{cwd}"))])
+        )
+
+        result = await get_system_snapshot(ctx=mock_ctx)
 
         # Result should be a string
         assert isinstance(result, str), "get_system_snapshot should return a string"
@@ -95,7 +107,15 @@ class TestGetSystemSnapshotBehavior:
         """
         from src.maid_runner_mcp.resources.snapshot import get_system_snapshot
 
-        result = await get_system_snapshot()
+        # Create mock context
+        mock_ctx = MagicMock()
+        mock_ctx.session = AsyncMock()
+        cwd = os.getcwd()
+        mock_ctx.session.list_roots = AsyncMock(
+            return_value=ListRootsResult(roots=[Root(uri=FileUrl(f"file://{cwd}"))])
+        )
+
+        result = await get_system_snapshot(ctx=mock_ctx)
 
         # Should be parseable as JSON
         snapshot_data = json.loads(result)
@@ -115,7 +135,15 @@ class TestGetSystemSnapshotBehavior:
         """
         from src.maid_runner_mcp.resources.snapshot import get_system_snapshot
 
-        result = await get_system_snapshot()
+        # Create mock context
+        mock_ctx = MagicMock()
+        mock_ctx.session = AsyncMock()
+        cwd = os.getcwd()
+        mock_ctx.session.list_roots = AsyncMock(
+            return_value=ListRootsResult(roots=[Root(uri=FileUrl(f"file://{cwd}"))])
+        )
+
+        result = await get_system_snapshot(ctx=mock_ctx)
         snapshot_data = json.loads(result)
 
         # Should have some content (not empty dict)
@@ -132,8 +160,16 @@ class TestGetSystemSnapshotBehavior:
         """
         from src.maid_runner_mcp.resources.snapshot import get_system_snapshot
 
-        result1 = await get_system_snapshot()
-        result2 = await get_system_snapshot()
+        # Create mock context
+        mock_ctx = MagicMock()
+        mock_ctx.session = AsyncMock()
+        cwd = os.getcwd()
+        mock_ctx.session.list_roots = AsyncMock(
+            return_value=ListRootsResult(roots=[Root(uri=FileUrl(f"file://{cwd}"))])
+        )
+
+        result1 = await get_system_snapshot(ctx=mock_ctx)
+        result2 = await get_system_snapshot(ctx=mock_ctx)
 
         # Both should be valid strings
         assert isinstance(result1, str), "First call should return string"
@@ -160,8 +196,16 @@ class TestGetSystemSnapshotBehavior:
         import subprocess
         from src.maid_runner_mcp.resources.snapshot import get_system_snapshot
 
+        # Create mock context
+        mock_ctx = MagicMock()
+        mock_ctx.session = AsyncMock()
+        cwd = os.getcwd()
+        mock_ctx.session.list_roots = AsyncMock(
+            return_value=ListRootsResult(roots=[Root(uri=FileUrl(f"file://{cwd}"))])
+        )
+
         # Get snapshot from resource
-        result = await get_system_snapshot()
+        result = await get_system_snapshot(ctx=mock_ctx)
         resource_snapshot = json.loads(result)
 
         # Verify it's a valid dictionary (basic format check)
@@ -170,7 +214,6 @@ class TestGetSystemSnapshotBehavior:
         # Try to get snapshot from MAID CLI for comparison
         try:
             import tempfile
-            import os
 
             # Use temp file to avoid creating system.manifest.json in project root
             with tempfile.TemporaryDirectory() as tmpdir:
@@ -198,7 +241,15 @@ class TestGetSystemSnapshotBehavior:
         """
         from src.maid_runner_mcp.resources.snapshot import get_system_snapshot
 
-        result = await get_system_snapshot()
+        # Create mock context
+        mock_ctx = MagicMock()
+        mock_ctx.session = AsyncMock()
+        cwd = os.getcwd()
+        mock_ctx.session.list_roots = AsyncMock(
+            return_value=ListRootsResult(roots=[Root(uri=FileUrl(f"file://{cwd}"))])
+        )
+
+        result = await get_system_snapshot(ctx=mock_ctx)
         snapshot_data = json.loads(result)
 
         # Should be a dictionary with content
@@ -216,8 +267,16 @@ class TestGetSystemSnapshotBehavior:
         """
         from src.maid_runner_mcp.resources.snapshot import get_system_snapshot
 
+        # Create mock context
+        mock_ctx = MagicMock()
+        mock_ctx.session = AsyncMock()
+        cwd = os.getcwd()
+        mock_ctx.session.list_roots = AsyncMock(
+            return_value=ListRootsResult(roots=[Root(uri=FileUrl(f"file://{cwd}"))])
+        )
+
         # Call the function
-        result = await get_system_snapshot()
+        result = await get_system_snapshot(ctx=mock_ctx)
 
         # Should still return valid JSON
         snapshot_data = json.loads(result)
@@ -236,10 +295,18 @@ class TestGetSystemSnapshotBehavior:
         """
         from src.maid_runner_mcp.resources.snapshot import get_system_snapshot
 
+        # Create mock context
+        mock_ctx = MagicMock()
+        mock_ctx.session = AsyncMock()
+        cwd = os.getcwd()
+        mock_ctx.session.list_roots = AsyncMock(
+            return_value=ListRootsResult(roots=[Root(uri=FileUrl(f"file://{cwd}"))])
+        )
+
         # This test verifies the function can be called
         # Error handling behavior will depend on implementation
         try:
-            result = await get_system_snapshot()
+            result = await get_system_snapshot(ctx=mock_ctx)
 
             # If successful, verify it's valid
             assert isinstance(result, str), "Should return string"
@@ -262,6 +329,14 @@ class TestResourceDecorator:
         """
         import asyncio
         from src.maid_runner_mcp.resources.snapshot import get_system_snapshot
+
+        # Create mock context
+        mock_ctx = MagicMock()
+        mock_ctx.session = AsyncMock()
+        cwd = os.getcwd()
+        mock_ctx.session.list_roots = AsyncMock(
+            return_value=ListRootsResult(roots=[Root(uri=FileUrl(f"file://{cwd}"))])
+        )
 
         # Check if function has MCP resource metadata
         # FastMCP decorators typically add attributes or wrap the function
@@ -295,10 +370,18 @@ class TestCachingBehavior:
         """
         from src.maid_runner_mcp.resources.snapshot import get_system_snapshot
 
+        # Create mock context
+        mock_ctx = MagicMock()
+        mock_ctx.session = AsyncMock()
+        cwd = os.getcwd()
+        mock_ctx.session.list_roots = AsyncMock(
+            return_value=ListRootsResult(roots=[Root(uri=FileUrl(f"file://{cwd}"))])
+        )
+
         # Call multiple times in quick succession
-        result1 = await get_system_snapshot()
-        result2 = await get_system_snapshot()
-        result3 = await get_system_snapshot()
+        result1 = await get_system_snapshot(ctx=mock_ctx)
+        result2 = await get_system_snapshot(ctx=mock_ctx)
+        result3 = await get_system_snapshot(ctx=mock_ctx)
 
         # All should return valid results
         for result in [result1, result2, result3]:
@@ -336,8 +419,16 @@ class TestIntegrationWithSnapshotTool:
         """
         from src.maid_runner_mcp.resources.snapshot import get_system_snapshot
 
+        # Create mock context
+        mock_ctx = MagicMock()
+        mock_ctx.session = AsyncMock()
+        cwd = os.getcwd()
+        mock_ctx.session.list_roots = AsyncMock(
+            return_value=ListRootsResult(roots=[Root(uri=FileUrl(f"file://{cwd}"))])
+        )
+
         # Call the resource
-        result = await get_system_snapshot()
+        result = await get_system_snapshot(ctx=mock_ctx)
 
         # Verify it returns valid snapshot data
         assert isinstance(result, str), "Should return string"
@@ -352,11 +443,19 @@ class TestIntegrationWithSnapshotTool:
         import asyncio
         from src.maid_runner_mcp.resources.snapshot import get_system_snapshot
 
+        # Create mock context
+        mock_ctx = MagicMock()
+        mock_ctx.session = AsyncMock()
+        cwd = os.getcwd()
+        mock_ctx.session.list_roots = AsyncMock(
+            return_value=ListRootsResult(roots=[Root(uri=FileUrl(f"file://{cwd}"))])
+        )
+
         # Make multiple concurrent calls
         results = await asyncio.gather(
-            get_system_snapshot(),
-            get_system_snapshot(),
-            get_system_snapshot(),
+            get_system_snapshot(ctx=mock_ctx),
+            get_system_snapshot(ctx=mock_ctx),
+            get_system_snapshot(ctx=mock_ctx),
             return_exceptions=True,
         )
 

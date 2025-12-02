@@ -10,7 +10,11 @@ Tests follow MAID behavioral testing pattern - they USE the artifacts
 rather than just checking existence.
 """
 
+import os
 import pytest
+from unittest.mock import AsyncMock, MagicMock
+from mcp.types import ListRootsResult, Root
+from pydantic import FileUrl
 
 
 class TestInitResult:
@@ -133,19 +137,19 @@ class TestMaidGetSchemaFunction:
             maid_get_schema
         ), "maid_get_schema should be an async function"
 
-    def test_maid_get_schema_has_no_required_parameters(self):
-        """Test that maid_get_schema has no required parameters."""
+    def test_maid_get_schema_has_ctx_parameter(self):
+        """Test that maid_get_schema has ctx parameter.
+
+        Updated to use working directory from MCP roots (Task 031).
+        """
         import inspect
         from maid_runner_mcp.tools.schema import maid_get_schema
 
         sig = inspect.signature(maid_get_schema)
         params = sig.parameters
 
-        # All parameters (if any) should have defaults
-        for param_name, param in params.items():
-            assert (
-                param.default is not inspect.Parameter.empty
-            ), f"Parameter '{param_name}' should have a default value"
+        # Should have ctx parameter (required, no default)
+        assert "ctx" in params, "maid_get_schema should have 'ctx' parameter"
 
 
 @pytest.mark.asyncio
@@ -157,9 +161,17 @@ class TestMaidInitBehavior:
         import tempfile
         from maid_runner_mcp.tools.init import maid_init
 
+        # Create mock context
+        mock_ctx = MagicMock()
+        mock_ctx.session = AsyncMock()
+        cwd = os.getcwd()
+        mock_ctx.session.list_roots = AsyncMock(
+            return_value=ListRootsResult(roots=[Root(uri=FileUrl(f"file://{cwd}"))])
+        )
+
         # Use a temporary directory to avoid overwriting project files
         with tempfile.TemporaryDirectory() as tmpdir:
-            result = await maid_init(target_dir=tmpdir)
+            result = await maid_init(ctx=mock_ctx, target_dir=tmpdir)
 
             # Result should have the required fields
             assert "success" in result, "Result should have 'success' field"
@@ -170,8 +182,16 @@ class TestMaidInitBehavior:
         """Test that maid_init handles nonexistent directories."""
         from maid_runner_mcp.tools.init import maid_init
 
+        # Create mock context
+        mock_ctx = MagicMock()
+        mock_ctx.session = AsyncMock()
+        cwd = os.getcwd()
+        mock_ctx.session.list_roots = AsyncMock(
+            return_value=ListRootsResult(roots=[Root(uri=FileUrl(f"file://{cwd}"))])
+        )
+
         # Call with a nonexistent directory
-        result = await maid_init(target_dir="/nonexistent/path/that/does/not/exist")
+        result = await maid_init(ctx=mock_ctx, target_dir="/nonexistent/path/that/does/not/exist")
 
         # Should return with errors
         assert isinstance(result["errors"], list), "errors should be a list"
@@ -185,8 +205,16 @@ class TestMaidGetSchemaBehavior:
         """Test that maid_get_schema returns a SchemaResult-compatible dict."""
         from maid_runner_mcp.tools.schema import maid_get_schema
 
-        # Call with no parameters
-        result = await maid_get_schema()
+        # Create mock context
+        mock_ctx = MagicMock()
+        mock_ctx.session = AsyncMock()
+        cwd = os.getcwd()
+        mock_ctx.session.list_roots = AsyncMock(
+            return_value=ListRootsResult(roots=[Root(uri=FileUrl(f"file://{cwd}"))])
+        )
+
+        # Call with ctx parameter
+        result = await maid_get_schema(ctx=mock_ctx)
 
         # Result should have the schema field
         assert "schema" in result, "Result should have 'schema' field"
@@ -195,7 +223,15 @@ class TestMaidGetSchemaBehavior:
         """Test that maid_get_schema returns a valid JSON schema object."""
         from maid_runner_mcp.tools.schema import maid_get_schema
 
-        result = await maid_get_schema()
+        # Create mock context
+        mock_ctx = MagicMock()
+        mock_ctx.session = AsyncMock()
+        cwd = os.getcwd()
+        mock_ctx.session.list_roots = AsyncMock(
+            return_value=ListRootsResult(roots=[Root(uri=FileUrl(f"file://{cwd}"))])
+        )
+
+        result = await maid_get_schema(ctx=mock_ctx)
 
         # Schema should be a dict with standard JSON schema fields
         schema = result["schema"]

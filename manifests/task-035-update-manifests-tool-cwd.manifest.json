@@ -1,0 +1,41 @@
+{
+  "goal": "Update maid_list_manifests tool to use working directory from MCP roots",
+  "taskType": "edit",
+  "supersedes": [],
+  "creatableFiles": [],
+  "editableFiles": [
+    "src/maid_runner_mcp/tools/manifests.py"
+  ],
+  "readonlyFiles": [
+    "src/maid_runner_mcp/utils/roots.py"
+  ],
+  "expectedArtifacts": {
+    "file": "src/maid_runner_mcp/tools/manifests.py",
+    "contains": [
+      {
+        "type": "function",
+        "name": "maid_list_manifests",
+        "args": [
+          {
+            "name": "file_path",
+            "type": "str"
+          },
+          {
+            "name": "manifest_dir",
+            "type": "str"
+          },
+          {
+            "name": "ctx",
+            "type": "Context"
+          }
+        ],
+        "returns": "ListManifestsResult"
+      }
+    ]
+  },
+  "validationCommand": [
+    "pytest",
+    "tests/test_task_035_manifests_tool_cwd.py",
+    "-v"
+  ]
+}

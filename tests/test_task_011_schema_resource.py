@@ -8,7 +8,11 @@ rather than just checking existence.
 """
 
 import json
+import os
 import pytest
+from unittest.mock import AsyncMock, MagicMock
+from mcp.types import ListRootsResult, Root
+from pydantic import FileUrl
 
 
 class TestGetManifestSchemaFunction:
@@ -37,13 +41,13 @@ class TestGetManifestSchemaFunction:
             get_manifest_schema
         ), "get_manifest_schema should be an async function"
 
-    def test_get_manifest_schema_has_no_parameters(self):
-        """Test that get_manifest_schema accepts no parameters.
+    def test_get_manifest_schema_has_ctx_parameter(self):
+        """Test that get_manifest_schema has ctx parameter.
 
         The manifest specifies:
-        - args: []
+        - args: [{"name": "ctx", "type": "Context"}]
 
-        This is a static resource that returns the schema without input.
+        Updated to use working directory from MCP roots.
         """
         import inspect
         from src.maid_runner_mcp.resources.schema import get_manifest_schema
@@ -51,7 +55,7 @@ class TestGetManifestSchemaFunction:
         sig = inspect.signature(get_manifest_schema)
         params = sig.parameters
 
-        assert len(params) == 0, "get_manifest_schema should have no parameters"
+        assert "ctx" in params, "get_manifest_schema should have 'ctx' parameter"
 
     def test_get_manifest_schema_returns_string(self):
         """Test that get_manifest_schema return type is str.
@@ -80,7 +84,15 @@ class TestGetManifestSchemaBehavior:
         """
         from src.maid_runner_mcp.resources.schema import get_manifest_schema
 
-        result = await get_manifest_schema()
+        # Create mock context
+        mock_ctx = MagicMock()
+        mock_ctx.session = AsyncMock()
+        cwd = os.getcwd()
+        mock_ctx.session.list_roots = AsyncMock(
+            return_value=ListRootsResult(roots=[Root(uri=FileUrl(f"file://{cwd}"))])
+        )
+
+        result = await get_manifest_schema(ctx=mock_ctx)
 
         # Result should be a string
         assert isinstance(result, str), "get_manifest_schema should return a string"
@@ -95,7 +107,15 @@ class TestGetManifestSchemaBehavior:
         """
         from src.maid_runner_mcp.resources.schema import get_manifest_schema
 
-        result = await get_manifest_schema()
+        # Create mock context
+        mock_ctx = MagicMock()
+        mock_ctx.session = AsyncMock()
+        cwd = os.getcwd()
+        mock_ctx.session.list_roots = AsyncMock(
+            return_value=ListRootsResult(roots=[Root(uri=FileUrl(f"file://{cwd}"))])
+        )
+
+        result = await get_manifest_schema(ctx=mock_ctx)
 
         # Should be parseable as JSON
         schema_data = json.loads(result)
@@ -115,7 +135,15 @@ class TestGetManifestSchemaBehavior:
         """
         from src.maid_runner_mcp.resources.schema import get_manifest_schema
 
-        result = await get_manifest_schema()
+        # Create mock context
+        mock_ctx = MagicMock()
+        mock_ctx.session = AsyncMock()
+        cwd = os.getcwd()
+        mock_ctx.session.list_roots = AsyncMock(
+            return_value=ListRootsResult(roots=[Root(uri=FileUrl(f"file://{cwd}"))])
+        )
+
+        result = await get_manifest_schema(ctx=mock_ctx)
         schema_data = json.loads(result)
 
         # Check for common JSON Schema fields
@@ -140,7 +168,15 @@ class TestGetManifestSchemaBehavior:
         """
         from src.maid_runner_mcp.resources.schema import get_manifest_schema
 
-        result = await get_manifest_schema()
+        # Create mock context
+        mock_ctx = MagicMock()
+        mock_ctx.session = AsyncMock()
+        cwd = os.getcwd()
+        mock_ctx.session.list_roots = AsyncMock(
+            return_value=ListRootsResult(roots=[Root(uri=FileUrl(f"file://{cwd}"))])
+        )
+
+        result = await get_manifest_schema(ctx=mock_ctx)
         schema_data = json.loads(result)
 
         # Get properties from schema
@@ -163,8 +199,16 @@ class TestGetManifestSchemaBehavior:
         """
         from src.maid_runner_mcp.resources.schema import get_manifest_schema
 
-        result1 = await get_manifest_schema()
-        result2 = await get_manifest_schema()
+        # Create mock context
+        mock_ctx = MagicMock()
+        mock_ctx.session = AsyncMock()
+        cwd = os.getcwd()
+        mock_ctx.session.list_roots = AsyncMock(
+            return_value=ListRootsResult(roots=[Root(uri=FileUrl(f"file://{cwd}"))])
+        )
+
+        result1 = await get_manifest_schema(ctx=mock_ctx)
+        result2 = await get_manifest_schema(ctx=mock_ctx)
 
         # Parse both as JSON and compare
         schema1 = json.loads(result1)
@@ -180,8 +224,16 @@ class TestGetManifestSchemaBehavior:
         import subprocess
         from src.maid_runner_mcp.resources.schema import get_manifest_schema
 
+        # Create mock context
+        mock_ctx = MagicMock()
+        mock_ctx.session = AsyncMock()
+        cwd = os.getcwd()
+        mock_ctx.session.list_roots = AsyncMock(
+            return_value=ListRootsResult(roots=[Root(uri=FileUrl(f"file://{cwd}"))])
+        )
+
         # Get schema from resource
-        result = await get_manifest_schema()
+        result = await get_manifest_schema(ctx=mock_ctx)
         resource_schema = json.loads(result)
 
         # Get schema from MAID CLI
@@ -210,8 +262,16 @@ class TestGetManifestSchemaBehavior:
         import subprocess
         from src.maid_runner_mcp.resources.schema import get_manifest_schema
 
+        # Create mock context
+        mock_ctx = MagicMock()
+        mock_ctx.session = AsyncMock()
+        cwd = os.getcwd()
+        mock_ctx.session.list_roots = AsyncMock(
+            return_value=ListRootsResult(roots=[Root(uri=FileUrl(f"file://{cwd}"))])
+        )
+
         # Get schema
-        schema_str = await get_manifest_schema()
+        schema_str = await get_manifest_schema(ctx=mock_ctx)
         schema_data = json.loads(schema_str)
 
         # Try to import jsonschema (skip if not available)

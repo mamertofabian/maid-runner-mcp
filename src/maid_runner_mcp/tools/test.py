@@ -5,7 +5,10 @@ import re
 import subprocess
 from typing import TypedDict
 
+from mcp.server.fastmcp import Context
+
 from maid_runner_mcp.server import mcp
+from maid_runner_mcp.utils.roots import get_working_directory
 
 
 class TestResult(TypedDict):
@@ -28,6 +31,7 @@ class TestResult(TypedDict):
 
 @mcp.tool()
 async def maid_test(
+    ctx: Context,
     manifest_dir: str = "manifests",
     manifest: str | None = None,
     fail_fast: bool = False,
@@ -51,6 +55,7 @@ async def maid_test(
     - Increase `timeout` for slow-running test suites
 
     Args:
+        ctx: MCP context for accessing working directory
         manifest_dir: Directory containing manifests (default: "manifests")
         manifest: Specific manifest file to test (optional, tests all if None)
         fail_fast: Stop on first failure (default: False)
@@ -75,9 +80,10 @@ async def maid_test(
     # Run in thread pool to avoid blocking
     loop = asyncio.get_event_loop()
     try:
+        cwd = await get_working_directory(ctx)
         result = await loop.run_in_executor(
             None,
-            lambda: subprocess.run(cmd, capture_output=True, text=True, timeout=timeout),
+            lambda: subprocess.run(cmd, capture_output=True, text=True, timeout=timeout, cwd=cwd),
         )
 
         # Parse output to extract results

@@ -3,14 +3,20 @@
 import asyncio
 import subprocess
 
+from mcp.server.fastmcp import Context
+
 from maid_runner_mcp.server import mcp
+from maid_runner_mcp.utils.roots import get_working_directory
 
 
 @mcp.resource("schema://manifest")
-async def get_manifest_schema() -> str:
+async def get_manifest_schema(ctx: Context) -> str:
     """MCP resource handler for accessing the MAID manifest JSON schema.
 
     Provides read-only access to the manifest schema by calling the MAID CLI.
+
+    Args:
+        ctx: MCP context containing session information (roots)
 
     Returns:
         str: The manifest schema as a JSON string
@@ -18,6 +24,9 @@ async def get_manifest_schema() -> str:
     Raises:
         RuntimeError: If schema retrieval fails
     """
+    # Get working directory from MCP roots
+    cwd = await get_working_directory(ctx)
+
     # Build command
     cmd = ["uv", "run", "maid", "schema"]
 
@@ -25,7 +34,7 @@ async def get_manifest_schema() -> str:
     loop = asyncio.get_event_loop()
     try:
         result = await loop.run_in_executor(
-            None, lambda: subprocess.run(cmd, capture_output=True, text=True)
+            None, lambda: subprocess.run(cmd, capture_output=True, text=True, cwd=cwd)
         )
 
         if result.returncode == 0:

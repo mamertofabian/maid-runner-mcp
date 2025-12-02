@@ -1,0 +1,45 @@
+{
+  "goal": "Update maid_snapshot_system tool to use working directory from MCP roots",
+  "taskType": "edit",
+  "supersedes": [],
+  "creatableFiles": [],
+  "editableFiles": [
+    "src/maid_runner_mcp/tools/snapshot_system.py"
+  ],
+  "readonlyFiles": [
+    "src/maid_runner_mcp/utils/roots.py"
+  ],
+  "expectedArtifacts": {
+    "file": "src/maid_runner_mcp/tools/snapshot_system.py",
+    "contains": [
+      {
+        "type": "function",
+        "name": "maid_snapshot_system",
+        "args": [
+          {
+            "name": "output",
+            "type": "str"
+          },
+          {
+            "name": "manifest_dir",
+            "type": "str"
+          },
+          {
+            "name": "quiet",
+            "type": "bool"
+          },
+          {
+            "name": "ctx",
+            "type": "Context"
+          }
+        ],
+        "returns": "SystemSnapshotResult"
+      }
+    ]
+  },
+  "validationCommand": [
+    "pytest",
+    "tests/test_task_030_snapshot_system_tool_cwd.py",
+    "-v"
+  ]
+}

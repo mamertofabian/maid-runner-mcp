@@ -1,0 +1,33 @@
+{
+  "goal": "Update snapshot resource to use working directory from MCP roots",
+  "taskType": "edit",
+  "supersedes": [],
+  "creatableFiles": [],
+  "editableFiles": [
+    "src/maid_runner_mcp/resources/snapshot.py"
+  ],
+  "readonlyFiles": [
+    "src/maid_runner_mcp/utils/roots.py"
+  ],
+  "expectedArtifacts": {
+    "file": "src/maid_runner_mcp/resources/snapshot.py",
+    "contains": [
+      {
+        "type": "function",
+        "name": "get_system_snapshot",
+        "args": [
+          {
+            "name": "ctx",
+            "type": "Context"
+          }
+        ],
+        "returns": "str"
+      }
+    ]
+  },
+  "validationCommand": [
+    "pytest",
+    "tests/test_task_036_snapshot_resource_cwd.py",
+    "-v"
+  ]
+}

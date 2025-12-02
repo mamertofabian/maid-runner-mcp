@@ -1,0 +1,38 @@
+{
+  "goal": "Update maid_get_schema tool to use working directory from MCP roots",
+  "taskType": "edit",
+  "supersedes": [],
+  "creatableFiles": [],
+  "editableFiles": [
+    "src/maid_runner_mcp/tools/schema.py"
+  ],
+  "readonlyFiles": [
+    "src/maid_runner_mcp/utils/roots.py"
+  ],
+  "expectedArtifacts": {
+    "file": "src/maid_runner_mcp/tools/schema.py",
+    "contains": [
+      {
+        "type": "class",
+        "name": "SchemaResult",
+        "description": "TypedDict for schema results with fields: success, schema, errors"
+      },
+      {
+        "type": "function",
+        "name": "maid_get_schema",
+        "args": [
+          {
+            "name": "ctx",
+            "type": "Context"
+          }
+        ],
+        "returns": "SchemaResult"
+      }
+    ]
+  },
+  "validationCommand": [
+    "pytest",
+    "tests/test_task_031_schema_tool_cwd.py",
+    "-v"
+  ]
+}

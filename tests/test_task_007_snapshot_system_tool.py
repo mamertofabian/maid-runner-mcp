@@ -8,7 +8,11 @@ Tests follow MAID behavioral testing pattern - they USE the artifacts
 rather than just checking existence.
 """
 
+import os
 import pytest
+from unittest.mock import AsyncMock, MagicMock
+from mcp.types import ListRootsResult, Root
+from pydantic import FileUrl
 
 
 class TestSystemSnapshotResult:
@@ -132,10 +136,18 @@ class TestMaidSnapshotSystemBehavior:
         import os
         from maid_runner_mcp.tools.snapshot_system import maid_snapshot_system
 
+        # Create mock context
+        mock_ctx = MagicMock()
+        mock_ctx.session = AsyncMock()
+        cwd = os.getcwd()
+        mock_ctx.session.list_roots = AsyncMock(
+            return_value=ListRootsResult(roots=[Root(uri=FileUrl(f"file://{cwd}"))])
+        )
+
         # Use temporary directory to avoid creating files in current directory
         with tempfile.TemporaryDirectory() as tmpdir:
             output_path = os.path.join(tmpdir, "system.manifest.json")
-            result = await maid_snapshot_system(output=output_path)
+            result = await maid_snapshot_system(ctx=mock_ctx, output=output_path)
 
             # Result should have the required fields
             assert "success" in result, "Result should have 'success' field"
@@ -148,12 +160,20 @@ class TestMaidSnapshotSystemBehavior:
         import os
         from maid_runner_mcp.tools.snapshot_system import maid_snapshot_system
 
+        # Create mock context
+        mock_ctx = MagicMock()
+        mock_ctx.session = AsyncMock()
+        cwd = os.getcwd()
+        mock_ctx.session.list_roots = AsyncMock(
+            return_value=ListRootsResult(roots=[Root(uri=FileUrl(f"file://{cwd}"))])
+        )
+
         # Use a temporary directory for output
         with tempfile.TemporaryDirectory() as tmpdir:
             output_path = os.path.join(tmpdir, "test-system.manifest.json")
 
             result = await maid_snapshot_system(
-                output=output_path, manifest_dir="manifests", quiet=True
+                ctx=mock_ctx, output=output_path, manifest_dir="manifests", quiet=True
             )
 
             # Result should have proper structure
@@ -166,8 +186,18 @@ class TestMaidSnapshotSystemBehavior:
         """Test that maid_snapshot_system handles errors gracefully."""
         from maid_runner_mcp.tools.snapshot_system import maid_snapshot_system
 
+        # Create mock context
+        mock_ctx = MagicMock()
+        mock_ctx.session = AsyncMock()
+        cwd = os.getcwd()
+        mock_ctx.session.list_roots = AsyncMock(
+            return_value=ListRootsResult(roots=[Root(uri=FileUrl(f"file://{cwd}"))])
+        )
+
         # Call with an invalid manifest directory
-        result = await maid_snapshot_system(manifest_dir="/nonexistent/manifests/directory")
+        result = await maid_snapshot_system(
+            ctx=mock_ctx, manifest_dir="/nonexistent/manifests/directory"
+        )
 
         # Should return with errors field populated
         assert "errors" in result
@@ -179,10 +209,18 @@ class TestMaidSnapshotSystemBehavior:
         import os
         from maid_runner_mcp.tools.snapshot_system import maid_snapshot_system
 
+        # Create mock context
+        mock_ctx = MagicMock()
+        mock_ctx.session = AsyncMock()
+        cwd = os.getcwd()
+        mock_ctx.session.list_roots = AsyncMock(
+            return_value=ListRootsResult(roots=[Root(uri=FileUrl(f"file://{cwd}"))])
+        )
+
         with tempfile.TemporaryDirectory() as tmpdir:
             custom_output = os.path.join(tmpdir, "custom-system.manifest.json")
 
-            result = await maid_snapshot_system(output=custom_output)
+            result = await maid_snapshot_system(ctx=mock_ctx, output=custom_output)
 
             # Result should include the output path
             assert "output_path" in result

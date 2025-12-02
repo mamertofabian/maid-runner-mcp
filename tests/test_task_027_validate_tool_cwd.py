@@ -59,9 +59,7 @@ class TestMaidValidateSignature:
         import inspect
 
         source = inspect.getsource(validate_module.maid_validate)
-        assert (
-            "get_working_directory" in source
-        ), "maid_validate should call get_working_directory"
+        assert "get_working_directory" in source, "maid_validate should call get_working_directory"
 
 
 @pytest.mark.asyncio

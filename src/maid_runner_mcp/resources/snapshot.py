@@ -5,8 +5,11 @@ import subprocess
 import tempfile
 from pathlib import Path
 
+from mcp.server.fastmcp import Context
+
 from maid_runner_mcp.server import mcp
 from maid_runner_mcp.utils.cache import TTLCache
+from maid_runner_mcp.utils.roots import get_working_directory
 
 
 # TTL cache for system snapshot (5 minutes)
@@ -14,11 +17,14 @@ _snapshot_cache: TTLCache[str] = TTLCache(ttl_seconds=300)
 
 
 @mcp.resource("snapshot://system")
-async def get_system_snapshot() -> str:
+async def get_system_snapshot(ctx: Context) -> str:
     """MCP resource handler for accessing the system-wide manifest snapshot.
 
     Provides read-only access to the system-wide snapshot by calling MAID CLI.
     Results are cached for 5 minutes to reduce CLI overhead.
+
+    Args:
+        ctx: MCP context for accessing session roots
 
     Returns:
         str: The system snapshot as a JSON string
@@ -31,6 +37,9 @@ async def get_system_snapshot() -> str:
     cached = _snapshot_cache.get(cache_key)
     if cached is not None:
         return cached
+
+    # Get working directory from MCP context
+    cwd = await get_working_directory(ctx)
 
     # Create temporary file for snapshot output
     with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as tmp:
@@ -51,7 +60,7 @@ async def get_system_snapshot() -> str:
         # Run in thread pool to avoid blocking
         loop = asyncio.get_event_loop()
         result = await loop.run_in_executor(
-            None, lambda: subprocess.run(cmd, capture_output=True, text=True)
+            None, lambda: subprocess.run(cmd, capture_output=True, text=True, cwd=cwd)
         )
 
         if result.returncode == 0:

@@ -8,7 +8,11 @@ Tests follow MAID behavioral testing pattern - they USE the artifacts
 rather than just checking existence.
 """
 
+import os
 import pytest
+from unittest.mock import AsyncMock, MagicMock
+from mcp.types import ListRootsResult, Root
+from pydantic import FileUrl
 
 
 class TestGenerateStubsResult:
@@ -100,10 +104,18 @@ class TestMaidGenerateStubsBehavior:
         """Test that maid_generate_stubs returns a GenerateStubsResult-compatible dict."""
         from maid_runner_mcp.tools.generate_stubs import maid_generate_stubs
 
+        # Create mock context
+        mock_ctx = MagicMock()
+        mock_ctx.session = AsyncMock()
+        cwd = os.getcwd()
+        mock_ctx.session.list_roots = AsyncMock(
+            return_value=ListRootsResult(roots=[Root(uri=FileUrl(f"file://{cwd}"))])
+        )
+
         # Test with non-existent manifest to check structure without creating files
         manifest_path = "/tmp/nonexistent-test.manifest.json"
 
-        result = await maid_generate_stubs(manifest_path)
+        result = await maid_generate_stubs(manifest_path=manifest_path, ctx=mock_ctx)
 
         # Result should have the required fields even on failure
         assert "success" in result, "Result should have 'success' field"
@@ -115,10 +127,18 @@ class TestMaidGenerateStubsBehavior:
         """Test that maid_generate_stubs returns correct types for all fields."""
         from maid_runner_mcp.tools.generate_stubs import maid_generate_stubs
 
+        # Create mock context
+        mock_ctx = MagicMock()
+        mock_ctx.session = AsyncMock()
+        cwd = os.getcwd()
+        mock_ctx.session.list_roots = AsyncMock(
+            return_value=ListRootsResult(roots=[Root(uri=FileUrl(f"file://{cwd}"))])
+        )
+
         # Test with non-existent manifest - focuses on structure not side effects
         manifest_path = "/tmp/test-missing.manifest.json"
 
-        result = await maid_generate_stubs(manifest_path)
+        result = await maid_generate_stubs(manifest_path=manifest_path, ctx=mock_ctx)
 
         # Should have correct types regardless of success
         assert isinstance(result["success"], bool), "success should be a bool"
@@ -130,9 +150,17 @@ class TestMaidGenerateStubsBehavior:
         """Test stub generation with non-existent manifest file."""
         from maid_runner_mcp.tools.generate_stubs import maid_generate_stubs
 
+        # Create mock context
+        mock_ctx = MagicMock()
+        mock_ctx.session = AsyncMock()
+        cwd = os.getcwd()
+        mock_ctx.session.list_roots = AsyncMock(
+            return_value=ListRootsResult(roots=[Root(uri=FileUrl(f"file://{cwd}"))])
+        )
+
         manifest_path = "manifests/nonexistent.manifest.json"
 
-        result = await maid_generate_stubs(manifest_path)
+        result = await maid_generate_stubs(manifest_path=manifest_path, ctx=mock_ctx)
 
         # Should return with errors
         assert isinstance(result["errors"], list), "errors should be a list"

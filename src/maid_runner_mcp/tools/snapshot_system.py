@@ -4,7 +4,10 @@ import asyncio
 import subprocess
 from typing import TypedDict
 
+from mcp.server.fastmcp import Context
+
 from maid_runner_mcp.server import mcp
+from maid_runner_mcp.utils.roots import get_working_directory
 
 
 class SystemSnapshotResult(TypedDict):
@@ -23,6 +26,7 @@ class SystemSnapshotResult(TypedDict):
 
 @mcp.tool()
 async def maid_snapshot_system(
+    ctx: Context,
     output: str = "system.manifest.json",
     manifest_dir: str = "manifests",
     quiet: bool = True,
@@ -52,6 +56,9 @@ async def maid_snapshot_system(
     Returns:
         SystemSnapshotResult with generation outcome
     """
+    # Get working directory from MCP roots
+    cwd = await get_working_directory(ctx)
+
     # Build command
     cmd = ["uv", "run", "maid", "snapshot-system"]
 
@@ -65,7 +72,7 @@ async def maid_snapshot_system(
     loop = asyncio.get_event_loop()
     try:
         result = await loop.run_in_executor(
-            None, lambda: subprocess.run(cmd, capture_output=True, text=True)
+            None, lambda: subprocess.run(cmd, capture_output=True, text=True, cwd=cwd)
         )
 
         success = result.returncode == 0

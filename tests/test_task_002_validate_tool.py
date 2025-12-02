@@ -186,8 +186,7 @@ class TestMaidValidateBehavior:
 
         # Use the existing task-001 manifest which should be valid
         result = await maid_validate(
-            manifest_path="manifests/task-001-mcp-server-core.manifest.json",
-            ctx=mock_ctx
+            manifest_path="manifests/task-001-mcp-server-core.manifest.json", ctx=mock_ctx
         )
 
         # Result should have proper structure regardless of success
