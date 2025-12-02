@@ -1,0 +1,31 @@
+{
+  "version": "1",
+  "goal": "Add MAID methodology instructions to the MCP server to help AI tools understand how to use the tools effectively",
+  "description": "The MCP specification supports an 'instructions' parameter that provides guidance to AI clients on how to use the server's tools. This task adds comprehensive MAID methodology instructions including workflow phases, tool usage patterns, key rules, and manifest structure guidance. The instructions serve as the equivalent of CLAUDE.md for AI tools consuming this MCP server.",
+  "taskType": "edit",
+  "editableFiles": [
+    "src/maid_runner_mcp/server.py"
+  ],
+  "readonlyFiles": [
+    "tests/test_task_024_add_mcp_server_instructions.py",
+    ".maid/docs/maid_specs.md"
+  ],
+  "expectedArtifacts": {
+    "file": "src/maid_runner_mcp/server.py",
+    "contains": [
+      {
+        "type": "attribute",
+        "name": "MAID_INSTRUCTIONS",
+        "description": "Multi-line string constant containing comprehensive MAID methodology instructions for AI tools"
+      },
+      {
+        "type": "function",
+        "name": "create_server",
+        "description": "Creates FastMCP server instance with MAID_INSTRUCTIONS passed to instructions parameter",
+        "args": [],
+        "returns": "FastMCP"
+      }
+    ]
+  },
+  "validationCommand": ["uv", "run", "python", "-m", "pytest", "tests/test_task_024_add_mcp_server_instructions.py", "-v"]
+}
