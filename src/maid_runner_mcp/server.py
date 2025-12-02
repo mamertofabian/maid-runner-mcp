@@ -31,6 +31,7 @@ mcp = create_server()
 
 # Import tools to register them with the server
 # Tools use @mcp.tool() decorator from this module
+from maid_runner_mcp.tools import files  # noqa: E402, F401
 from maid_runner_mcp.tools import generate_stubs  # noqa: E402, F401
 from maid_runner_mcp.tools import init  # noqa: E402, F401
 from maid_runner_mcp.tools import manifests  # noqa: E402, F401

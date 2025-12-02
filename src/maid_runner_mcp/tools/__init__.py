@@ -1,5 +1,10 @@
 """MCP Tools for MAID Runner."""
 
+from maid_runner_mcp.tools.files import (
+    FileInfo,
+    FileTrackingResult,
+    maid_files,
+)
 from maid_runner_mcp.tools.generate_stubs import (
     GenerateStubsResult,
     maid_generate_stubs,
@@ -16,6 +21,8 @@ from maid_runner_mcp.tools.test import TestResult, maid_test
 from maid_runner_mcp.tools.validate import ValidateResult, maid_validate
 
 __all__ = [
+    "FileInfo",
+    "FileTrackingResult",
     "GenerateStubsResult",
     "InitResult",
     "ListManifestsResult",
@@ -24,6 +31,7 @@ __all__ = [
     "SystemSnapshotResult",
     "TestResult",
     "ValidateResult",
+    "maid_files",
     "maid_generate_stubs",
     "maid_init",
     "maid_get_schema",

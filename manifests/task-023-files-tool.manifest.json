@@ -1,0 +1,43 @@
+{
+  "goal": "Implement the maid_files MCP tool that provides file-level tracking status using the MAID files command",
+  "taskType": "create",
+  "supersedes": [],
+  "creatableFiles": [
+    "src/maid_runner_mcp/tools/files.py",
+    "tests/test_task_023_files_tool.py"
+  ],
+  "editableFiles": [
+    "src/maid_runner_mcp/tools/__init__.py",
+    "src/maid_runner_mcp/server.py"
+  ],
+  "readonlyFiles": [
+    "src/maid_runner_mcp/tools/manifests.py"
+  ],
+  "expectedArtifacts": {
+    "file": "src/maid_runner_mcp/tools/files.py",
+    "contains": [
+      {
+        "type": "class",
+        "name": "FileInfo",
+        "description": "TypedDict for individual file tracking info with fields: file, status, issues, manifests"
+      },
+      {
+        "type": "class",
+        "name": "FileTrackingResult",
+        "description": "TypedDict for file tracking results with fields: undeclared, registered, tracked"
+      },
+      {
+        "type": "function",
+        "name": "maid_files",
+        "args": [
+          {"name": "manifest_dir", "type": "str", "default": "manifests"},
+          {"name": "issues_only", "type": "bool", "default": "False"},
+          {"name": "status", "type": "str | None", "default": "None"}
+        ],
+        "returns": "FileTrackingResult",
+        "description": "MCP tool that provides file-level tracking status using MAID Runner's files command"
+      }
+    ]
+  },
+  "validationCommand": ["uv", "run", "python", "-m", "pytest", "tests/test_task_023_files_tool.py", "-v"]
+}
