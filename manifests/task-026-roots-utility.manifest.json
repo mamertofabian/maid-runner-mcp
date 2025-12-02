@@ -1,0 +1,25 @@
+{
+  "goal": "Create utility module for extracting working directory from MCP session roots",
+  "taskType": "create",
+  "creatableFiles": [
+    "src/maid_runner_mcp/utils/roots.py"
+  ],
+  "editableFiles": [],
+  "readonlyFiles": [
+    "src/maid_runner_mcp/server.py"
+  ],
+  "expectedArtifacts": {
+    "file": "src/maid_runner_mcp/utils/roots.py",
+    "contains": [
+      {
+        "type": "function",
+        "name": "get_working_directory",
+        "args": [
+          {"name": "ctx", "type": "Context"}
+        ],
+        "returns": "str | None"
+      }
+    ]
+  },
+  "validationCommand": ["pytest", "tests/test_task_026_roots_utility.py", "-v"]
+}
