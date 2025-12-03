@@ -271,6 +271,28 @@ MAID is a methodology for developing software with AI assistance by explicitly d
 
 This project is compatible with MAID-aware AI agents including Claude Code and other tools that understand the MAID workflow.
 
+## Prerequisites: Installing MAID Runner
+
+MAID Runner is a Python CLI tool that validates manifests and runs tests. Install it using one of these methods:
+
+```bash
+# Using pip
+pip install maid-runner
+
+# Using uv (recommended for Python projects)
+uv add maid-runner --dev
+
+# Using pipx (for global installation)
+pipx install maid-runner
+```
+
+After installation, the `maid` command will be available in your terminal. Verify with:
+```bash
+maid --help
+```
+
+**Note:** If using `uv` or a virtual environment, prefix commands with your runner (e.g., `uv run maid validate ...`).
+
 ## MAID Workflow
 
 ### Phase 1: Goal Definition
@@ -318,6 +340,8 @@ Verify complete chain: `pytest tests/ -v`
 }
 ```
 
+
+
 ## MAID CLI Commands
 
 ```bash
@@ -347,12 +371,46 @@ maid --help
 **NEVER:** Modify code without manifest | Skip validation | Access unlisted files
 **ALWAYS:** Manifest first → Tests → Implementation → Validate
 
+## Manifest Rules (CRITICAL)
+
+**These rules are non-negotiable for maintaining MAID compliance:**
+
+- **Manifest Immutability**: The current task's manifest (e.g., `task-050.manifest.json`) can be modified while actively working on that task. Once you move to the next task, ALL prior manifests become immutable and part of the permanent audit trail. NEVER modify completed task manifests—this breaks the chronological record of changes.
+
+- **One File Per Manifest**: `expectedArtifacts` is an OBJECT that defines artifacts for a SINGLE file only. It is NOT an array of files. This is a common mistake that will cause validation to fail.
+
+- **Multi-File Changes Require Multiple Manifests**: If your task modifies public APIs in multiple files (e.g., `utils.py` AND `handlers.py`), you MUST create separate sequential manifests—one per file:
+  - `task-050-update-utils.manifest.json` → modifies `utils.py`
+  - `task-051-update-handlers.manifest.json` → modifies `handlers.py`
+
+- **Definition of Done (Zero Tolerance)**: A task is NOT complete until BOTH validation commands pass with ZERO errors or warnings:
+  - `maid validate <manifest-path>` → Must pass 100%
+  - `maid test` → Must pass 100%
+
+  Partial completion is not acceptable. All errors must be fixed before proceeding to the next task.
+
 ## Artifact Rules
 
 - **Public** (no `_` prefix): MUST be in manifest
 - **Private** (`_` prefix): Optional in manifest
 - **creatableFiles**: Strict validation (exact match)
 - **editableFiles**: Permissive validation (contains at least)
+
+## Refactoring Private Implementation
+
+MAID provides flexibility for refactoring private implementation details without requiring new manifests:
+
+- **Private code** (functions, classes, variables with `_` prefix) can be refactored freely
+- **Internal logic changes** that don't affect the public API are allowed
+- **Code quality improvements** (splitting functions, extracting helpers, renaming privates) are permitted
+
+**Requirements:**
+- All tests must continue to pass
+- All validations must pass (`maid validate`, `maid test`)
+- Public API must remain unchanged
+- No MAID rules are violated
+
+This breathing room allows practical development without bureaucracy while maintaining accountability for public interface changes.
 
 ## Getting Started
 
@@ -366,5 +424,4 @@ maid --help
 
 - **Full MAID Specification**: See `.maid/docs/maid_specs.md` for complete methodology details
 - **MAID Runner Repository**: https://github.com/mamertofabian/maid-runner
-
 <!-- MAID-SECTION-END -->
