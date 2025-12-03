@@ -90,6 +90,47 @@ For multi-file features: Create SEPARATE manifests for each file.
 }
 ```
 
+## Manifest Rules (CRITICAL)
+
+**These rules are non-negotiable for maintaining MAID compliance:**
+
+- **Manifest Immutability**: The current task's manifest (e.g., `task-050.manifest.json`) can be modified while actively working on that task. Once you move to the next task, ALL prior manifests become immutable and part of the permanent audit trail. NEVER modify completed task manifests—this breaks the chronological record of changes.
+
+- **One File Per Manifest**: `expectedArtifacts` is an OBJECT that defines artifacts for a SINGLE file only. It is NOT an array of files. This is a common mistake that will cause validation to fail.
+
+- **Multi-File Changes Require Multiple Manifests**: If your task modifies public APIs in multiple files (e.g., `utils.py` AND `handlers.py`), you MUST create separate sequential manifests—one per file:
+  - `task-050-update-utils.manifest.json` → modifies `utils.py`
+  - `task-051-update-handlers.manifest.json` → modifies `handlers.py`
+
+- **Definition of Done (Zero Tolerance)**: A task is NOT complete until BOTH validation commands pass with ZERO errors or warnings:
+  - `maid_validate <manifest-path>` → Must pass 100%
+  - `maid_test` → Must pass 100%
+
+  Partial completion is not acceptable. All errors must be fixed before proceeding to the next task.
+
+## Artifact Rules
+
+- **Public** (no `_` prefix): MUST be in manifest
+- **Private** (`_` prefix): Optional in manifest
+- **creatableFiles**: Strict validation (exact match)
+- **editableFiles**: Permissive validation (contains at least)
+
+## Refactoring Private Implementation
+
+MAID provides flexibility for refactoring private implementation details without requiring new manifests:
+
+- **Private code** (functions, classes, variables with `_` prefix) can be refactored freely
+- **Internal logic changes** that don't affect the public API are allowed
+- **Code quality improvements** (splitting functions, extracting helpers, renaming privates) are permitted
+
+**Requirements:**
+- All tests must continue to pass
+- All validations must pass (`maid_validate`, `maid_test`)
+- Public API must remain unchanged
+- No MAID rules are violated
+
+This breathing room allows practical development without bureaucracy while maintaining accountability for public interface changes.
+
 ## Available Tools
 
 - `maid_validate`: Validate manifest against code/tests
