@@ -55,10 +55,10 @@ class TestTestResult:
         annotations = TestResult.__annotations__
 
         # Check field types
-        assert annotations["success"] == bool, "success should be bool"
-        assert annotations["total_manifests"] == int, "total_manifests should be int"
-        assert annotations["passed"] == int, "passed should be int"
-        assert annotations["failed"] == int, "failed should be int"
+        assert annotations["success"] is bool, "success should be bool"
+        assert annotations["total_manifests"] is int, "total_manifests should be int"
+        assert annotations["passed"] is int, "passed should be int"
+        assert annotations["failed"] is int, "failed should be int"
         # failed_manifests should be list[str]
         assert "failed_manifests" in annotations
 

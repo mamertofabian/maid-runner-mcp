@@ -111,7 +111,7 @@ class TestMaidGenerateStubsUsesWorkingDirectory:
             mock_get_wd.return_value = "/tmp/test"
 
             # Call maid_generate_stubs
-            result = await maid_generate_stubs(
+            await maid_generate_stubs(
                 manifest_path="nonexistent.json",
                 ctx=mock_ctx,
             )

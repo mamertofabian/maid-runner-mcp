@@ -112,7 +112,7 @@ class TestMaidListManifestsUsesWorkingDirectory:
             mock_get_wd.return_value = "/tmp/test"
 
             # Call maid_list_manifests
-            result = await maid_list_manifests(
+            await maid_list_manifests(
                 file_path="nonexistent.py",
                 ctx=mock_ctx,
             )

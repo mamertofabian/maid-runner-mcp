@@ -259,7 +259,6 @@ class TestGetManifestSchemaBehavior:
         Use jsonschema library to validate a real manifest against the schema.
         This is the ultimate behavioral test - the schema should be usable.
         """
-        import subprocess
         from src.maid_runner_mcp.resources.schema import get_manifest_schema
 
         # Create mock context

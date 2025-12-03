@@ -23,7 +23,6 @@ class TestValidateResult:
         - description: TypedDict for validation results
         """
         from maid_runner_mcp.tools.validate import ValidateResult
-        from typing import get_type_hints
 
         # TypedDict classes have __annotations__
         assert hasattr(
@@ -129,7 +128,9 @@ class TestMaidValidateFunction:
         docstring_lower = docstring.lower()
 
         # Check that schema mode is mentioned in the docstring
-        assert "schema" in docstring_lower, "maid_validate docstring should mention 'schema' validation mode"
+        assert (
+            "schema" in docstring_lower
+        ), "maid_validate docstring should mention 'schema' validation mode"
 
     def test_maid_validate_docstring_mentions_all_modes(self):
         """Test that maid_validate docstring mentions all three validation modes."""
@@ -235,7 +236,7 @@ class TestMaidValidateBehavior:
         result = await maid_validate(
             manifest_path="manifests/task-001-mcp-server-core.manifest.json",
             validation_mode="schema",
-            ctx=mock_ctx
+            ctx=mock_ctx,
         )
 
         # Result should have proper structure
@@ -259,9 +260,7 @@ class TestMaidValidateBehavior:
 
         # Call with schema mode - should work even if manifest doesn't exist
         result = await maid_validate(
-            manifest_path="nonexistent.json",
-            validation_mode="schema",
-            ctx=mock_ctx
+            manifest_path="nonexistent.json", validation_mode="schema", ctx=mock_ctx
         )
 
         # Should return ValidateResult structure

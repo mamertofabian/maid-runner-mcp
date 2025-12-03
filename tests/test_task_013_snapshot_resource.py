@@ -218,7 +218,7 @@ class TestGetSystemSnapshotBehavior:
             # Use temp file to avoid creating system.manifest.json in project root
             with tempfile.TemporaryDirectory() as tmpdir:
                 tmp_output = os.path.join(tmpdir, "system.manifest.json")
-                cli_result = subprocess.run(
+                subprocess.run(
                     ["uv", "run", "maid", "snapshot-system", "--output", tmp_output, "--quiet"],
                     capture_output=True,
                     text=True,

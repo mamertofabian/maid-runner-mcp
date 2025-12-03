@@ -9,7 +9,6 @@ Tests follow MAID behavioral testing pattern - they USE the artifacts
 rather than just checking existence.
 """
 
-import pytest
 from mcp.server.fastmcp import FastMCP
 
 
@@ -153,7 +152,7 @@ class TestMCPServerConfiguration:
         created = create_server()
 
         # Both should be FastMCP instances
-        assert type(mcp) == type(created), (
+        assert type(mcp) is type(created), (
             f"create_server() should return same type as mcp attribute. "
             f"mcp is {type(mcp)}, created is {type(created)}"
         )

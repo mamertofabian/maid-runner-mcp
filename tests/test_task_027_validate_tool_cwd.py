@@ -109,7 +109,7 @@ class TestMaidValidateUsesWorkingDirectory:
             mock_get_wd.return_value = "/tmp/test"
 
             # Call maid_validate
-            result = await maid_validate(
+            await maid_validate(
                 manifest_path="nonexistent.json",
                 ctx=mock_ctx,
             )

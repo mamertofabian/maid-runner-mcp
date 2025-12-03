@@ -125,7 +125,7 @@ class TestMaidInitUsesWorkingDirectory:
                 )
 
                 # Call maid_init
-                result = await maid_init(
+                await maid_init(
                     target_dir=".",
                     force=False,
                     ctx=mock_ctx,

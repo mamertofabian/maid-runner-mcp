@@ -89,7 +89,7 @@ class TestGetSystemSnapshotUsesWorkingDirectory:
 
             # Call with ctx parameter - should accept it without error
             try:
-                result = await get_system_snapshot(ctx=mock_ctx)
+                await get_system_snapshot(ctx=mock_ctx)
             except RuntimeError as e:
                 # Expected to fail since we're mocking, but it should have accepted ctx
                 assert (
@@ -123,7 +123,7 @@ class TestGetSystemSnapshotUsesWorkingDirectory:
 
                 # Call get_system_snapshot
                 try:
-                    result = await get_system_snapshot(ctx=mock_ctx)
+                    await get_system_snapshot(ctx=mock_ctx)
                 except RuntimeError:
                     pass  # Expected to fail with mocked subprocess
 

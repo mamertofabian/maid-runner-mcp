@@ -10,7 +10,6 @@ rather than just checking existence.
 """
 
 import time
-import pytest
 
 
 class TestLRUCache:

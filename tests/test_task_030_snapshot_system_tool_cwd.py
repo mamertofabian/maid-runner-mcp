@@ -126,7 +126,7 @@ class TestMaidSnapshotSystemUsesWorkingDirectory:
                 )
 
                 # Call maid_snapshot_system
-                result = await maid_snapshot_system(
+                await maid_snapshot_system(
                     output="test.json",
                     ctx=mock_ctx,
                 )

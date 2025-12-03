@@ -30,7 +30,6 @@ class TestSchemaResultClass:
     def test_schema_result_is_typeddict(self):
         """Test that SchemaResult is a TypedDict."""
         from maid_runner_mcp.tools.schema import SchemaResult
-        from typing import get_type_hints
 
         # TypedDict classes have __annotations__
         assert hasattr(SchemaResult, "__annotations__"), "SchemaResult should have annotations"
@@ -156,7 +155,7 @@ class TestMaidGetSchemaUsesWorkingDirectory:
             mock_get_wd.return_value = "/tmp/test"
 
             # Call maid_get_schema
-            result = await maid_get_schema(ctx=mock_ctx)
+            await maid_get_schema(ctx=mock_ctx)
 
             # Verify get_working_directory was called with ctx
             mock_get_wd.assert_called_once_with(mock_ctx)

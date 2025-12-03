@@ -8,8 +8,6 @@ These tests USE the artifacts by:
 - Calling create_server() and verifying the server has instructions
 """
 
-import pytest
-
 
 class TestMAIDInstructions:
     """Tests for the MAID_INSTRUCTIONS constant."""

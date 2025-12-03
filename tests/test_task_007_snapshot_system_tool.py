@@ -115,7 +115,6 @@ class TestMaidSnapshotSystemFunction:
         import inspect
         from maid_runner_mcp.tools.snapshot_system import (
             maid_snapshot_system,
-            SystemSnapshotResult,
         )
 
         sig = inspect.signature(maid_snapshot_system)

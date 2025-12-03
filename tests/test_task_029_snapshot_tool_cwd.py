@@ -109,7 +109,7 @@ class TestMaidSnapshotUsesWorkingDirectory:
             mock_get_wd.return_value = "/tmp/test"
 
             # Call maid_snapshot
-            result = await maid_snapshot(
+            await maid_snapshot(
                 file_path="nonexistent.py",
                 ctx=mock_ctx,
             )

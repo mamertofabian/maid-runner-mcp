@@ -111,7 +111,7 @@ class TestMaidFilesUsesWorkingDirectory:
             mock_get_wd.return_value = "/tmp/test"
 
             # Call maid_files
-            result = await maid_files(
+            await maid_files(
                 manifest_dir="nonexistent-manifests",
                 ctx=mock_ctx,
             )

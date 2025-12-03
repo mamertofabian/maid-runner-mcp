@@ -109,7 +109,7 @@ class TestMaidTestUsesWorkingDirectory:
             mock_get_wd.return_value = "/tmp/test"
 
             # Call maid_test
-            result = await maid_test(
+            await maid_test(
                 manifest_dir="nonexistent-dir",
                 ctx=mock_ctx,
             )
