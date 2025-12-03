@@ -17,7 +17,7 @@ class ValidateResult(TypedDict, total=False):
 
     Fields:
         success: Whether validation passed
-        mode: Validation mode used (implementation or behavioral)
+        mode: Validation mode used (implementation, behavioral, or schema)
         manifest: Path to the manifest file
         target_file: Target file being validated
         used_chain: Whether manifest chain was used
@@ -53,6 +53,7 @@ async def maid_validate(
     **Validation modes:**
     - `implementation`: Checks that code artifacts match manifest expectedArtifacts
     - `behavioral`: Checks that tests exist and reference the expected artifacts
+    - `schema`: Checks that the manifest structure conforms to the JSON schema
 
     **Use manifest chain when:**
     - Editing existing files (taskType: "edit")
@@ -61,7 +62,7 @@ async def maid_validate(
 
     Args:
         manifest_path: Path to the manifest JSON file
-        validation_mode: Validation mode (implementation or behavioral)
+        validation_mode: Validation mode (implementation, behavioral, or schema)
         use_manifest_chain: Whether to use manifest chain for validation
         manifest_dir: Directory containing manifests (optional)
         quiet: Whether to suppress verbose output

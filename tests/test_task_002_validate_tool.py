@@ -121,6 +121,28 @@ class TestMaidValidateFunction:
         assert "quiet" in params, "maid_validate should have 'quiet' parameter"
         assert params["quiet"].default is True, "quiet should default to True"
 
+    def test_maid_validate_docstring_mentions_schema(self):
+        """Test that maid_validate docstring mentions schema validation mode."""
+        from maid_runner_mcp.tools.validate import maid_validate
+
+        docstring = maid_validate.__doc__ or ""
+        docstring_lower = docstring.lower()
+
+        # Check that schema mode is mentioned in the docstring
+        assert "schema" in docstring_lower, "maid_validate docstring should mention 'schema' validation mode"
+
+    def test_maid_validate_docstring_mentions_all_modes(self):
+        """Test that maid_validate docstring mentions all three validation modes."""
+        from maid_runner_mcp.tools.validate import maid_validate
+
+        docstring = maid_validate.__doc__ or ""
+        docstring_lower = docstring.lower()
+
+        # Check that all three modes are mentioned
+        assert "implementation" in docstring_lower, "Docstring should mention 'implementation' mode"
+        assert "behavioral" in docstring_lower, "Docstring should mention 'behavioral' mode"
+        assert "schema" in docstring_lower, "Docstring should mention 'schema' mode"
+
 
 @pytest.mark.asyncio
 class TestMaidValidateBehavior:
@@ -195,3 +217,56 @@ class TestMaidValidateBehavior:
         assert result["mode"] == "implementation"
         assert "manifest" in result
         assert "task-001" in result["manifest"]
+
+    async def test_maid_validate_with_schema_mode(self):
+        """Test that maid_validate can be called with validation_mode='schema'."""
+        from maid_runner_mcp.tools.validate import maid_validate
+        from unittest.mock import AsyncMock, MagicMock
+
+        # Create a mock context
+        mock_ctx = MagicMock()
+        mock_session = MagicMock()
+        mock_session.list_roots = AsyncMock(
+            return_value=MagicMock(roots=[MagicMock(uri="file:///tmp/test")])
+        )
+        mock_ctx.session = mock_session
+
+        # Call with schema validation mode
+        result = await maid_validate(
+            manifest_path="manifests/task-001-mcp-server-core.manifest.json",
+            validation_mode="schema",
+            ctx=mock_ctx
+        )
+
+        # Result should have proper structure
+        assert "success" in result, "Result should have 'success' field"
+        assert "mode" in result, "Result should have 'mode' field"
+        assert result["mode"] == "schema", "Result mode should be 'schema'"
+        assert "manifest" in result, "Result should have 'manifest' field"
+
+    async def test_maid_validate_schema_mode_returns_result(self):
+        """Test that schema validation mode returns a ValidateResult."""
+        from maid_runner_mcp.tools.validate import maid_validate
+        from unittest.mock import AsyncMock, MagicMock
+
+        # Create a mock context
+        mock_ctx = MagicMock()
+        mock_session = MagicMock()
+        mock_session.list_roots = AsyncMock(
+            return_value=MagicMock(roots=[MagicMock(uri="file:///tmp/test")])
+        )
+        mock_ctx.session = mock_session
+
+        # Call with schema mode - should work even if manifest doesn't exist
+        result = await maid_validate(
+            manifest_path="nonexistent.json",
+            validation_mode="schema",
+            ctx=mock_ctx
+        )
+
+        # Should return ValidateResult structure
+        assert isinstance(result, dict), "Result should be a dict"
+        assert "success" in result, "Result should have 'success' field"
+        assert "mode" in result, "Result should have 'mode' field"
+        assert result["mode"] == "schema", "Mode should be 'schema'"
+        assert "errors" in result, "Result should have 'errors' field"
