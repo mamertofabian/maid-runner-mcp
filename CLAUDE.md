@@ -101,7 +101,6 @@ make validate    # Validate all manifests
 
 - `maid_validate` - Validate manifests
 - `maid_snapshot` - Generate snapshots
-- `maid_test` - Run validation commands
 - `maid_list_manifests` - List manifests for a file
 - `maid_init` - Initialize MAID project
 - `maid_get_schema` - Get manifest schema

@@ -1,0 +1,27 @@
+{
+  "goal": "Remove maid_test MCP tool and update documentation to reflect that validation commands should be executed via Bash tool in project context",
+  "taskType": "refactor",
+  "supersedes": ["task-004-maid-test-tool.manifest.json", "task-028-update-test-tool-cwd.manifest.json"],
+  "creatableFiles": [],
+  "editableFiles": [
+    "src/maid_runner_mcp/tools/__init__.py",
+    "src/maid_runner_mcp/server.py",
+    "README.md",
+    "CLAUDE.md"
+  ],
+  "readonlyFiles": [
+    "src/maid_runner_mcp/tools/validate.py",
+    "src/maid_runner_mcp/tools/snapshot.py",
+    "src/maid_runner_mcp/tools/list_manifests.py",
+    "src/maid_runner_mcp/tools/init.py",
+    "src/maid_runner_mcp/tools/get_schema.py",
+    "src/maid_runner_mcp/tools/generate_stubs.py",
+    "src/maid_runner_mcp/tools/files.py"
+  ],
+  "expectedArtifacts": {
+    "file": "src/maid_runner_mcp/tools/test.py",
+    "status": "absent",
+    "contains": []
+  },
+  "validationCommand": ["pytest", "tests/test_task_038_remove_maid_test_tool.py", "-v"]
+}

@@ -29,7 +29,7 @@ Before ANY implementation:
 ### Phase 3: Implementation
 1. Load ONLY files from manifest (`editableFiles` + `readonlyFiles`)
 2. Implement code to pass tests
-3. Run `maid_test` to execute validation commands
+3. Run validation commands from manifest using Bash tool in project context
 4. Iterate until all tests pass
 
 ### Phase 4: Integration
@@ -46,7 +46,7 @@ Verify complete test suite passes.
 ### Validating Code
 1. Use `maid_validate` with specific manifest path
 2. Use `--use-manifest-chain` for edit tasks (validates history)
-3. Use `maid_test` to run all validation commands
+3. Run validation commands from manifests using Bash tool
 
 ### Working with Existing Code
 1. Use `maid_snapshot` to generate manifest from existing file
@@ -102,9 +102,9 @@ For multi-file features: Create SEPARATE manifests for each file.
   - `task-050-update-utils.manifest.json` → modifies `utils.py`
   - `task-051-update-handlers.manifest.json` → modifies `handlers.py`
 
-- **Definition of Done (Zero Tolerance)**: A task is NOT complete until BOTH validation commands pass with ZERO errors or warnings:
+- **Definition of Done (Zero Tolerance)**: A task is NOT complete until validation passes with ZERO errors or warnings:
   - `maid_validate <manifest-path>` → Must pass 100%
-  - `maid_test` → Must pass 100%
+  - Validation commands from manifest → Must pass 100%
 
   Partial completion is not acceptable. All errors must be fixed before proceeding to the next task.
 
@@ -125,7 +125,7 @@ MAID provides flexibility for refactoring private implementation details without
 
 **Requirements:**
 - All tests must continue to pass
-- All validations must pass (`maid_validate`, `maid_test`)
+- All validations must pass (`maid_validate`)
 - Public API must remain unchanged
 - No MAID rules are violated
 
@@ -134,7 +134,6 @@ This breathing room allows practical development without bureaucracy while maint
 ## Available Tools
 
 - `maid_validate`: Validate manifest against code/tests
-- `maid_test`: Run validation commands from manifests
 - `maid_snapshot`: Generate manifest from existing code
 - `maid_snapshot_system`: Generate system-wide manifest
 - `maid_list_manifests`: Find manifests for a file
@@ -142,6 +141,15 @@ This breathing room allows practical development without bureaucracy while maint
 - `maid_get_schema`: Get manifest JSON schema
 - `maid_init`: Initialize MAID project
 - `maid_generate_stubs`: Generate test stubs from manifest
+
+**Note on validation commands:**
+The `maid test` CLI command is NOT exposed as an MCP tool because validation
+commands must run in the project's environment (not the MCP server's environment).
+
+Claude Code should run validation commands directly using the Bash tool:
+- Read `validationCommand` from manifests
+- Execute via Bash in project context
+- This ensures correct dependencies, virtual environments, and tooling
 
 ## Available Resources
 
@@ -185,7 +193,6 @@ from maid_runner_mcp.tools import manifests  # noqa: E402, F401
 from maid_runner_mcp.tools import schema  # noqa: E402, F401
 from maid_runner_mcp.tools import snapshot  # noqa: E402, F401
 from maid_runner_mcp.tools import snapshot_system  # noqa: E402, F401
-from maid_runner_mcp.tools import test  # noqa: E402, F401
 from maid_runner_mcp.tools import validate  # noqa: E402, F401
 
 # Import resources to register them with the server
