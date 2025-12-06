@@ -28,18 +28,7 @@ Message = _Message
 
 @mcp.prompt()
 async def spike_idea(idea: str) -> list[Message]:
-    """MCP prompt handler that returns a spike exploration template for the given idea.
-
-    Guides AI agents through an exploratory spike to understand an idea
-    before creating a formal manifest. This helps estimate scope, identify
-    affected files, and determine if the idea should be one task or multiple.
-
-    Args:
-        idea: The idea or feature to explore
-
-    Returns:
-        A list of Message dicts containing the spike exploration template
-    """
+    """Guide AI agents through exploratory spike to understand an idea before creating a manifest."""
     content = f"""Explore the idea: {idea}
 
 Quick exploratory spike (no manifest yet):

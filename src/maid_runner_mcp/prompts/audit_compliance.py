@@ -28,19 +28,7 @@ Message = _Message
 
 @mcp.prompt()
 async def audit_compliance(manifest_path: str = "", scope: str = "all") -> list[Message]:
-    """MCP prompt handler that returns a compliance audit template for the given scope.
-
-    Guides AI agents through cross-cutting MAID compliance auditing.
-    This audit can be performed at any phase to verify methodology compliance.
-
-    Args:
-        manifest_path: Optional path to a specific manifest to audit (defaults to "")
-        scope: The scope of the audit - "all", "tests", "implementation", etc.
-               (defaults to "all" for comprehensive audit)
-
-    Returns:
-        A list of Message dicts containing the compliance audit template
-    """
+    """Guide AI agents through cross-cutting MAID compliance auditing for any phase."""
     # Build manifest context if provided
     manifest_context = ""
     if manifest_path:

@@ -28,17 +28,7 @@ Message = _Message
 
 @mcp.prompt()
 async def implement_task(manifest_path: str) -> list[Message]:
-    """MCP prompt handler that returns an implementation guide for Phase 3 TDD workflow.
-
-    Guides AI agents through MAID Phase 3 (Implementation) following TDD principles.
-    The implementation must make tests pass while matching manifest artifacts exactly.
-
-    Args:
-        manifest_path: Path to the manifest file for the task being implemented
-
-    Returns:
-        A list of Message dicts containing the implementation guidance template
-    """
+    """Guide AI agents through MAID Phase 3 TDD implementation to make tests pass."""
     content = f"""# Phase 3: Implementation (TDD)
 
 Implement code to make tests pass. Follow Red-Green-Refactor. See CLAUDE.md for details.

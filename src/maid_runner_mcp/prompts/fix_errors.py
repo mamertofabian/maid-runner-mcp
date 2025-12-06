@@ -28,18 +28,7 @@ Message = _Message
 
 @mcp.prompt()
 async def fix_errors(error_context: str = "") -> list[Message]:
-    """MCP prompt handler that returns a template to guide AI agents through fixing validation errors and test failures.
-
-    Guides AI agents through MAID Phase 3 Support - iteratively fixing
-    validation errors and test failures until all pass.
-
-    Args:
-        error_context: Optional error message or context to include in the prompt.
-                      Defaults to empty string.
-
-    Returns:
-        A list of Message dicts containing the error fixing template
-    """
+    """Guide AI agents through MAID Phase 3 error fixing for validation failures and test errors."""
     # Build error context section if provided
     error_section = ""
     if error_context:

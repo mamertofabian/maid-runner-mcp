@@ -28,18 +28,7 @@ Message = _Message
 
 @mcp.prompt()
 async def design_tests(manifest_path: str) -> list[Message]:
-    """MCP prompt handler that returns a behavioral test creation template for the given manifest.
-
-    Guides AI agents through MAID Phase 2 (Behavioral Test Creation) to create
-    tests that import and USE each artifact from the manifest. Tests should
-    cover realistic scenarios and not just check for existence.
-
-    Args:
-        manifest_path: Path to the manifest file (e.g., manifests/task-XXX.manifest.json)
-
-    Returns:
-        A list of Message dicts containing the behavioral test creation template
-    """
+    """Guide AI agents through MAID Phase 2 behavioral test creation from the manifest."""
     content = f"""# Phase 2: Behavioral Test Creation
 
 Create behavioral tests from the manifest: `{manifest_path}`

@@ -28,18 +28,7 @@ Message = _Message
 
 @mcp.prompt()
 async def refactor_code(file_path: str, goal: str) -> list[Message]:
-    """MCP prompt handler that returns a refactoring guidance template for code quality improvements.
-
-    Guides AI agents through MAID Phase 3.5 (Refactoring) to improve code quality
-    while keeping tests green and maintaining manifest compliance.
-
-    Args:
-        file_path: The file path to refactor
-        goal: The refactoring goal (e.g., "reduce code duplication")
-
-    Returns:
-        A list of Message dicts containing the refactoring guidance template
-    """
+    """Guide AI agents through MAID Phase 3.5 code refactoring while maintaining test compliance."""
     content = f"""# Phase 3.5: Refactoring
 
 Improve code quality for: `{file_path}`

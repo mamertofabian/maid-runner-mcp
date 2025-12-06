@@ -28,18 +28,7 @@ Message = _Message
 
 @mcp.prompt()
 async def review_manifest(manifest_path: str) -> list[Message]:
-    """MCP prompt handler that returns a review template for validating manifest and tests quality before implementation.
-
-    Guides AI agents through MAID Phase 2 Quality Gate - reviewing the manifest
-    and tests before implementation begins. This ensures the plan is solid
-    before committing to code changes.
-
-    Args:
-        manifest_path: Path to the manifest file to review
-
-    Returns:
-        A list of Message dicts containing the review template
-    """
+    """Guide AI agents through MAID Phase 2 quality gate review of manifest and tests."""
     content = f"""# Phase 2 Quality Gate: Plan Review
 
 Review the manifest and tests for quality before implementation begins.

@@ -28,19 +28,7 @@ Message = _Message
 
 @mcp.prompt()
 async def plan_task(goal: str, file_path: str, task_type: str) -> list[Message]:
-    """MCP prompt handler that returns a manifest creation template for the given goal.
-
-    Guides AI agents through MAID Phase 1 (Planning Loop) to create a task manifest.
-    The manifest serves as the primary contract for implementation.
-
-    Args:
-        goal: The task goal or feature description
-        file_path: Optional target file path for the task
-        task_type: Type of task (create, edit, or refactor)
-
-    Returns:
-        A list of Message dicts containing the manifest creation template
-    """
+    """Guide AI agents through MAID Phase 1 manifest creation for the given goal."""
     # Build file path context if provided
     file_context = ""
     if file_path:
