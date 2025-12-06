@@ -16,12 +16,12 @@ class SchemaResult(TypedDict):
 
     Fields:
         success: Whether schema retrieval succeeded
-        schema: The JSON schema object (empty dict if failed)
+        json_schema: The JSON schema object (empty dict if failed)
         errors: List of error messages if retrieval failed
     """
 
     success: bool
-    schema: dict[str, Any]
+    json_schema: dict[str, Any]
     errors: list[str]
 
 
@@ -70,13 +70,13 @@ async def maid_get_schema(ctx: Context) -> SchemaResult:
                 schema = json.loads(result.stdout)
                 return SchemaResult(
                     success=True,
-                    schema=schema,
+                    json_schema=schema,
                     errors=[],
                 )
             except json.JSONDecodeError as e:
                 return SchemaResult(
                     success=False,
-                    schema={},
+                    json_schema={},
                     errors=[f"Failed to parse schema JSON: {e}"],
                 )
         else:
@@ -88,19 +88,19 @@ async def maid_get_schema(ctx: Context) -> SchemaResult:
 
             return SchemaResult(
                 success=False,
-                schema={},
+                json_schema={},
                 errors=errors,
             )
 
     except FileNotFoundError:
         return SchemaResult(
             success=False,
-            schema={},
+            json_schema={},
             errors=["MAID Runner command not found"],
         )
     except Exception as e:
         return SchemaResult(
             success=False,
-            schema={},
+            json_schema={},
             errors=[str(e)],
         )

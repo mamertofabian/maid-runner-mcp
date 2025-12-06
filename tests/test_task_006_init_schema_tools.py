@@ -101,7 +101,7 @@ class TestSchemaResult:
         """Test that SchemaResult is a TypedDict.
 
         The schema tool should return a TypedDict containing:
-        - schema: the JSON schema object
+        - json_schema: the JSON schema object
         """
         from maid_runner_mcp.tools.schema import SchemaResult
 
@@ -111,12 +111,12 @@ class TestSchemaResult:
         ), "SchemaResult should have __annotations__ (TypedDict requirement)"
 
     def test_schema_result_has_schema_field(self):
-        """Test that SchemaResult has the schema field."""
+        """Test that SchemaResult has the json_schema field."""
         from maid_runner_mcp.tools.schema import SchemaResult
 
         annotations = SchemaResult.__annotations__
 
-        assert "schema" in annotations, "SchemaResult should have 'schema' field"
+        assert "json_schema" in annotations, "SchemaResult should have 'json_schema' field"
 
 
 class TestMaidGetSchemaFunction:
@@ -216,8 +216,8 @@ class TestMaidGetSchemaBehavior:
         # Call with ctx parameter
         result = await maid_get_schema(ctx=mock_ctx)
 
-        # Result should have the schema field
-        assert "schema" in result, "Result should have 'schema' field"
+        # Result should have the json_schema field
+        assert "json_schema" in result, "Result should have 'json_schema' field"
 
     async def test_maid_get_schema_returns_valid_json_schema(self):
         """Test that maid_get_schema returns a valid JSON schema object."""
@@ -234,8 +234,8 @@ class TestMaidGetSchemaBehavior:
         result = await maid_get_schema(ctx=mock_ctx)
 
         # Schema should be a dict with standard JSON schema fields
-        schema = result["schema"]
-        assert isinstance(schema, dict), "schema should be a dictionary"
+        schema = result["json_schema"]
+        assert isinstance(schema, dict), "json_schema should be a dictionary"
 
         # A valid JSON schema typically has these fields
         assert (

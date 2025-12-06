@@ -37,7 +37,7 @@ class TestSchemaResultClass:
         # Check that it has the expected fields
         annotations = SchemaResult.__annotations__
         assert "success" in annotations, "SchemaResult should have success field"
-        assert "schema" in annotations, "SchemaResult should have schema field"
+        assert "json_schema" in annotations, "SchemaResult should have json_schema field"
         assert "errors" in annotations, "SchemaResult should have errors field"
 
     def test_schema_result_can_be_used(self):
@@ -47,13 +47,13 @@ class TestSchemaResultClass:
         # Create a SchemaResult instance
         result: SchemaResult = {
             "success": True,
-            "schema": {"type": "object"},
+            "json_schema": {"type": "object"},
             "errors": [],
         }
 
         # Verify the structure
         assert result["success"] is True
-        assert result["schema"] == {"type": "object"}
+        assert result["json_schema"] == {"type": "object"}
         assert result["errors"] == []
 
 
@@ -130,9 +130,9 @@ class TestMaidGetSchemaUsesWorkingDirectory:
         # Call maid_get_schema with ctx parameter
         result = await maid_get_schema(ctx=mock_ctx)
 
-        # Should return a result (SchemaResult with success, schema, errors)
+        # Should return a result (SchemaResult with success, json_schema, errors)
         assert "success" in result, "Should return SchemaResult"
-        assert "schema" in result, "Should have schema field"
+        assert "json_schema" in result, "Should have json_schema field"
         assert "errors" in result, "Should have errors field"
 
     async def test_maid_get_schema_calls_get_working_directory(self):
