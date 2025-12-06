@@ -25,9 +25,27 @@ class TestLRUCache:
         """
         from maid_runner_mcp.utils.cache import LRUCache
 
-        # Should be able to create an instance with a size parameter
         cache = LRUCache(max_size=3)
         assert cache is not None
+
+    def test_lru_cache_init_method(self):
+        """Test that LRUCache.__init__ method can be called explicitly.
+
+        The manifest specifies:
+        - type: function
+        - name: __init__
+        - class: LRUCache
+        - args: [{"name": "max_size", "type": "int"}]
+        - returns: None
+        """
+        from maid_runner_mcp.utils.cache import LRUCache
+
+        cache = object.__new__(LRUCache)
+        LRUCache.__init__(cache, max_size=5)
+
+        assert cache is not None
+        cache.set("test", "value")
+        assert cache.get("test") == "value"
 
     def test_lru_cache_basic_operations(self):
         """Test basic LRU cache operations: get, set, delete."""
@@ -35,11 +53,8 @@ class TestLRUCache:
 
         cache = LRUCache(max_size=3)
 
-        # Set and get operations
         cache.set("key1", "value1")
         assert cache.get("key1") == "value1"
-
-        # Non-existent key returns None
         assert cache.get("nonexistent") is None
 
     def test_lru_cache_eviction(self):
@@ -50,9 +65,8 @@ class TestLRUCache:
 
         cache.set("key1", "value1")
         cache.set("key2", "value2")
-        cache.set("key3", "value3")  # Should evict key1
+        cache.set("key3", "value3")
 
-        # key1 should have been evicted
         assert cache.get("key1") is None
         assert cache.get("key2") == "value2"
         assert cache.get("key3") == "value3"
@@ -71,9 +85,27 @@ class TestTTLCache:
         """
         from maid_runner_mcp.utils.cache import TTLCache
 
-        # Should be able to create an instance with a TTL parameter
         cache = TTLCache(ttl_seconds=60)
         assert cache is not None
+
+    def test_ttl_cache_init_method(self):
+        """Test that TTLCache.__init__ method can be called explicitly.
+
+        The manifest specifies:
+        - type: function
+        - name: __init__
+        - class: TTLCache
+        - args: [{"name": "ttl_seconds", "type": "float"}]
+        - returns: None
+        """
+        from maid_runner_mcp.utils.cache import TTLCache
+
+        cache = object.__new__(TTLCache)
+        TTLCache.__init__(cache, ttl_seconds=30.0)
+
+        assert cache is not None
+        cache.set("test", "value")
+        assert cache.get("test") == "value"
 
     def test_ttl_cache_basic_operations(self):
         """Test basic TTL cache operations: get, set, delete."""
@@ -81,26 +113,20 @@ class TestTTLCache:
 
         cache = TTLCache(ttl_seconds=60)
 
-        # Set and get operations
         cache.set("key1", "value1")
         assert cache.get("key1") == "value1"
-
-        # Non-existent key returns None
         assert cache.get("nonexistent") is None
 
     def test_ttl_cache_expiration(self):
         """Test that TTL cache expires items after TTL."""
         from maid_runner_mcp.utils.cache import TTLCache
 
-        cache = TTLCache(ttl_seconds=0.1)  # 100ms TTL
+        cache = TTLCache(ttl_seconds=0.1)
 
         cache.set("key1", "value1")
         assert cache.get("key1") == "value1"
 
-        # Wait for expiration
         time.sleep(0.2)
-
-        # key1 should have expired
         assert cache.get("key1") is None
 
 
@@ -117,9 +143,28 @@ class TestValidationCache:
         """
         from maid_runner_mcp.utils.cache import ValidationCache
 
-        # Should be able to create an instance
         cache = ValidationCache(max_size=10)
         assert cache is not None
+
+    def test_validation_cache_init_method(self):
+        """Test that ValidationCache.__init__ method can be called explicitly.
+
+        The manifest specifies:
+        - type: function
+        - name: __init__
+        - class: ValidationCache
+        - args: [{"name": "max_size", "type": "int"}]
+        - returns: None
+        """
+        from maid_runner_mcp.utils.cache import ValidationCache
+
+        cache = object.__new__(ValidationCache)
+        ValidationCache.__init__(cache, max_size=15)
+
+        assert cache is not None
+        result = {"success": True, "errors": []}
+        cache.set("manifest1.json", result)
+        assert cache.get("manifest1.json") == result
 
     def test_validation_cache_basic_operations(self):
         """Test basic ValidationCache operations."""
@@ -127,7 +172,6 @@ class TestValidationCache:
 
         cache = ValidationCache(max_size=10)
 
-        # Should be able to store validation results
         result = {"success": True, "errors": []}
         cache.set("manifest1.json", result)
 
@@ -142,9 +186,8 @@ class TestValidationCache:
 
         cache.set("manifest1.json", {"success": True})
         cache.set("manifest2.json", {"success": True})
-        cache.set("manifest3.json", {"success": False})  # Should evict manifest1
+        cache.set("manifest3.json", {"success": False})
 
-        # manifest1 should have been evicted
         assert cache.get("manifest1.json") is None
         assert cache.get("manifest2.json") is not None
         assert cache.get("manifest3.json") is not None
@@ -163,7 +206,6 @@ class TestResourcesModule:
         """Test that resources module has __all__ attribute."""
         import maid_runner_mcp.resources
 
-        # The manifest specifies __all__ should exist
         assert hasattr(maid_runner_mcp.resources, "__all__")
         assert isinstance(maid_runner_mcp.resources.__all__, list)
 
