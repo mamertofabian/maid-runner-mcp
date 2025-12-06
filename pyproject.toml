@@ -19,7 +19,7 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [
-    "maid-runner>=0.1.0",
+    "maid-runner",
     "mcp>=1.0.0",
 ]
 
@@ -38,6 +38,7 @@ dev = [
     "mypy>=1.0.0",
     "build>=1.0.0",
     "twine>=5.0.0",
+    "pre-commit>=4.0.0",
     "maid-agents",
 ]
 
@@ -73,4 +74,3 @@ disallow_untyped_defs = true
 
 [tool.uv.sources]
 maid-runner = { path = "../maid-runner", editable = true }
-maid-agents = { path = "../maid-agents", editable = true }

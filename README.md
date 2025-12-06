@@ -84,7 +84,6 @@ AI Agents (Claude, GPT-4, etc.)
 
 - `maid_validate` - Validate manifests (structural + behavioral + implementation)
 - `maid_snapshot` - Generate manifest snapshots from existing code
-- `maid_test` - Run validation commands from manifests
 - `maid_list_manifests` - Find manifests referencing a file
 - `maid_init` - Initialize MAID project structure
 - `maid_get_schema` - Get manifest JSON schema
