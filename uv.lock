@@ -551,34 +551,17 @@ wheels = [
 
 [[package]]
 name = "maid-runner"
-version = "0.3.1"
-source = { editable = "../maid-runner" }
+version = "0.4.0"
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "jsonschema" },
     { name = "tree-sitter" },
     { name = "tree-sitter-svelte" },
     { name = "tree-sitter-typescript" },
 ]
-
-[package.metadata]
-requires-dist = [
-    { name = "jsonschema", specifier = ">=4.25.1" },
-    { name = "tree-sitter", specifier = ">=0.23.2" },
-    { name = "tree-sitter-svelte", specifier = ">=1.0.2" },
-    { name = "tree-sitter-typescript", specifier = ">=0.23.2" },
-    { name = "watchdog", marker = "extra == 'watch'", specifier = ">=6.0.0" },
-]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "black", specifier = ">=25.1.0" },
-    { name = "build", specifier = ">=1.0.0" },
-    { name = "pre-commit", specifier = ">=4.0.0" },
-    { name = "pytest", specifier = ">=8.4.2" },
-    { name = "ruff", specifier = ">=0.13.0" },
-    { name = "twine", specifier = ">=5.0.0" },
-    { name = "vulture", specifier = ">=2.0" },
-    { name = "watchdog", specifier = ">=6.0.0" },
+sdist = { url = "https://files.pythonhosted.org/packages/49/9f/7546c6259c696a68e8f4b91217d89bab3d9dade6158d8306788ed88e2d0c/maid_runner-0.4.0.tar.gz", hash = "sha256:302f3ec889668a7f474968431ffe7be119a73508595c443eebcc06d399adf69b", size = 304777 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/50/4e/dc01d73cb4281173f95a7b217c993f02f429017b693d091d7f3d7d13a66c/maid_runner-0.4.0-py3-none-any.whl", hash = "sha256:66ab5a50f3faf732a01d80b1ea2fda9a4f39f0ef2172b45ada97a967b0c0732f", size = 157370 },
 ]
 
 [[package]]
@@ -605,7 +588,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "maid-runner", editable = "../maid-runner" },
+    { name = "maid-runner" },
     { name = "mcp", specifier = ">=1.0.0" },
 ]
 
