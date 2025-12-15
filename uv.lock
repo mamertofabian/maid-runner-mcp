@@ -551,7 +551,7 @@ wheels = [
 
 [[package]]
 name = "maid-runner"
-version = "0.4.0"
+version = "0.5.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "jsonschema" },
@@ -559,9 +559,9 @@ dependencies = [
     { name = "tree-sitter-svelte" },
     { name = "tree-sitter-typescript" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/49/9f/7546c6259c696a68e8f4b91217d89bab3d9dade6158d8306788ed88e2d0c/maid_runner-0.4.0.tar.gz", hash = "sha256:302f3ec889668a7f474968431ffe7be119a73508595c443eebcc06d399adf69b", size = 304777 }
+sdist = { url = "https://files.pythonhosted.org/packages/ac/e6/6dba0d51a4dd5e51e18ec930d00f7c54752b1bf1922326cc3baaa6d4e48d/maid_runner-0.5.0.tar.gz", hash = "sha256:bbff2c4059eae5f1f31c9e59250a2a8ff90cc65e814fee768fff3db4bf48013d", size = 313481 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/50/4e/dc01d73cb4281173f95a7b217c993f02f429017b693d091d7f3d7d13a66c/maid_runner-0.4.0-py3-none-any.whl", hash = "sha256:66ab5a50f3faf732a01d80b1ea2fda9a4f39f0ef2172b45ada97a967b0c0732f", size = 157370 },
+    { url = "https://files.pythonhosted.org/packages/08/1d/334c577e13066e8d5968b54708da86918783cca748b63daf3788c6eb690f/maid_runner-0.5.0-py3-none-any.whl", hash = "sha256:f35b73529814e5460836e5acadb4bf748047b0383ed4481aa54c3f210ec72f49", size = 162197 },
 ]
 
 [[package]]
