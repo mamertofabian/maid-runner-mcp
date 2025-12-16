@@ -1,0 +1,36 @@
+{
+  "version": "1",
+  "goal": "Create a minimal MCP server that starts successfully and responds to MCP protocol handshake with stdio transport",
+  "description": "Implement the foundational MCP server using the official MCP Python SDK. The server should have basic metadata, stdio transport configuration, and be testable via MCP Inspector. No tools are registered yet - this is the foundation for subsequent tool implementations.",
+  "taskType": "create",
+  "supersedes": [],
+  "creatableFiles": [
+    "src/maid_runner_mcp/server.py"
+  ],
+  "editableFiles": [],
+  "readonlyFiles": [
+    "src/maid_runner_mcp/__init__.py",
+    "src/maid_runner_mcp/__version__.py",
+    "pyproject.toml"
+  ],
+  "expectedArtifacts": {
+    "file": "src/maid_runner_mcp/server.py",
+    "contains": [
+      {
+        "type": "function",
+        "name": "create_server",
+        "description": "Factory function to create and configure MCP server instance",
+        "args": [],
+        "returns": "Server"
+      },
+      {
+        "type": "function",
+        "name": "main",
+        "description": "Entry point that runs the MCP server with stdio transport",
+        "args": [],
+        "returns": "None"
+      }
+    ]
+  },
+  "validationCommand": ["pytest", "tests/test_task_001_blank_server.py", "-v"]
+}
