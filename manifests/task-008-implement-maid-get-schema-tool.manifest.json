@@ -1,0 +1,28 @@
+{
+  "version": "1",
+  "goal": "Implement the maid_get_schema MCP tool to wrap MAID Runner's schema command and expose it via the Model Context Protocol",
+  "description": "Create the schema.py module that implements the maid_get_schema tool. This tool wraps the MAID Runner CLI schema command, handles async execution, captures stdout/stderr, parses the JSON schema output, and returns structured JSON responses compatible with MCP clients.",
+  "taskType": "create",
+  "supersedes": [],
+  "creatableFiles": [
+    "src/maid_runner_mcp/tools/schema.py"
+  ],
+  "editableFiles": [],
+  "readonlyFiles": [
+    "src/maid_runner_mcp/tools/__init__.py",
+    "pyproject.toml"
+  ],
+  "expectedArtifacts": {
+    "file": "src/maid_runner_mcp/tools/schema.py",
+    "contains": [
+      {
+        "type": "function",
+        "name": "maid_get_schema",
+        "description": "MCP tool that retrieves the MAID manifest JSON schema",
+        "args": [],
+        "returns": "dict[str, Any]"
+      }
+    ]
+  },
+  "validationCommand": ["pytest", "tests/test_task_008_maid_get_schema_tool.py", "-v"]
+}

@@ -1,0 +1,40 @@
+{
+  "version": "1",
+  "goal": "Implement the maid_list_manifests MCP tool to wrap MAID Runner's manifests command and expose it via the Model Context Protocol",
+  "description": "Create the manifests.py module that implements the maid_list_manifests tool. This tool wraps the MAID Runner CLI manifests command, handles async execution, captures stdout/stderr, parses manifest listing results categorized by reference type (created, edited, read), and returns structured JSON responses compatible with MCP clients.",
+  "taskType": "create",
+  "supersedes": [],
+  "creatableFiles": [
+    "src/maid_runner_mcp/tools/manifests.py"
+  ],
+  "editableFiles": [],
+  "readonlyFiles": [
+    "src/maid_runner_mcp/tools/__init__.py",
+    "src/maid_runner_mcp/tools/validate.py",
+    "src/maid_runner_mcp/tools/snapshot.py",
+    "pyproject.toml"
+  ],
+  "expectedArtifacts": {
+    "file": "src/maid_runner_mcp/tools/manifests.py",
+    "contains": [
+      {
+        "type": "function",
+        "name": "maid_list_manifests",
+        "description": "MCP tool that lists all manifests referencing a given file, categorized by reference type",
+        "args": [
+          {
+            "name": "file_path",
+            "type": "str"
+          },
+          {
+            "name": "manifest_dir",
+            "type": "str",
+            "default": "\"manifests\""
+          }
+        ],
+        "returns": "dict[str, Any]"
+      }
+    ]
+  },
+  "validationCommand": ["pytest", "tests/test_task_006_maid_list_manifests_tool.py", "-v"]
+}

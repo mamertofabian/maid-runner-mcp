@@ -1,0 +1,51 @@
+{
+  "version": "1",
+  "goal": "Implement the maid_test MCP tool to wrap MAID Runner's test command and expose it via the Model Context Protocol",
+  "description": "Create the test.py module that implements the maid_test tool. This tool wraps the MAID Runner CLI test command, handles async execution, captures stdout/stderr, parses test results including total/passed/failed manifests, and returns structured JSON responses compatible with MCP clients.",
+  "taskType": "create",
+  "supersedes": [],
+  "creatableFiles": [
+    "src/maid_runner_mcp/tools/test.py"
+  ],
+  "editableFiles": [],
+  "readonlyFiles": [
+    "src/maid_runner_mcp/tools/__init__.py",
+    "src/maid_runner_mcp/tools/validate.py",
+    "src/maid_runner_mcp/tools/snapshot.py",
+    "pyproject.toml"
+  ],
+  "expectedArtifacts": {
+    "file": "src/maid_runner_mcp/tools/test.py",
+    "contains": [
+      {
+        "type": "function",
+        "name": "maid_test",
+        "description": "MCP tool that runs validation commands from all non-superseded manifests",
+        "args": [
+          {
+            "name": "manifest_dir",
+            "type": "str",
+            "default": "\"manifests\""
+          },
+          {
+            "name": "manifest",
+            "type": "str | None",
+            "default": "None"
+          },
+          {
+            "name": "fail_fast",
+            "type": "bool",
+            "default": "False"
+          },
+          {
+            "name": "timeout",
+            "type": "int",
+            "default": "300"
+          }
+        ],
+        "returns": "dict[str, Any]"
+      }
+    ]
+  },
+  "validationCommand": ["pytest", "tests/test_task_005_maid_test_tool.py", "-v"]
+}

@@ -1,0 +1,41 @@
+{
+  "version": "1",
+  "goal": "Implement the maid_init MCP tool to wrap MAID Runner's init command and expose it via the Model Context Protocol",
+  "description": "Create the init.py module that implements the maid_init tool. This tool wraps the MAID Runner CLI init command, handles async execution, captures stdout/stderr, parses initialization results including created files, and returns structured JSON responses compatible with MCP clients.",
+  "taskType": "create",
+  "supersedes": [],
+  "creatableFiles": [
+    "src/maid_runner_mcp/tools/init.py"
+  ],
+  "editableFiles": [],
+  "readonlyFiles": [
+    "src/maid_runner_mcp/tools/__init__.py",
+    "src/maid_runner_mcp/tools/validate.py",
+    "src/maid_runner_mcp/tools/snapshot.py",
+    "pyproject.toml"
+  ],
+  "expectedArtifacts": {
+    "file": "src/maid_runner_mcp/tools/init.py",
+    "contains": [
+      {
+        "type": "function",
+        "name": "maid_init",
+        "description": "MCP tool that initializes a MAID project structure in the target directory",
+        "args": [
+          {
+            "name": "target_dir",
+            "type": "str",
+            "default": "\".\""
+          },
+          {
+            "name": "force",
+            "type": "bool",
+            "default": "False"
+          }
+        ],
+        "returns": "dict[str, Any]"
+      }
+    ]
+  },
+  "validationCommand": ["pytest", "tests/test_task_007_maid_init_tool.py", "-v"]
+}
