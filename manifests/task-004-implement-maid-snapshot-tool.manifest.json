@@ -1,0 +1,49 @@
+{
+  "version": "1",
+  "goal": "Implement the maid_snapshot MCP tool to wrap MAID Runner's snapshot command and expose it via the Model Context Protocol",
+  "description": "Create the snapshot.py module that implements the maid_snapshot tool. This tool wraps the MAID Runner CLI snapshot command, handles async execution, captures stdout/stderr, parses snapshot results including manifest and test stub paths, and returns structured JSON responses compatible with MCP clients.",
+  "taskType": "create",
+  "supersedes": [],
+  "creatableFiles": [
+    "src/maid_runner_mcp/tools/snapshot.py"
+  ],
+  "editableFiles": [],
+  "readonlyFiles": [
+    "src/maid_runner_mcp/tools/__init__.py",
+    "src/maid_runner_mcp/tools/validate.py",
+    "pyproject.toml"
+  ],
+  "expectedArtifacts": {
+    "file": "src/maid_runner_mcp/tools/snapshot.py",
+    "contains": [
+      {
+        "type": "function",
+        "name": "maid_snapshot",
+        "description": "MCP tool that generates a snapshot manifest from an existing Python file",
+        "args": [
+          {
+            "name": "file_path",
+            "type": "str"
+          },
+          {
+            "name": "output_dir",
+            "type": "str",
+            "default": "\"manifests\""
+          },
+          {
+            "name": "force",
+            "type": "bool",
+            "default": "False"
+          },
+          {
+            "name": "skip_test_stub",
+            "type": "bool",
+            "default": "False"
+          }
+        ],
+        "returns": "dict[str, Any]"
+      }
+    ]
+  },
+  "validationCommand": ["pytest", "tests/test_task_004_maid_snapshot_tool.py", "-v"]
+}
