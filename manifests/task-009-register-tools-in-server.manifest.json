@@ -1,0 +1,39 @@
+{
+  "goal": "Register all 6 MCP tools (maid_validate, maid_snapshot, maid_test, maid_list_manifests, maid_init, maid_get_schema) in the MCP server",
+  "taskType": "edit",
+  "supersedes": [],
+  "creatableFiles": [],
+  "editableFiles": [
+    "src/maid_runner_mcp/server.py"
+  ],
+  "readonlyFiles": [
+    "src/maid_runner_mcp/tools/validate.py",
+    "src/maid_runner_mcp/tools/snapshot.py",
+    "src/maid_runner_mcp/tools/test.py",
+    "src/maid_runner_mcp/tools/manifests.py",
+    "src/maid_runner_mcp/tools/init.py",
+    "src/maid_runner_mcp/tools/schema.py",
+    "src/maid_runner_mcp/tools/__init__.py",
+    "pyproject.toml"
+  ],
+  "expectedArtifacts": {
+    "file": "src/maid_runner_mcp/server.py",
+    "contains": [
+      {
+        "type": "function",
+        "name": "create_server",
+        "args": [],
+        "returns": "Server",
+        "description": "Factory function to create and configure MCP server instance with registered tools"
+      },
+      {
+        "type": "function",
+        "name": "main",
+        "args": [],
+        "returns": "None",
+        "description": "Entry point that runs the MCP server with stdio transport"
+      }
+    ]
+  },
+  "validationCommand": ["pytest", "tests/test_task_009_register_tools.py", "-v"]
+}
