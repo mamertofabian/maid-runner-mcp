@@ -1,0 +1,27 @@
+{
+  "version": "1",
+  "goal": "Create the tools package foundation with __init__.py to enable tool module organization and shared utilities",
+  "description": "Establish the tools package structure that will contain all MCP tool implementations. This package should export common error handling utilities and provide a clean namespace for tool modules to follow.",
+  "taskType": "create",
+  "supersedes": [],
+  "creatableFiles": [
+    "src/maid_runner_mcp/tools/__init__.py"
+  ],
+  "editableFiles": [],
+  "readonlyFiles": [
+    "src/maid_runner_mcp/__init__.py",
+    "src/maid_runner_mcp/__version__.py",
+    "pyproject.toml"
+  ],
+  "expectedArtifacts": {
+    "file": "src/maid_runner_mcp/tools/__init__.py",
+    "contains": [
+      {
+        "type": "attribute",
+        "name": "__all__",
+        "description": "Public exports from the tools package"
+      }
+    ]
+  },
+  "validationCommand": ["pytest", "tests/test_task_002_tools_package.py", "-v"]
+}
