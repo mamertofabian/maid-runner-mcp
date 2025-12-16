@@ -107,7 +107,7 @@ The development process is broken down into distinct phases, characterized by tw
         "priority": "high"
       },
       "expectedArtifacts": {
-        "file": "src/services/user_service.py",
+        "file": "src/services/user_service.py",  // ⚠️ OBJECT with "file" + "contains" (NOT an array!)
         "contains": [
           {
             "type": "class",
@@ -137,7 +137,7 @@ The development process is broken down into distinct phases, characterized by tw
       "goal": "Add a method to UserService",
       "readonlyFiles": [],
       "expectedArtifacts": {
-        "file": "src/services/user_service.py",
+        "file": "src/services/user_service.py",  // ⚠️ OBJECT with "file" + "contains" (NOT an array!)
         "contains": [
           {
             "type": "function",
@@ -151,6 +151,33 @@ The development process is broken down into distinct phases, characterized by tw
       "validationCommand": ["pytest", "tests/test_user_service.py"]
     }
     ```
+
+    **⚠️ IMPORTANT: `expectedArtifacts` Structure**
+    - `expectedArtifacts` is an **OBJECT**, not an array
+    - It defines artifacts for **ONE file only** (specified by the `file` field)
+    - For multi-file tasks: Create **separate manifests** for each file
+    - The `systemArtifacts` field (array) is only for system-snapshot manifests
+
+  * **Multi-Language Support**
+    MAID Runner supports validation across multiple programming languages with production-ready parsers:
+
+      * **Python** - Full support via Python AST (built-in)
+        - File extensions: `.py`
+        - Artifact types: `class`, `function`, `attribute`
+        - Features: Type hints, async/await, decorators, class inheritance
+
+      * **TypeScript/JavaScript** - Production-ready support via tree-sitter
+        - File extensions: `.ts`, `.tsx`, `.js`, `.jsx`
+        - Artifact types: `class`, `function`, `interface`, `type`, `enum`, `namespace`, `attribute`
+        - Features: Generics, decorators, JSX/TSX, async functions, arrow functions
+        - Framework support: Angular, React, NestJS, Vue
+        - Coverage: 99.9% of TypeScript language constructs
+
+    The validator automatically detects the language based on file extension and routes to the appropriate parser. All validation features (behavioral tests, implementation validation, snapshot generation, test stub generation) work seamlessly across languages.
+
+    **Supported Artifact Types:**
+    - **Common (Python & TypeScript):** `class`, `function`, `attribute`
+    - **TypeScript-Specific:** `interface`, `type`, `enum`, `namespace`
 
   * **Context-Aware Validation Modes**
     The structural validator operates in two modes based on the manifest's intent, providing a balance between strictness and flexibility:
@@ -176,7 +203,142 @@ The development process is broken down into distinct phases, characterized by tw
 
     * **Handling Refactoring with `supersedes`:** To handle breaking changes without violating immutability, a new manifest can formally supersede an old one. It uses the optional `supersedes` property (an array of manifest paths). The Merging Validator is smart enough to ignore any manifest that has been superseded, allowing the contract to evolve. Superseded manifests are considered "dead" for validation but remain as an immutable part of the project's audit log.
 
+      **Important:** When a manifest is superseded, it is completely excluded from MAID operations:
+      - The validator (`maid validate`) ignores superseded manifests when merging manifest chains
+      - The test runner (`maid test`) does NOT execute `validationCommand` from superseded manifests
+      - Superseded manifests serve as historical documentation only—they are archived, not active
+
     * **Consolidated Snapshots:** For mature modules with a long manifest history, a tool can be run to generate a single "snapshot" manifest. This new manifest describes the complete current state of the file and supersedes all previous manifests for that file. This is also the primary mechanism for onboarding existing, legacy code into the MAID methodology.
+
+    * **Transitioning from Snapshots to Natural Evolution:** Snapshot manifests are designed for "frozen" code—capturing a complete baseline. Once code needs to evolve, you must transition to the natural MAID flow:
+
+      **The Pattern:**
+      1. **Snapshot Phase** (Initial state): A snapshot manifest captures the complete public API of a file at a specific point in time
+         ```json
+         {
+           "taskType": "snapshot",
+           "expectedArtifacts": {
+             "file": "src/service.py",
+             "contains": [
+               {"type": "function", "name": "existing_func_1"},
+               {"type": "function", "name": "existing_func_2"}
+             ]
+           }
+         }
+         ```
+
+      2. **Transition Manifest** (First evolution): When the file needs to evolve, create an edit manifest that:
+         - Declares ALL current functions (existing + new)
+         - Supersedes the snapshot manifest
+         - Uses `taskType: "edit"` (not "snapshot")
+
+         ```json
+         {
+           "taskType": "edit",
+           "supersedes": ["task-015-snapshot-service.manifest.json"],
+           "expectedArtifacts": {
+             "file": "src/service.py",
+             "contains": [
+               {"type": "function", "name": "existing_func_1"},
+               {"type": "function", "name": "existing_func_2"},
+               {"type": "function", "name": "new_func"}  // New addition
+             ]
+           }
+         }
+         ```
+
+      3. **Future Evolution** (Natural MAID flow): Subsequent manifests only declare new changes:
+         ```json
+         {
+           "taskType": "edit",
+           "expectedArtifacts": {
+             "file": "src/service.py",
+             "contains": [
+               {"type": "function", "name": "another_new_func"}  // Only the new addition
+             ]
+           }
+         }
+         ```
+
+         With `--use-manifest-chain`, the validator merges all active manifests, so the complete API is validated without needing to update previous manifests.
+
+      **Why This Pattern Works:**
+      - Snapshot = baseline for static/legacy code
+      - Transition manifest = bridge from frozen state to natural evolution
+      - Natural flow = incremental changes leveraging manifest chaining
+      - Future manifests can add APIs without touching previous manifests
+
+      **Key Rule:** Once you supersede a snapshot with a comprehensive edit manifest, continue using incremental edit manifests. Don't create new snapshots unless establishing a new "checkpoint" baseline.
+
+  * **File Deletion Pattern**
+
+    When removing a file that was previously tracked by MAID:
+
+    1. **Create a deletion manifest** with `taskType: "refactor"`
+    2. **Supersede** the original creation manifest
+    3. **Delete** the file, its tests, and any imports
+    4. **Validate** the deletion with behavioral tests
+
+    Use status: "absent" in expectedArtifacts to mark the file as deleted.
+
+    **Manifest Structure:**
+    ```json
+    {
+      "goal": "Remove module X as it is no longer needed",
+      "taskType": "refactor",
+      "supersedes": ["manifests/task-XXX-create-module.manifest.json"],
+      "creatableFiles": [],
+      "editableFiles": [],
+      "expectedArtifacts": {
+        "file": "module_x.py",
+        "status": "absent",
+        "contains": []
+      },
+      "validationCommand": ["pytest", "tests/test_verify_deletion.py", "-v"]
+    }
+    ```
+
+    **Validation Requirements:**
+    - File no longer exists
+    - Test file for original feature is deleted
+    - No remaining imports from the deleted module
+
+    **Audit Trail:** The superseded manifest preserves the complete history of when and why the file was created and later removed.
+
+  * **File Rename Pattern**
+
+    When renaming a file tracked by MAID:
+
+    1. **Create a rename manifest** with `taskType: "refactor"`
+    2. **Supersede** the original creation manifest
+    3. **Use `git mv`** to preserve file history
+    4. **Update** manifest to reference new filename
+    5. **Validate** the rename with behavioral tests
+
+    **Manifest Structure:**
+    ```json
+    {
+      "goal": "Rename module_old.py to module_new.py for clarity",
+      "taskType": "refactor",
+      "supersedes": ["manifests/task-XXX-create-module-old.manifest.json"],
+      "creatableFiles": ["path/to/module_new.py"],
+      "expectedArtifacts": {
+        "file": "path/to/module_new.py",
+        "contains": [
+          {"type": "function", "name": "existing_function"}
+        ]
+      },
+      "validationCommand": ["pytest", "tests/test_verify_rename.py", "-v"]
+    }
+    ```
+
+    **Validation Requirements:**
+    - Old filename no longer exists
+    - New filename exists with correct functionality
+    - No remaining imports from old module name
+    - Git history preserved via `git mv`
+
+    **Key Difference from Deletion:** The `creatableFiles` contains the new filename, and `expectedArtifacts` declares the same public API under the new file location. This maintains continuity of the module's functionality while updating its location.
 
   * **The "Scaffold and Fill" Pattern**
     A stricter version of the workflow where the Architect Agent not only creates tests but also creates the `editableFiles` with empty function signatures. This reduces the Developer Agent's task to pure implementation.
