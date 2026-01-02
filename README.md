@@ -84,9 +84,12 @@ AI Agents (Claude, GPT-4, etc.)
 
 - `maid_validate` - Validate manifests (structural + behavioral + implementation)
 - `maid_snapshot` - Generate manifest snapshots from existing code
+- `maid_snapshot_system` - Generate system-wide architecture snapshot
 - `maid_list_manifests` - Find manifests referencing a file
 - `maid_init` - Initialize MAID project structure
 - `maid_get_schema` - Get manifest JSON schema
+- `maid_generate_stubs` - Generate test stubs from manifest
+- `maid_files` - Check file tracking status
 
 ### Resources (Read-Only Data Access)
 
@@ -162,15 +165,6 @@ prompt = await session.get_prompt("plan-task", {
 # Follow prompt to create manifest
 ...
 ```
-
-## Documentation
-
-- [Installation & Setup](docs/setup.md)
-- [Tools Reference](docs/tools.md)
-- [Resources Reference](docs/resources.md)
-- [Prompts Reference](docs/prompts.md)
-- [Integration Guide](docs/integration.md)
-- [Examples](docs/examples/)
 
 ## Development
 

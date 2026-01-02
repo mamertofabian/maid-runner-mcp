@@ -156,7 +156,7 @@ make validate    # Validate all manifests
 
 ## Dependencies
 
-- **maid-runner>=0.1.0**: Core validation framework
+- **maid-runner>=0.7.0**: Core validation framework
 - **mcp>=1.0.0**: MCP Python SDK (FastMCP)
 - **pytest-asyncio**: Async testing support
 

@@ -19,7 +19,7 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [
-    "maid-runner",
+    "maid-runner>=0.7.0",
     "mcp>=1.0.0",
 ]
 
@@ -72,5 +72,3 @@ warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
 
-[tool.uv.sources]
-maid-runner = { path = "../maid-runner", editable = true }

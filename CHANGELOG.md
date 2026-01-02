@@ -11,11 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial project structure
 - MCP server foundation (Issue #89)
 
-## [0.1.0] - TBD
+## [0.1.0] - 2026-01-03
 
 ### Added
 - Model Context Protocol server implementation
-- Core MCP tools: `maid_validate`, `maid_snapshot`, `maid_test`, `maid_list_manifests`, `maid_init`, `maid_get_schema`
+- Core MCP tools: `maid_validate`, `maid_snapshot`, `maid_snapshot_system`, `maid_list_manifests`, `maid_init`, `maid_get_schema`, `maid_generate_stubs`, `maid_files`
 - MCP resources: `manifest://`, `schema://manifest`, `validation://`, `file-tracking://analysis`
 - MCP prompts: `plan-task`, `implement-task`, `refactor-code`, `review-manifest`
 - Integration with MAID Runner validation framework
