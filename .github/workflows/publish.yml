@@ -29,11 +29,11 @@ jobs:
     - name: Install dependencies
       run: uv sync
     - name: Run linting
-      run: uv run ruff check src/maid_runner_mcp/
+      run: uv run python -m ruff check src/maid_runner_mcp/
     - name: Run type checking
       run: uv run python -m mypy src/maid_runner_mcp/
     - name: Run MAID validation
-      run: uv run maid validate manifests/*.manifest.json --use-manifest-chain
+      run: uv run maid validate
     - name: Run full test suite
       run: uv run python -m pytest tests/ -v
 
