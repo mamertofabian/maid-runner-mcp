@@ -71,7 +71,7 @@ class TestGetManifestSchemaUsesWorkingDirectory:
     async def test_get_manifest_schema_accepts_context_parameter(self):
         """Test that get_manifest_schema can be called with ctx parameter."""
         from maid_runner_mcp.resources.schema import get_manifest_schema
-        from unittest.mock import AsyncMock, MagicMock, patch
+        from unittest.mock import AsyncMock, MagicMock
 
         # Create a mock context
         mock_ctx = MagicMock()
@@ -81,16 +81,12 @@ class TestGetManifestSchemaUsesWorkingDirectory:
         )
         mock_ctx.session = mock_session
 
-        # Mock subprocess to avoid actual command execution
-        with patch("maid_runner_mcp.resources.schema.subprocess.run") as mock_run:
-            mock_run.return_value = MagicMock(returncode=0, stdout='{"type": "object"}', stderr="")
+        # Call with ctx parameter - reads schema from installed package
+        result = await get_manifest_schema(ctx=mock_ctx)
 
-            # Call with ctx parameter
-            result = await get_manifest_schema(ctx=mock_ctx)
-
-            # Should return a result
-            assert isinstance(result, str), "Should return schema as string"
-            assert len(result) > 0, "Schema should not be empty"
+        # Should return a result
+        assert isinstance(result, str), "Should return schema as string"
+        assert len(result) > 0, "Schema should not be empty"
 
     async def test_get_manifest_schema_calls_get_working_directory(self):
         """Test that get_manifest_schema calls get_working_directory with ctx."""
@@ -111,17 +107,11 @@ class TestGetManifestSchemaUsesWorkingDirectory:
         ) as mock_get_wd:
             mock_get_wd.return_value = "/tmp/test"
 
-            # Mock subprocess to avoid actual command execution
-            with patch("maid_runner_mcp.resources.schema.subprocess.run") as mock_run:
-                mock_run.return_value = MagicMock(
-                    returncode=0, stdout='{"type": "object"}', stderr=""
-                )
+            # Call get_manifest_schema
+            result = await get_manifest_schema(ctx=mock_ctx)
 
-                # Call get_manifest_schema
-                result = await get_manifest_schema(ctx=mock_ctx)
+            # Verify get_working_directory was called with ctx
+            mock_get_wd.assert_called_once_with(mock_ctx)
 
-                # Verify get_working_directory was called with ctx
-                mock_get_wd.assert_called_once_with(mock_ctx)
-
-                # Verify result is valid
-                assert isinstance(result, str), "Should return schema as string"
+            # Verify result is valid
+            assert isinstance(result, str), "Should return schema as string"

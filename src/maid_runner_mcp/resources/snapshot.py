@@ -1,12 +1,12 @@
 """MCP resource for accessing system-wide manifest snapshots."""
 
 import asyncio
-import subprocess
-import tempfile
-from pathlib import Path
+import json
 
 from mcp.server.fastmcp import Context
 
+from maid_runner.core.manifest import _manifest_to_dict
+from maid_runner.core.snapshot import generate_system_snapshot
 from maid_runner_mcp.server import mcp
 from maid_runner_mcp.utils.cache import TTLCache
 from maid_runner_mcp.utils.roots import get_working_directory
@@ -20,8 +20,8 @@ _snapshot_cache: TTLCache[str] = TTLCache(ttl_seconds=300)
 async def get_system_snapshot(ctx: Context) -> str:
     """MCP resource handler for accessing the system-wide manifest snapshot.
 
-    Provides read-only access to the system-wide snapshot by calling MAID CLI.
-    Results are cached for 5 minutes to reduce CLI overhead.
+    Provides read-only access to the system-wide snapshot by calling the
+    maid_runner library directly. Results are cached for 5 minutes to reduce overhead.
 
     Args:
         ctx: MCP context for accessing session roots
@@ -38,50 +38,28 @@ async def get_system_snapshot(ctx: Context) -> str:
     if cached is not None:
         return cached
 
-    # Get working directory from MCP context
     cwd = await get_working_directory(ctx)
+    project_root = cwd or "."
 
-    # Create temporary file for snapshot output
-    with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as tmp:
-        tmp_path = tmp.name
-
+    loop = asyncio.get_event_loop()
     try:
-        # Build command - generate to temp file with quiet flag
-        cmd = [
-            "uv",
-            "run",
-            "maid",
-            "snapshot-system",
-            "--output",
-            tmp_path,
-            "--quiet",
-        ]
-
-        # Run in thread pool to avoid blocking
-        loop = asyncio.get_event_loop()
-        result = await loop.run_in_executor(
-            None, lambda: subprocess.run(cmd, capture_output=True, text=True, cwd=cwd)
+        manifest = await loop.run_in_executor(
+            None,
+            lambda: generate_system_snapshot(
+                manifest_dir="manifests/",
+                project_root=project_root,
+            ),
         )
 
-        if result.returncode == 0:
-            # Read the generated JSON file
-            snapshot = Path(tmp_path).read_text(encoding="utf-8")
+        snapshot_json = await loop.run_in_executor(
+            None,
+            lambda: json.dumps(_manifest_to_dict(manifest), indent=2),
+        )
 
-            # Cache and return snapshot as string
-            _snapshot_cache.set(cache_key, snapshot)
-            return snapshot
-        else:
-            # Parse error output
-            error_output = result.stderr or result.stdout
-            raise RuntimeError(f"Failed to generate system snapshot: {error_output}")
+        _snapshot_cache.set(cache_key, snapshot_json)
+        return snapshot_json
 
     except FileNotFoundError:
-        raise RuntimeError("MAID Runner command not found")
-    except subprocess.SubprocessError as e:
+        raise RuntimeError("Manifest directory not found")
+    except Exception as e:
         raise RuntimeError(f"Failed to generate system snapshot: {e}")
-    finally:
-        # Clean up temporary file
-        try:
-            Path(tmp_path).unlink()
-        except Exception:
-            pass  # Ignore cleanup errors

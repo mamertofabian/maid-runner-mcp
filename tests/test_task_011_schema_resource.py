@@ -183,8 +183,8 @@ class TestGetManifestSchemaBehavior:
         # Handle both direct properties and nested definitions
         properties = schema_data.get("properties", {})
 
-        # Check for key MAID manifest fields
-        expected_fields = ["goal", "taskType", "expectedArtifacts", "validationCommand"]
+        # Check for key MAID manifest fields (v2 schema property names)
+        expected_fields = ["goal", "schema", "files", "validate", "type", "description"]
 
         found_fields = [field for field in expected_fields if field in properties]
 
@@ -279,11 +279,16 @@ class TestGetManifestSchemaBehavior:
         except ImportError:
             pytest.skip("jsonschema library not available")
 
-        # Load a real manifest
+        # Load a real manifest and convert v1→v2 if needed
         manifest_path = "manifests/task-001-mcp-server-core.manifest.json"
         try:
+            from maid_runner.compat.v1_loader import is_v1_manifest, convert_v1_to_v2
+
             with open(manifest_path, "r") as f:
                 manifest_data = json.load(f)
+
+            if is_v1_manifest(manifest_data):
+                manifest_data = convert_v1_to_v2(manifest_data)
 
             # Validate manifest against schema
             # This should not raise an exception

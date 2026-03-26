@@ -98,8 +98,11 @@ class TestGetSystemSnapshotUsesWorkingDirectory:
 
     async def test_get_system_snapshot_calls_get_working_directory(self):
         """Test that get_system_snapshot calls get_working_directory with ctx."""
-        from maid_runner_mcp.resources.snapshot import get_system_snapshot
+        from maid_runner_mcp.resources.snapshot import get_system_snapshot, _snapshot_cache
         from unittest.mock import AsyncMock, MagicMock, patch
+
+        # Clear cache to ensure get_working_directory is called
+        _snapshot_cache._cache.clear()
 
         # Create a mock context
         mock_ctx = MagicMock()
@@ -115,17 +118,15 @@ class TestGetSystemSnapshotUsesWorkingDirectory:
         ) as mock_get_wd:
             mock_get_wd.return_value = "/tmp/test"
 
-            # Patch subprocess to avoid actual command execution
-            with patch("maid_runner_mcp.resources.snapshot.asyncio.get_event_loop") as mock_loop:
-                mock_executor = AsyncMock()
-                mock_executor.return_value = MagicMock(returncode=1, stderr="test error", stdout="")
-                mock_loop.return_value.run_in_executor = mock_executor
+            # Mock library function to avoid actual execution
+            with patch("maid_runner_mcp.resources.snapshot.generate_system_snapshot") as mock_gen:
+                mock_gen.side_effect = RuntimeError("Test error")
 
                 # Call get_system_snapshot
                 try:
                     await get_system_snapshot(ctx=mock_ctx)
                 except RuntimeError:
-                    pass  # Expected to fail with mocked subprocess
+                    pass  # Expected to fail with mocked library
 
                 # Verify get_working_directory was called with ctx
                 mock_get_wd.assert_called_once_with(mock_ctx)
