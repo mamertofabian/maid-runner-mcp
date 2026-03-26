@@ -1,6 +1,6 @@
 [project]
 name = "maid-runner-mcp"
-version = "0.1.0"
+version = "0.2.0"
 description = "Model Context Protocol (MCP) server for MAID Runner - exposes validation tools to AI agents via MCP"
 readme = "README.md"
 requires-python = ">=3.12"

@@ -7,9 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-- Initial project structure
-- MCP server foundation (Issue #89)
+## [0.2.0] - 2026-03-26
+
+### Changed
+- Migrate all tools from subprocess CLI calls to maid-runner v2.0.0 library API
+- Migrate schema and snapshot resources from subprocess to library imports
+- Bump maid-runner dependency from >=0.7.0 to >=2.0.0
+- Update tests to mock library objects instead of subprocess.run
+- Update MAID manifests for v2 validator compliance
 
 ## [0.1.0] - 2026-01-03
 
@@ -23,5 +28,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Structured JSON responses for all tools
 - Documentation and integration guides
 
-[Unreleased]: https://github.com/mamertofabian/maid-runner-mcp/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/mamertofabian/maid-runner-mcp/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/mamertofabian/maid-runner-mcp/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/mamertofabian/maid-runner-mcp/releases/tag/v0.1.0
