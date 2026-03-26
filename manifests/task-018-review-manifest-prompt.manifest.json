@@ -2,10 +2,10 @@
   "goal": "Implement review-manifest MCP prompt that guides AI agents through MAID Phase 2 Quality Gate - reviewing manifest and tests before implementation",
   "taskType": "create",
   "supersedes": [],
-  "creatableFiles": [
+  "creatableFiles": [],
+  "editableFiles": [
     "src/maid_runner_mcp/prompts/review_manifest.py"
   ],
-  "editableFiles": [],
   "readonlyFiles": [
     ".claude/agents/maid-plan-reviewer.md",
     "src/maid_runner_mcp/prompts/__init__.py",

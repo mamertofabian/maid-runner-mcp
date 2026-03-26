@@ -6,7 +6,7 @@ These tests verify the expected artifacts defined in the manifest:
 - maid_files(): Async function that provides file-level tracking status
 
 Tests follow MAID behavioral testing pattern - they USE the artifacts
-rather than just checking existence. We use mocking to avoid calling the real CLI.
+rather than just checking existence. We use mocking to avoid calling the real library.
 """
 
 import pytest
@@ -22,6 +22,31 @@ def _create_mock_context():
     )
     mock_ctx.session = mock_session
     return mock_ctx
+
+
+def _mock_entry(data):
+    """Create a mock FileTrackingEntry from a dict or string."""
+    entry = MagicMock()
+    if isinstance(data, str):
+        entry.path = data
+        entry.status = "tracked"
+        entry.issues = ()
+        entry.manifests = ()
+    else:
+        entry.path = data.get("file", "")
+        entry.status = data.get("status", "unknown")
+        entry.issues = tuple(data.get("issues", []))
+        entry.manifests = tuple(data.get("manifests", []))
+    return entry
+
+
+def _create_mock_report(undeclared=None, registered=None, tracked=None):
+    """Helper to create a mock FileTrackingReport."""
+    report = MagicMock()
+    report.undeclared = [_mock_entry(e) for e in (undeclared or [])]
+    report.registered = [_mock_entry(e) for e in (registered or [])]
+    report.tracked = [_mock_entry(t) for t in (tracked or [])]
+    return report
 
 
 class TestFileInfoTypedDict:
@@ -160,7 +185,7 @@ class TestMaidFilesFunction:
 class TestMaidFilesBehavior:
     """Tests for maid_files behavior when called.
 
-    Note: We use mocking here to avoid calling the real CLI and to test
+    Note: We use mocking here to avoid calling the real library and to test
     specific scenarios in isolation.
     """
 
@@ -168,16 +193,16 @@ class TestMaidFilesBehavior:
         """Test that maid_files returns a FileTrackingResult-compatible dict."""
         from maid_runner_mcp.tools.files import maid_files
 
-        # Mock subprocess to avoid real CLI execution
-        mock_result = MagicMock()
-        mock_result.returncode = 0
-        mock_result.stdout = '{"undeclared": [], "registered": [], "tracked": ["src/test.py"]}'
-        mock_result.stderr = ""
+        mock_report = _create_mock_report(tracked=["src/test.py"])
+        mock_engine = MagicMock()
+        mock_engine.run_file_tracking.return_value = mock_report
+        mock_chain = MagicMock()
 
         mock_ctx = _create_mock_context()
 
         with (
-            patch("subprocess.run", return_value=mock_result),
+            patch("maid_runner_mcp.tools.files.ManifestChain", return_value=mock_chain),
+            patch("maid_runner_mcp.tools.files.ValidationEngine", return_value=mock_engine),
             patch(
                 "maid_runner_mcp.tools.files.get_working_directory",
                 new_callable=AsyncMock,
@@ -195,15 +220,16 @@ class TestMaidFilesBehavior:
         """Test that maid_files returns correct field types."""
         from maid_runner_mcp.tools.files import maid_files
 
-        mock_result = MagicMock()
-        mock_result.returncode = 0
-        mock_result.stdout = '{"undeclared": [], "registered": [], "tracked": ["src/test.py"]}'
-        mock_result.stderr = ""
+        mock_report = _create_mock_report(tracked=["src/test.py"])
+        mock_engine = MagicMock()
+        mock_engine.run_file_tracking.return_value = mock_report
+        mock_chain = MagicMock()
 
         mock_ctx = _create_mock_context()
 
         with (
-            patch("subprocess.run", return_value=mock_result),
+            patch("maid_runner_mcp.tools.files.ManifestChain", return_value=mock_chain),
+            patch("maid_runner_mcp.tools.files.ValidationEngine", return_value=mock_engine),
             patch(
                 "maid_runner_mcp.tools.files.get_working_directory",
                 new_callable=AsyncMock,
@@ -212,7 +238,7 @@ class TestMaidFilesBehavior:
         ):
             result = await maid_files(ctx=mock_ctx)
 
-        # Verify types match the output schema from maid files --json
+        # Verify types match the output schema
         assert isinstance(result["undeclared"], list), "undeclared should be a list"
         assert isinstance(result["registered"], list), "registered should be a list"
         assert isinstance(result["tracked"], list), "tracked should be a list"
@@ -221,17 +247,16 @@ class TestMaidFilesBehavior:
         """Test that tracked files are strings (file paths)."""
         from maid_runner_mcp.tools.files import maid_files
 
-        mock_result = MagicMock()
-        mock_result.returncode = 0
-        mock_result.stdout = (
-            '{"undeclared": [], "registered": [], "tracked": ["src/a.py", "src/b.py"]}'
-        )
-        mock_result.stderr = ""
+        mock_report = _create_mock_report(tracked=["src/a.py", "src/b.py"])
+        mock_engine = MagicMock()
+        mock_engine.run_file_tracking.return_value = mock_report
+        mock_chain = MagicMock()
 
         mock_ctx = _create_mock_context()
 
         with (
-            patch("subprocess.run", return_value=mock_result),
+            patch("maid_runner_mcp.tools.files.ManifestChain", return_value=mock_chain),
+            patch("maid_runner_mcp.tools.files.ValidationEngine", return_value=mock_engine),
             patch(
                 "maid_runner_mcp.tools.files.get_working_directory",
                 new_callable=AsyncMock,
@@ -248,22 +273,25 @@ class TestMaidFilesBehavior:
         """Test that registered files have FileInfo structure."""
         from maid_runner_mcp.tools.files import maid_files
 
-        # Mock response with registered files
-        mock_result = MagicMock()
-        mock_result.returncode = 0
-        mock_result.stdout = """{
-            "undeclared": [],
-            "registered": [
-                {"file": "src/new.py", "status": "registered", "issues": [], "manifests": ["task-001"]}
-            ],
-            "tracked": []
-        }"""
-        mock_result.stderr = ""
+        mock_report = _create_mock_report(
+            registered=[
+                {
+                    "file": "src/new.py",
+                    "status": "registered",
+                    "issues": [],
+                    "manifests": ["task-001"],
+                }
+            ]
+        )
+        mock_engine = MagicMock()
+        mock_engine.run_file_tracking.return_value = mock_report
+        mock_chain = MagicMock()
 
         mock_ctx = _create_mock_context()
 
         with (
-            patch("subprocess.run", return_value=mock_result),
+            patch("maid_runner_mcp.tools.files.ManifestChain", return_value=mock_chain),
+            patch("maid_runner_mcp.tools.files.ValidationEngine", return_value=mock_engine),
             patch(
                 "maid_runner_mcp.tools.files.get_working_directory",
                 new_callable=AsyncMock,
@@ -284,22 +312,25 @@ class TestMaidFilesBehavior:
         """Test that undeclared files have FileInfo structure."""
         from maid_runner_mcp.tools.files import maid_files
 
-        # Mock response with undeclared files
-        mock_result = MagicMock()
-        mock_result.returncode = 0
-        mock_result.stdout = """{
-            "undeclared": [
-                {"file": "src/untracked.py", "status": "undeclared", "issues": ["not in any manifest"], "manifests": []}
-            ],
-            "registered": [],
-            "tracked": []
-        }"""
-        mock_result.stderr = ""
+        mock_report = _create_mock_report(
+            undeclared=[
+                {
+                    "file": "src/untracked.py",
+                    "status": "undeclared",
+                    "issues": ["not in any manifest"],
+                    "manifests": [],
+                }
+            ]
+        )
+        mock_engine = MagicMock()
+        mock_engine.run_file_tracking.return_value = mock_report
+        mock_chain = MagicMock()
 
         mock_ctx = _create_mock_context()
 
         with (
-            patch("subprocess.run", return_value=mock_result),
+            patch("maid_runner_mcp.tools.files.ManifestChain", return_value=mock_chain),
+            patch("maid_runner_mcp.tools.files.ValidationEngine", return_value=mock_engine),
             patch(
                 "maid_runner_mcp.tools.files.get_working_directory",
                 new_callable=AsyncMock,
@@ -320,22 +351,25 @@ class TestMaidFilesBehavior:
         """Test that maid_files with issues_only parameter filters correctly."""
         from maid_runner_mcp.tools.files import maid_files
 
-        # Mock response for issues_only mode
-        mock_result = MagicMock()
-        mock_result.returncode = 0
-        mock_result.stdout = """{
-            "undeclared": [
-                {"file": "src/issue.py", "status": "undeclared", "issues": ["not tracked"], "manifests": []}
-            ],
-            "registered": [],
-            "tracked": []
-        }"""
-        mock_result.stderr = ""
+        mock_report = _create_mock_report(
+            undeclared=[
+                {
+                    "file": "src/issue.py",
+                    "status": "undeclared",
+                    "issues": ["not tracked"],
+                    "manifests": [],
+                }
+            ]
+        )
+        mock_engine = MagicMock()
+        mock_engine.run_file_tracking.return_value = mock_report
+        mock_chain = MagicMock()
 
         mock_ctx = _create_mock_context()
 
         with (
-            patch("subprocess.run", return_value=mock_result) as mock_run,
+            patch("maid_runner_mcp.tools.files.ManifestChain", return_value=mock_chain),
+            patch("maid_runner_mcp.tools.files.ValidationEngine", return_value=mock_engine),
             patch(
                 "maid_runner_mcp.tools.files.get_working_directory",
                 new_callable=AsyncMock,
@@ -349,24 +383,25 @@ class TestMaidFilesBehavior:
         assert "registered" in result
         assert "tracked" in result
 
-        # Verify the command was called with --issues-only flag
-        call_args = mock_run.call_args
-        cmd = call_args[0][0]
-        assert "--issues-only" in cmd, "Command should include --issues-only flag"
-
     async def test_maid_files_with_status_filter(self):
         """Test that maid_files with status filter works."""
         from maid_runner_mcp.tools.files import maid_files
 
-        mock_result = MagicMock()
-        mock_result.returncode = 0
-        mock_result.stdout = '{"undeclared": [], "registered": [], "tracked": ["src/test.py"]}'
-        mock_result.stderr = ""
+        mock_report = _create_mock_report(
+            undeclared=[
+                {"file": "src/a.py", "status": "undeclared", "issues": [], "manifests": []}
+            ],
+            tracked=["src/test.py"],
+        )
+        mock_engine = MagicMock()
+        mock_engine.run_file_tracking.return_value = mock_report
+        mock_chain = MagicMock()
 
         mock_ctx = _create_mock_context()
 
         with (
-            patch("subprocess.run", return_value=mock_result) as mock_run,
+            patch("maid_runner_mcp.tools.files.ManifestChain", return_value=mock_chain),
+            patch("maid_runner_mcp.tools.files.ValidationEngine", return_value=mock_engine),
             patch(
                 "maid_runner_mcp.tools.files.get_working_directory",
                 new_callable=AsyncMock,
@@ -380,27 +415,26 @@ class TestMaidFilesBehavior:
         assert "registered" in result
         assert "tracked" in result
 
-        # Verify the command was called with --status flag
-        call_args = mock_run.call_args
-        cmd = call_args[0][0]
-        assert "--status" in cmd, "Command should include --status flag"
-        # Find the index of --status and check the next argument
-        status_idx = cmd.index("--status")
-        assert cmd[status_idx + 1] == "tracked", "Status value should be 'tracked'"
+        # With status="tracked", only tracked should have data
+        assert result["undeclared"] == [], "undeclared should be empty when filtering by tracked"
+        assert result["tracked"] == ["src/test.py"], "tracked should be preserved"
 
     async def test_maid_files_custom_manifest_dir(self):
         """Test that maid_files accepts custom manifest_dir."""
         from maid_runner_mcp.tools.files import maid_files
 
-        mock_result = MagicMock()
-        mock_result.returncode = 0
-        mock_result.stdout = '{"undeclared": [], "registered": [], "tracked": []}'
-        mock_result.stderr = ""
+        mock_report = _create_mock_report()
+        mock_engine = MagicMock()
+        mock_engine.run_file_tracking.return_value = mock_report
+        mock_chain = MagicMock()
 
         mock_ctx = _create_mock_context()
 
         with (
-            patch("subprocess.run", return_value=mock_result) as mock_run,
+            patch(
+                "maid_runner_mcp.tools.files.ManifestChain", return_value=mock_chain
+            ) as mock_chain_cls,
+            patch("maid_runner_mcp.tools.files.ValidationEngine", return_value=mock_engine),
             patch(
                 "maid_runner_mcp.tools.files.get_working_directory",
                 new_callable=AsyncMock,
@@ -414,27 +448,20 @@ class TestMaidFilesBehavior:
         assert "registered" in result
         assert "tracked" in result
 
-        # Verify the command was called with --manifest-dir flag
-        call_args = mock_run.call_args
-        cmd = call_args[0][0]
-        assert "--manifest-dir" in cmd, "Command should include --manifest-dir flag"
-        # Find the index of --manifest-dir and check the next argument
-        dir_idx = cmd.index("--manifest-dir")
-        assert cmd[dir_idx + 1] == "custom_manifests", "Manifest dir should be 'custom_manifests'"
+        # Verify ManifestChain was called with the custom manifest_dir
+        mock_chain_cls.assert_called_once_with("custom_manifests", project_root="/tmp/test")
 
-    async def test_maid_files_handles_cli_error(self):
-        """Test that maid_files handles CLI errors gracefully."""
+    async def test_maid_files_handles_library_error(self):
+        """Test that maid_files handles library errors gracefully."""
         from maid_runner_mcp.tools.files import maid_files
-
-        mock_result = MagicMock()
-        mock_result.returncode = 1
-        mock_result.stdout = ""
-        mock_result.stderr = "Error: manifest directory not found"
 
         mock_ctx = _create_mock_context()
 
         with (
-            patch("subprocess.run", return_value=mock_result),
+            patch(
+                "maid_runner_mcp.tools.files.ManifestChain",
+                side_effect=RuntimeError("manifest directory not found"),
+            ),
             patch(
                 "maid_runner_mcp.tools.files.get_working_directory",
                 new_callable=AsyncMock,
@@ -452,48 +479,22 @@ class TestMaidFilesBehavior:
         assert isinstance(result["registered"], list)
         assert isinstance(result["tracked"], list)
 
-    async def test_maid_files_handles_invalid_json_response(self):
-        """Test that maid_files handles invalid JSON gracefully."""
-        from maid_runner_mcp.tools.files import maid_files
-
-        mock_result = MagicMock()
-        mock_result.returncode = 0
-        mock_result.stdout = "Not valid JSON output"
-        mock_result.stderr = ""
-
-        mock_ctx = _create_mock_context()
-
-        with (
-            patch("subprocess.run", return_value=mock_result),
-            patch(
-                "maid_runner_mcp.tools.files.get_working_directory",
-                new_callable=AsyncMock,
-                return_value="/tmp/test",
-            ),
-        ):
-            result = await maid_files(ctx=mock_ctx)
-
-        # Should return empty result on parse error
-        assert "undeclared" in result
-        assert "registered" in result
-        assert "tracked" in result
-        assert isinstance(result["undeclared"], list)
-        assert isinstance(result["registered"], list)
-        assert isinstance(result["tracked"], list)
-
     async def test_maid_files_default_parameters(self):
         """Test that maid_files uses default parameters correctly."""
         from maid_runner_mcp.tools.files import maid_files
 
-        mock_result = MagicMock()
-        mock_result.returncode = 0
-        mock_result.stdout = '{"undeclared": [], "registered": [], "tracked": []}'
-        mock_result.stderr = ""
+        mock_report = _create_mock_report()
+        mock_engine = MagicMock()
+        mock_engine.run_file_tracking.return_value = mock_report
+        mock_chain = MagicMock()
 
         mock_ctx = _create_mock_context()
 
         with (
-            patch("subprocess.run", return_value=mock_result) as mock_run,
+            patch(
+                "maid_runner_mcp.tools.files.ManifestChain", return_value=mock_chain
+            ) as mock_chain_cls,
+            patch("maid_runner_mcp.tools.files.ValidationEngine", return_value=mock_engine),
             patch(
                 "maid_runner_mcp.tools.files.get_working_directory",
                 new_callable=AsyncMock,
@@ -502,32 +503,23 @@ class TestMaidFilesBehavior:
         ):
             await maid_files(ctx=mock_ctx)
 
-        # Verify the command was called with default manifest_dir
-        call_args = mock_run.call_args
-        cmd = call_args[0][0]
-        assert "--manifest-dir" in cmd
-        dir_idx = cmd.index("--manifest-dir")
-        assert cmd[dir_idx + 1] == "manifests", "Default manifest_dir should be 'manifests'"
+        # Verify ManifestChain was called with default manifest_dir
+        mock_chain_cls.assert_called_once_with("manifests", project_root="/tmp/test")
 
-        # Should NOT include --issues-only by default
-        assert "--issues-only" not in cmd, "Command should not include --issues-only by default"
-
-        # Should NOT include --status by default
-        assert "--status" not in cmd, "Command should not include --status by default"
-
-    async def test_maid_files_uses_json_flag(self):
-        """Test that maid_files uses --json flag for structured output."""
+    async def test_maid_files_calls_run_file_tracking(self):
+        """Test that maid_files calls engine.run_file_tracking with the chain."""
         from maid_runner_mcp.tools.files import maid_files
 
-        mock_result = MagicMock()
-        mock_result.returncode = 0
-        mock_result.stdout = '{"undeclared": [], "registered": [], "tracked": []}'
-        mock_result.stderr = ""
+        mock_report = _create_mock_report()
+        mock_engine = MagicMock()
+        mock_engine.run_file_tracking.return_value = mock_report
+        mock_chain = MagicMock()
 
         mock_ctx = _create_mock_context()
 
         with (
-            patch("subprocess.run", return_value=mock_result) as mock_run,
+            patch("maid_runner_mcp.tools.files.ManifestChain", return_value=mock_chain),
+            patch("maid_runner_mcp.tools.files.ValidationEngine", return_value=mock_engine),
             patch(
                 "maid_runner_mcp.tools.files.get_working_directory",
                 new_callable=AsyncMock,
@@ -536,7 +528,5 @@ class TestMaidFilesBehavior:
         ):
             await maid_files(ctx=mock_ctx)
 
-        # Verify the command includes --json flag
-        call_args = mock_run.call_args
-        cmd = call_args[0][0]
-        assert "--json" in cmd, "Command should include --json flag for structured output"
+        # Verify run_file_tracking was called with the chain
+        mock_engine.run_file_tracking.assert_called_once_with(mock_chain)

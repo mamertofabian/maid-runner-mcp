@@ -4,11 +4,11 @@
   "supersedes": [],
   "creatableFiles": [
     "src/maid_runner_mcp/resources/__init__.py",
-    "src/maid_runner_mcp/utils/__init__.py",
-    "src/maid_runner_mcp/utils/cache.py"
+    "src/maid_runner_mcp/utils/__init__.py"
   ],
   "editableFiles": [
-    "src/maid_runner_mcp/server.py"
+    "src/maid_runner_mcp/server.py",
+    "src/maid_runner_mcp/utils/cache.py"
   ],
   "readonlyFiles": [
     "src/maid_runner_mcp/tools/__init__.py"

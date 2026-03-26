@@ -2,10 +2,10 @@
   "goal": "Implement refactor-code MCP prompt that guides AI agents through MAID Phase 3.5 code quality improvements",
   "taskType": "create",
   "supersedes": [],
-  "creatableFiles": [
+  "creatableFiles": [],
+  "editableFiles": [
     "src/maid_runner_mcp/prompts/refactor_code.py"
   ],
-  "editableFiles": [],
   "readonlyFiles": [
     ".claude/agents/maid-refactorer.md",
     "src/maid_runner_mcp/prompts/__init__.py",

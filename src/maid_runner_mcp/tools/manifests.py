@@ -1,12 +1,11 @@
 """MCP tool for listing manifests that reference a file."""
 
 import asyncio
-import re
-import subprocess
 from typing import TypedDict
 
 from mcp.server.fastmcp import Context
 
+from maid_runner import ManifestChain
 from maid_runner_mcp.server import mcp
 from maid_runner_mcp.utils.roots import get_working_directory
 
@@ -59,65 +58,44 @@ async def maid_list_manifests(
     Returns:
         ListManifestsResult with manifest information
     """
-    # Get working directory from MCP roots
     cwd = await get_working_directory(ctx)
 
-    # Build command
-    cmd = ["uv", "run", "maid", "manifests", file_path]
-
-    if manifest_dir:
-        cmd.extend(["--manifest-dir", manifest_dir])
-
-    # Run in thread pool to avoid blocking
     loop = asyncio.get_event_loop()
     try:
-        result = await loop.run_in_executor(
-            None, lambda: subprocess.run(cmd, capture_output=True, text=True, cwd=cwd)
+        project_root = cwd or "."
+
+        chain = await loop.run_in_executor(
+            None,
+            lambda: ManifestChain(manifest_dir, project_root=project_root),
         )
 
-        output = result.stdout
+        manifests = await loop.run_in_executor(
+            None,
+            lambda: chain.manifests_for_file(file_path),
+        )
 
-        # Parse the output
         created_by: list[str] = []
         edited_by: list[str] = []
         read_by: list[str] = []
-        total_manifests = 0
 
-        # Check for "No manifests found" case
-        if "No manifests found referencing:" in output:
-            return ListManifestsResult(
-                file_path=file_path,
-                total_manifests=0,
-                created_by=[],
-                edited_by=[],
-                read_by=[],
-            )
+        for m in manifests:
+            slug = m.slug
+            create_paths = [fs.path for fs in m.files_create]
+            edit_paths = [fs.path for fs in m.files_edit]
+            read_paths = list(m.files_read)
 
-        # Parse total count
-        total_match = re.search(r"Total: (\d+) manifest\(s\)", output)
-        if total_match:
-            total_manifests = int(total_match.group(1))
+            if file_path in create_paths:
+                created_by.append(slug)
+            if file_path in edit_paths:
+                edited_by.append(slug)
+            if file_path in read_paths:
+                read_by.append(slug)
 
-        # Parse sections
-        current_section: list[str] | None = None
-        for line in output.split("\n"):
-            line = line.strip()
-
-            # Detect section headers
-            if "CREATED BY" in line:
-                current_section = created_by
-            elif "EDITED BY" in line:
-                current_section = edited_by
-            elif "READ BY" in line:
-                current_section = read_by
-            elif line.startswith("- ") and current_section is not None:
-                # Extract manifest name
-                manifest_name = line[2:].strip()
-                current_section.append(manifest_name)
+        total = len(created_by) + len(edited_by) + len(read_by)
 
         return ListManifestsResult(
             file_path=file_path,
-            total_manifests=total_manifests,
+            total_manifests=total,
             created_by=created_by,
             edited_by=edited_by,
             read_by=read_by,

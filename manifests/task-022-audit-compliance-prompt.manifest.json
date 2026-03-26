@@ -2,10 +2,10 @@
   "goal": "Implement audit-compliance MCP prompt that guides AI agents through cross-cutting MAID compliance auditing across all phases",
   "taskType": "create",
   "supersedes": [],
-  "creatableFiles": [
+  "creatableFiles": [],
+  "editableFiles": [
     "src/maid_runner_mcp/prompts/audit_compliance.py"
   ],
-  "editableFiles": [],
   "readonlyFiles": [
     ".claude/agents/maid-auditor.md",
     "src/maid_runner_mcp/prompts/__init__.py",

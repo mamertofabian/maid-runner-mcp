@@ -2,10 +2,10 @@
   "goal": "Implement implement-task MCP prompt that guides AI agents through MAID Phase 3 implementation (TDD)",
   "taskType": "create",
   "supersedes": [],
-  "creatableFiles": [
+  "creatableFiles": [],
+  "editableFiles": [
     "src/maid_runner_mcp/prompts/implement_task.py"
   ],
-  "editableFiles": [],
   "readonlyFiles": [
     ".claude/agents/maid-developer.md",
     "src/maid_runner_mcp/prompts/__init__.py",

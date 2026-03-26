@@ -1,12 +1,14 @@
 """MCP tool for MAID manifest validation."""
 
 import asyncio
-import subprocess
+import json
 from pathlib import Path
 from typing import Any, TypedDict, cast
 
 from mcp.server.fastmcp import Context
 
+from maid_runner import validate as maid_runner_validate, ValidationMode
+from maid_runner.core.manifest import validate_manifest_schema
 from maid_runner_mcp.server import mcp
 from maid_runner_mcp.resources.validation import _validation_cache
 from maid_runner_mcp.utils.roots import get_working_directory
@@ -32,6 +34,26 @@ class ValidateResult(TypedDict, total=False):
     used_chain: bool
     errors: list[str]
     file_tracking: dict | None
+
+
+_MODE_MAP: dict[str, ValidationMode] = {
+    "implementation": ValidationMode.IMPLEMENTATION,
+    "behavioral": ValidationMode.BEHAVIORAL,
+}
+
+
+def _validate_schema(manifest_path: str, project_root: str | None) -> dict[str, Any]:
+    """Run schema-only validation on a manifest file."""
+    resolved = Path(project_root or ".") / manifest_path
+    if not resolved.exists():
+        resolved = Path(manifest_path)
+    data = json.loads(resolved.read_text())
+    errors = validate_manifest_schema(data)
+    return {
+        "success": len(errors) == 0,
+        "errors": errors,
+        "target_file": "",
+    }
 
 
 @mcp.tool()
@@ -71,50 +93,44 @@ async def maid_validate(
     Returns:
         ValidateResult with validation outcome
     """
-    # Build command
-    cmd = ["uv", "run", "maid", "validate", manifest_path]
-
-    if validation_mode:
-        cmd.extend(["--validation-mode", validation_mode])
-
-    if use_manifest_chain:
-        cmd.append("--use-manifest-chain")
-
-    if manifest_dir:
-        cmd.extend(["--manifest-dir", manifest_dir])
-
-    if quiet:
-        cmd.append("--quiet")
-
-    # Run in thread pool to avoid blocking
-    loop = asyncio.get_event_loop()
     try:
         cwd = await get_working_directory(ctx)
-        result = await loop.run_in_executor(
-            None, lambda: subprocess.run(cmd, capture_output=True, text=True, cwd=cwd)
-        )
+        loop = asyncio.get_event_loop()
 
-        success = result.returncode == 0
-        errors: list[str] = []
+        if validation_mode == "schema":
+            result_dict = await loop.run_in_executor(
+                None,
+                lambda: _validate_schema(manifest_path, cwd),
+            )
+        else:
+            mode = _MODE_MAP.get(validation_mode, ValidationMode.IMPLEMENTATION)
 
-        if not success:
-            # Parse error output
-            error_output = result.stderr or result.stdout
-            if error_output:
-                errors = [line.strip() for line in error_output.strip().split("\n") if line.strip()]
+            kwargs: dict[str, Any] = {
+                "mode": mode,
+                "use_chain": use_manifest_chain,
+            }
+            if cwd:
+                kwargs["project_root"] = cwd
+            if manifest_dir:
+                kwargs["manifest_dir"] = manifest_dir
+
+            result = await loop.run_in_executor(
+                None,
+                lambda: maid_runner_validate(manifest_path, **kwargs),
+            )
+            result_dict = result.to_dict()
 
         validate_result = ValidateResult(
-            success=success,
+            success=result_dict.get("success", False),
             mode=validation_mode,
             manifest=manifest_path,
-            target_file="",  # Would need to parse from output
+            target_file=result_dict.get("target_file", ""),
             used_chain=use_manifest_chain,
-            errors=errors,
-            file_tracking=None,
+            errors=result_dict.get("errors", []),
+            file_tracking=result_dict.get("file_tracking"),
         )
 
         # Cache the validation result by manifest name
-        # Extract manifest name from path (remove directory and extension)
         manifest_name = Path(manifest_path).stem
         if manifest_name.endswith(".manifest"):
             manifest_name = manifest_name[: -len(".manifest")]

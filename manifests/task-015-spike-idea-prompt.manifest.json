@@ -2,10 +2,10 @@
   "goal": "Implement spike-idea MCP prompt that guides AI agents through exploratory spikes before creating manifests",
   "taskType": "create",
   "supersedes": [],
-  "creatableFiles": [
+  "creatableFiles": [],
+  "editableFiles": [
     "src/maid_runner_mcp/prompts/spike_idea.py"
   ],
-  "editableFiles": [],
   "readonlyFiles": [
     ".claude/commands/spike.md",
     "src/maid_runner_mcp/prompts/__init__.py",

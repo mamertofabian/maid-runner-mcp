@@ -81,13 +81,9 @@ class TestMaidSnapshotSystemUsesWorkingDirectory:
         )
         mock_ctx.session = mock_session
 
-        # Mock subprocess to avoid actual execution
-        with patch("maid_runner_mcp.tools.snapshot_system.subprocess.run") as mock_run:
-            mock_run.return_value = MagicMock(
-                returncode=1,  # Fail to avoid actual work
-                stderr="Test error",
-                stdout="",
-            )
+        # Mock library function to avoid actual execution
+        with patch("maid_runner_mcp.tools.snapshot_system.generate_system_snapshot") as mock_gen:
+            mock_gen.side_effect = RuntimeError("Test error")
 
             # Call with ctx parameter
             result = await maid_snapshot_system(
@@ -117,13 +113,11 @@ class TestMaidSnapshotSystemUsesWorkingDirectory:
         ) as mock_get_wd:
             mock_get_wd.return_value = "/tmp/test"
 
-            # Mock subprocess to avoid actual execution
-            with patch("maid_runner_mcp.tools.snapshot_system.subprocess.run") as mock_run:
-                mock_run.return_value = MagicMock(
-                    returncode=1,
-                    stderr="Test error",
-                    stdout="",
-                )
+            # Mock library function to avoid actual execution
+            with patch(
+                "maid_runner_mcp.tools.snapshot_system.generate_system_snapshot"
+            ) as mock_gen:
+                mock_gen.side_effect = RuntimeError("Test error")
 
                 # Call maid_snapshot_system
                 await maid_snapshot_system(

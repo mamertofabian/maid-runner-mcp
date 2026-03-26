@@ -2,13 +2,24 @@
 
 import asyncio
 import json
-import subprocess
+from pathlib import Path
 from typing import Any, TypedDict
 
 from mcp.server.fastmcp import Context
 
 from maid_runner_mcp.server import mcp
 from maid_runner_mcp.utils.roots import get_working_directory
+
+# Resolve the schema file from the installed maid_runner package
+_SCHEMA_FILE = Path(__file__).resolve().parents[0]  # placeholder, resolved at runtime
+
+
+def _get_schema_path() -> Path:
+    """Get the path to the maid_runner manifest JSON schema file."""
+    import maid_runner.core.manifest as manifest_mod
+
+    schema_dir = Path(manifest_mod.__file__).parent.parent / "schemas"
+    return schema_dir / "manifest.v2.schema.json"
 
 
 class SchemaResult(TypedDict):
@@ -51,52 +62,32 @@ async def maid_get_schema(ctx: Context) -> SchemaResult:
     Returns:
         SchemaResult with the manifest schema
     """
-    # Get working directory from MCP roots
-    cwd = await get_working_directory(ctx)
+    await get_working_directory(ctx)
 
-    # Build command
-    cmd = ["uv", "run", "maid", "schema"]
-
-    # Run in thread pool to avoid blocking
     loop = asyncio.get_event_loop()
     try:
-        result = await loop.run_in_executor(
-            None, lambda: subprocess.run(cmd, capture_output=True, text=True, cwd=cwd)
+        schema = await loop.run_in_executor(
+            None,
+            lambda: json.loads(_get_schema_path().read_text()),
         )
 
-        if result.returncode == 0:
-            # Parse JSON schema from stdout
-            try:
-                schema = json.loads(result.stdout)
-                return SchemaResult(
-                    success=True,
-                    json_schema=schema,
-                    errors=[],
-                )
-            except json.JSONDecodeError as e:
-                return SchemaResult(
-                    success=False,
-                    json_schema={},
-                    errors=[f"Failed to parse schema JSON: {e}"],
-                )
-        else:
-            # Parse error output
-            error_output = result.stderr or result.stdout
-            errors: list[str] = []
-            if error_output:
-                errors = [line.strip() for line in error_output.strip().split("\n") if line.strip()]
-
-            return SchemaResult(
-                success=False,
-                json_schema={},
-                errors=errors,
-            )
+        return SchemaResult(
+            success=True,
+            json_schema=schema,
+            errors=[],
+        )
 
     except FileNotFoundError:
         return SchemaResult(
             success=False,
             json_schema={},
-            errors=["MAID Runner command not found"],
+            errors=["MAID Runner schema file not found"],
+        )
+    except json.JSONDecodeError as e:
+        return SchemaResult(
+            success=False,
+            json_schema={},
+            errors=[f"Failed to parse schema JSON: {e}"],
         )
     except Exception as e:
         return SchemaResult(

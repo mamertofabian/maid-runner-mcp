@@ -1,11 +1,11 @@
 """MCP tool for MAID system-wide manifest snapshot generation."""
 
 import asyncio
-import subprocess
 from typing import TypedDict
 
 from mcp.server.fastmcp import Context
 
+from maid_runner.core.snapshot import generate_system_snapshot, save_snapshot
 from maid_runner_mcp.server import mcp
 from maid_runner_mcp.utils.roots import get_working_directory
 
@@ -56,51 +56,29 @@ async def maid_snapshot_system(
     Returns:
         SystemSnapshotResult with generation outcome
     """
-    # Get working directory from MCP roots
     cwd = await get_working_directory(ctx)
 
-    # Build command
-    cmd = ["uv", "run", "maid", "snapshot-system"]
-
-    cmd.extend(["--output", output])
-    cmd.extend(["--manifest-dir", manifest_dir])
-
-    if quiet:
-        cmd.append("--quiet")
-
-    # Run in thread pool to avoid blocking
     loop = asyncio.get_event_loop()
     try:
-        result = await loop.run_in_executor(
-            None, lambda: subprocess.run(cmd, capture_output=True, text=True, cwd=cwd)
+        project_root = cwd or "."
+
+        manifest = await loop.run_in_executor(
+            None,
+            lambda: generate_system_snapshot(
+                manifest_dir=manifest_dir,
+                project_root=project_root,
+            ),
         )
 
-        success = result.returncode == 0
-        errors: list[str] = []
-        output_path = output
-
-        if not success:
-            # Parse error output
-            error_output = result.stderr or result.stdout
-            if error_output:
-                errors = [line.strip() for line in error_output.strip().split("\n") if line.strip()]
-        else:
-            # Parse successful output for output path confirmation
-            stdout = result.stdout or ""
-            # If output mentions a different path, use it
-            for line in stdout.split("\n"):
-                if "system" in line.lower() and ".json" in line:
-                    # Extract path from output
-                    parts = line.split()
-                    for part in parts:
-                        if part.endswith(".json"):
-                            output_path = part
-                            break
+        output_path = await loop.run_in_executor(
+            None,
+            lambda: save_snapshot(manifest, output=output),
+        )
 
         return SystemSnapshotResult(
-            success=success,
-            output_path=output_path,
-            errors=errors,
+            success=True,
+            output_path=str(output_path),
+            errors=[],
         )
 
     except FileNotFoundError:

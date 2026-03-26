@@ -2,10 +2,10 @@
   "goal": "Implement design-tests MCP prompt that guides AI agents through MAID Phase 2 behavioral test creation",
   "taskType": "create",
   "supersedes": [],
-  "creatableFiles": [
+  "creatableFiles": [],
+  "editableFiles": [
     "src/maid_runner_mcp/prompts/design_tests.py"
   ],
-  "editableFiles": [],
   "readonlyFiles": [
     ".claude/agents/maid-test-designer.md",
     "src/maid_runner_mcp/prompts/__init__.py",

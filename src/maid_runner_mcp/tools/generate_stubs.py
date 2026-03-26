@@ -1,11 +1,13 @@
 """MCP tool for MAID test stub generation."""
 
 import asyncio
-import subprocess
+from pathlib import Path
 from typing import TypedDict
 
 from mcp.server.fastmcp import Context
 
+from maid_runner import load_manifest
+from maid_runner.core.snapshot import generate_test_stub
 from maid_runner_mcp.server import mcp
 from maid_runner_mcp.utils.roots import get_working_directory
 
@@ -53,46 +55,32 @@ async def maid_generate_stubs(ctx: Context, manifest_path: str) -> GenerateStubs
     Returns:
         GenerateStubsResult with generation outcome
     """
-    # Get working directory from MCP roots
     cwd = await get_working_directory(ctx)
 
-    # Build command
-    cmd = ["uv", "run", "maid", "generate-stubs", manifest_path]
-
-    # Run in thread pool to avoid blocking
     loop = asyncio.get_event_loop()
     try:
-        result = await loop.run_in_executor(
-            None, lambda: subprocess.run(cmd, capture_output=True, text=True, cwd=cwd)
+        # Resolve manifest path relative to project root
+        resolved_path = Path(cwd or ".") / manifest_path
+        if not resolved_path.exists():
+            resolved_path = Path(manifest_path)
+
+        manifest = await loop.run_in_executor(
+            None,
+            lambda: load_manifest(resolved_path),
         )
 
-        success = result.returncode == 0
-        errors: list[str] = []
-        generated_files: list[str] = []
+        stub_files = await loop.run_in_executor(
+            None,
+            lambda: generate_test_stub(manifest),
+        )
 
-        if not success:
-            # Parse error output
-            error_output = result.stderr or result.stdout
-            if error_output:
-                errors = [line.strip() for line in error_output.strip().split("\n") if line.strip()]
-        else:
-            # Parse successful output for generated file paths
-            output = result.stdout or ""
-            for line in output.split("\n"):
-                # Look for lines like "Test stub generated: tests/test_task_XXX_*.py"
-                if "generated:" in line.lower() and ".py" in line:
-                    # Extract path from output
-                    parts = line.split(":")
-                    if len(parts) >= 2:
-                        file_path = parts[1].strip()
-                        if file_path:
-                            generated_files.append(file_path)
+        generated_files = list(stub_files.keys()) if stub_files else []
 
         return GenerateStubsResult(
-            success=success,
+            success=True,
             manifest_path=manifest_path,
             generated_files=generated_files,
-            errors=errors,
+            errors=[],
         )
 
     except FileNotFoundError:

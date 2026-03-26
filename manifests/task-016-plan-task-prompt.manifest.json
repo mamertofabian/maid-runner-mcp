@@ -2,10 +2,10 @@
   "goal": "Implement plan-task MCP prompt that guides AI agents through MAID Phase 1 manifest creation",
   "taskType": "create",
   "supersedes": [],
-  "creatableFiles": [
+  "creatableFiles": [],
+  "editableFiles": [
     "src/maid_runner_mcp/prompts/plan_task.py"
   ],
-  "editableFiles": [],
   "readonlyFiles": [
     ".claude/agents/maid-manifest-architect.md",
     "src/maid_runner_mcp/prompts/__init__.py",

@@ -1,11 +1,12 @@
 """MCP tool for MAID manifest snapshot generation."""
 
 import asyncio
-import subprocess
 from typing import TypedDict
 
 from mcp.server.fastmcp import Context
 
+from maid_runner import generate_snapshot
+from maid_runner.core.snapshot import save_snapshot, generate_test_stub
 from maid_runner_mcp.server import mcp
 from maid_runner_mcp.utils.roots import get_working_directory
 
@@ -62,63 +63,39 @@ async def maid_snapshot(
     Returns:
         SnapshotResult with generation outcome
     """
-    # Get working directory from MCP roots
     cwd = await get_working_directory(ctx)
 
-    # Build command
-    cmd = ["uv", "run", "maid", "snapshot", file_path]
-
-    cmd.extend(["--output-dir", output_dir])
-
-    if force:
-        cmd.append("--force")
-
-    if skip_test_stub:
-        cmd.append("--skip-test-stub")
-
-    # Run in thread pool to avoid blocking
     loop = asyncio.get_event_loop()
     try:
-        result = await loop.run_in_executor(
-            None, lambda: subprocess.run(cmd, capture_output=True, text=True, cwd=cwd)
+        project_root = cwd or "."
+
+        manifest = await loop.run_in_executor(
+            None,
+            lambda: generate_snapshot(file_path, project_root=project_root),
         )
 
-        success = result.returncode == 0
-        errors: list[str] = []
-        manifest_path = ""
-        test_stub_path: str | None = None
-        superseded_manifests: list[str] = []
+        manifest_path = await loop.run_in_executor(
+            None,
+            lambda: save_snapshot(manifest, output_dir=output_dir),
+        )
 
-        if not success:
-            # Parse error output
-            error_output = result.stderr or result.stdout
-            if error_output:
-                errors = [line.strip() for line in error_output.strip().split("\n") if line.strip()]
-        else:
-            # Parse successful output for manifest path
-            output = result.stdout or ""
-            for line in output.split("\n"):
-                if "manifest" in line.lower() and ".json" in line:
-                    # Extract path from output
-                    parts = line.split()
-                    for part in parts:
-                        if part.endswith(".json"):
-                            manifest_path = part
-                            break
-                if "test" in line.lower() and ".py" in line:
-                    # Extract test stub path
-                    parts = line.split()
-                    for part in parts:
-                        if part.endswith(".py"):
-                            test_stub_path = part
-                            break
+        test_stub_path: str | None = None
+        if not skip_test_stub:
+            stub_result = await loop.run_in_executor(
+                None,
+                lambda: generate_test_stub(manifest),
+            )
+            if stub_result:
+                test_stub_path = next(iter(stub_result.values()), None)
+
+        superseded = list(manifest.supersedes) if manifest.supersedes else []
 
         return SnapshotResult(
-            success=success,
-            manifest_path=manifest_path,
+            success=True,
+            manifest_path=str(manifest_path),
             test_stub_path=test_stub_path,
-            superseded_manifests=superseded_manifests,
-            errors=errors,
+            superseded_manifests=superseded,
+            errors=[],
         )
 
     except FileNotFoundError:
